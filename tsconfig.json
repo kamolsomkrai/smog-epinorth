@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "types": ["node"], // เพิ่ม "node" หากยังไม่ถูกเพิ่ม
     "plugins": [
       {
         "name": "next"
