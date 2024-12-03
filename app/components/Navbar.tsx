@@ -1,18 +1,37 @@
-// app/components/Navbar.tsx
 "use client";
 
 import React, { useState, useContext } from "react";
-import Link from "next/link";
-import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import LoginModal from "./LoginModal";
 import { AuthContext } from "../context/AuthContext";
+import LogoutIcon from '@mui/icons-material/Logout';
+import { Menu as MenuIcon, AccountCircle } from "@mui/icons-material";
+import SidebarMenu from "./SidebarMenu";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const auth = useContext(AuthContext);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = async () => {
     try {
@@ -22,6 +41,7 @@ const Navbar = () => {
       });
       if (res.ok) {
         auth?.setUser(null);
+        handleCloseMenu();
       } else {
         alert("Logout failed");
       }
@@ -30,35 +50,114 @@ const Navbar = () => {
     }
   };
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
     <>
-      <AppBar position="static">
-        <Toolbar className="flex justify-between">
-          <Typography variant="h6" component="div">
-            My Supplies App
+      <AppBar position="static" className="bg-pink-200">
+        <Toolbar className="flex justify-between items-center">
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={toggleSidebar}
+            className="hover:bg-pink-300 rounded-md transition-colors duration-200"
+          >
+            <MenuIcon className="text-pink-800" />
+          </IconButton>
+          <Typography
+            variant="h6"
+            component="div"
+            className="font-bold text-pink-800"
+          >
+            ระบาดวิทยาและตอบโต้ ฯ
           </Typography>
           <div>
-            <Link href="/supplies" passHref>
-              <Button color="inherit">Supplies</Button>
-            </Link>
-            <Link href="/summary" passHref>
-              <Button color="inherit">Summary</Button>
-            </Link>
             {auth?.user ? (
               <>
-                <span>{auth.user.hospname}</span>
-                <Button color="inherit" onClick={handleLogout}>
-                  Logout
-                </Button>
+                <IconButton
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
+
+                  className="hover:bg-pink-300   
+ rounded-md transition-colors duration-200"
+                >
+                  <AccountCircle className="text-pink-800" />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorEl)}
+                  onClose={handleCloseMenu}
+                  PaperProps={{
+
+                    sx: {
+                      backgroundColor: 'pink.100',
+                      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                      borderRadius: '8px',
+                      mt: 1.5,
+                      '& .MuiMenuItem-root': {
+                        '&:hover': {
+                          backgroundColor: 'pink.200',
+                          transition: 'background-color 0.2s ease',
+                        },
+                        '& svg': {
+                          mr: 2,
+                          color: 'pink.800',
+                        },
+                      },
+                    }
+                  }}
+                >
+                  <MenuItem onClick={handleCloseMenu}>
+                    <span className="text-gray-700 font-medium">
+                      {auth.user.hospname}
+                    </span>
+                  </MenuItem>
+                  <MenuItem onClick={handleLogout}>
+                    <Button
+                      color="inherit"
+                      startIcon={<LogoutIcon />}
+                      sx={{
+                        color: 'pink.800',
+                        '&:hover': {
+                          backgroundColor: 'pink.200',
+                        }
+                      }}
+                    >
+                      Logout
+                    </Button>
+                  </MenuItem>
+                </Menu>
               </>
             ) : (
-              <Button color="inherit" onClick={handleOpen}>
+              <Button
+                color="inherit"
+                onClick={handleOpen}
+                className="bg-white hover:bg-pink-100 text-pink-800 font-medium rounded-md px-4 py-2 transition-colors duration-200"
+              >
                 Login
               </Button>
             )}
           </div>
         </Toolbar>
       </AppBar>
+
+      <SidebarMenu open={sidebarOpen} onClose={toggleSidebar} />
       <LoginModal open={open} handleClose={handleClose} />
     </>
   );

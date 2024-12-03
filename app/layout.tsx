@@ -55,7 +55,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'Roboto, sans-serif',
+    fontFamily: 'Sarabun, sans-serif',
   },
 });
 
@@ -67,7 +67,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <CssBaseline />
           <AuthProvider>
             <Navbar />
-            <main className="p-4">{children}</main>
+            <main className="p-8">{children}</main>
           </AuthProvider>
         </ThemeProvider>
       </body>

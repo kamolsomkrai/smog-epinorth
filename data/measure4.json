@@ -1,0 +1,26 @@
+[
+  {
+    "province": "กรุงเทพมหานคร",
+    "measure4_eoc_open_date": "2024-01-01",
+    "measure4_eoc_close_date": "2024-03-01",
+    "measure4_law_enforcement_fine": 500000
+  },
+  {
+    "province": "เชียงใหม่",
+    "measure4_eoc_open_date": "2024-02-15",
+    "measure4_eoc_close_date": "2024-04-15",
+    "measure4_law_enforcement_fine": 300000
+  },
+  {
+    "province": "ภูเก็ต",
+    "measure4_eoc_open_date": "2024-03-10",
+    "measure4_eoc_close_date": "2024-05-10",
+    "measure4_law_enforcement_fine": 250000
+  },
+  {
+    "province": "ขอนแก่น",
+    "measure4_eoc_open_date": "2024-04-05",
+    "measure4_eoc_close_date": "2024-06-05",
+    "measure4_law_enforcement_fine": 400000
+  }
+]

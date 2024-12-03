@@ -1,0 +1,58 @@
+[
+  {
+    "province": "กรุงเทพมหานคร",
+    "measure2_1_1": 100,
+    "measure2_1_2": 150,
+    "measure2_child": 50,
+    "measure2_elderly": 70,
+    "measure2_pregnant": 30,
+    "measure2_bedridden": 20,
+    "measure2_asthma": 15,
+    "measure2_copd": 10,
+    "measure2_asthma_copd": 5,
+    "measure2_health_check_staff": 200,
+    "measure2_health_check_volunteer": 180
+  },
+  {
+    "province": "เชียงใหม่",
+    "measure2_1_1": 80,
+    "measure2_1_2": 120,
+    "measure2_child": 40,
+    "measure2_elderly": 60,
+    "measure2_pregnant": 25,
+    "measure2_bedridden": 15,
+    "measure2_asthma": 10,
+    "measure2_copd": 8,
+    "measure2_asthma_copd": 4,
+    "measure2_health_check_staff": 160,
+    "measure2_health_check_volunteer": 140
+  },
+  {
+    "province": "ภูเก็ต",
+    "measure2_1_1": 70,
+    "measure2_1_2": 110,
+    "measure2_child": 35,
+    "measure2_elderly": 55,
+    "measure2_pregnant": 20,
+    "measure2_bedridden": 12,
+    "measure2_asthma": 9,
+    "measure2_copd": 7,
+    "measure2_asthma_copd": 3,
+    "measure2_health_check_staff": 140,
+    "measure2_health_check_volunteer": 130
+  },
+  {
+    "province": "ขอนแก่น",
+    "measure2_1_1": 90,
+    "measure2_1_2": 130,
+    "measure2_child": 45,
+    "measure2_elderly": 65,
+    "measure2_pregnant": 28,
+    "measure2_bedridden": 18,
+    "measure2_asthma": 12,
+    "measure2_copd": 9,
+    "measure2_asthma_copd": 4,
+    "measure2_health_check_staff": 180,
+    "measure2_health_check_volunteer": 160
+  }
+]
