@@ -39,7 +39,7 @@ const ReportPage: React.FC = () => {
               : 'bg-white text-gray-800 border border-gray-300 hover:bg-gray-200'
               }`}
           >
-            Measure 1
+            มาตรการที่ 1
           </button>
           <button
             onClick={() => setSelectedMeasure(2)}
@@ -48,7 +48,7 @@ const ReportPage: React.FC = () => {
               : 'bg-white text-gray-800 border border-gray-300 hover:bg-gray-200'
               }`}
           >
-            Measure 2
+            มาตรการที่ 2
           </button>
           <button
             onClick={() => setSelectedMeasure(3)}
@@ -57,7 +57,7 @@ const ReportPage: React.FC = () => {
               : 'bg-white text-gray-800 border border-gray-300 hover:bg-gray-200'
               }`}
           >
-            Measure 3
+            มาตรการที่ 3
           </button>
           <button
             onClick={() => setSelectedMeasure(4)}
@@ -66,7 +66,7 @@ const ReportPage: React.FC = () => {
               : 'bg-white text-gray-800 border border-gray-300 hover:bg-gray-200'
               }`}
           >
-            Measure 4
+            มาตรการที่ 4
           </button>
         </div>
 

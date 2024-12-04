@@ -1,5 +1,5 @@
 import React from 'react';
-import FormData from '../../interfaces/measure';
+import { FormData } from '../../interfaces/measure';
 
 interface Props {
   formData: FormData;

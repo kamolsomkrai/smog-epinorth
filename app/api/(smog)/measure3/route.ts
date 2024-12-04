@@ -1,38 +1,40 @@
 // app/api/measure3/route.ts
 "use server";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 
 // Zod Schema สำหรับ Measure3
 const Measure3Schema = z.object({
   activity_id: z.number().int().min(1),
-  measure3_pollution_clinic_open: z.number().int().min(0),
-  measure3_pollution_clinic_service: z.number().int().min(0),
-  measure3_online_clinic_open: z.number().int().min(0),
-  measure3_online_clinic_service: z.number().int().min(0),
-  measure3_nursery_dust_free_open: z.number().int().min(0),
-  measure3_nursery_dust_free_service: z.number().int().min(0),
-  measure3_gov_dust_free_open: z.number().int().min(0),
-  measure3_gov_dust_free_service: z.number().int().min(0),
-  measure3_active_teams_3_doctors_total: z.number().int().min(0),
-  measure3_active_teams_3_doctors_add: z.number().int().min(0),
-  measure3_active_teams_mobile_total: z.number().int().min(0),
-  measure3_active_teams_mobile_add: z.number().int().min(0),
-  measure3_active_teams_citizens_total: z.number().int().min(0),
-  measure3_active_teams_citizens_add: z.number().int().min(0),
-  measure3_personal_protective_gear: z.number().int().min(0),
-  measure3_elderly_N95_mask: z.number().int().min(0),
-  measure3_elderly_surgical_mask: z.number().int().min(0),
-  measure3_children_N95_mask: z.number().int().min(0),
-  measure3_children_surgical_mask: z.number().int().min(0),
-  measure3_pregnant_N95_mask: z.number().int().min(0),
-  measure3_pregnant_surgical_mask: z.number().int().min(0),
-  measure3_bedridden_N95_mask: z.number().int().min(0),
-  measure3_bedridden_surgical_mask: z.number().int().min(0),
-  measure3_disease_N95_mask: z.number().int().min(0),
-  measure3_disease_surgical_mask: z.number().int().min(0),
-  measure3_sky_doctor: z.number().int().min(0),
-  measure3_ambulance: z.number().int().min(0),
+  pollution_clinic_open: z.number().int().min(0),
+  pollution_clinic_service: z.number().int().min(0),
+  online_clinic_open: z.number().int().min(0),
+  online_clinic_service: z.number().int().min(0),
+  nursery_dust_free_open: z.number().int().min(0),
+  nursery_dust_free_service: z.number().int().min(0),
+  gov_dust_free_open: z.number().int().min(0),
+  gov_dust_free_service: z.number().int().min(0),
+  active_teams_3_doctors_total: z.number().int().min(0),
+  active_teams_3_doctors_add: z.number().int().min(0),
+  active_teams_mobile_total: z.number().int().min(0),
+  active_teams_mobile_add: z.number().int().min(0),
+  active_teams_citizens_total: z.number().int().min(0),
+  active_teams_citizens_add: z.number().int().min(0),
+  // personal_protective_gear: z.number().int().min(0),
+  pop_N95_mask: z.number().int().min(0),
+  pop_surgical_mask: z.number().int().min(0),
+  elderly_N95_mask: z.number().int().min(0),
+  elderly_surgical_mask: z.number().int().min(0),
+  children_N95_mask: z.number().int().min(0),
+  children_surgical_mask: z.number().int().min(0),
+  pregnant_N95_mask: z.number().int().min(0),
+  pregnant_surgical_mask: z.number().int().min(0),
+  bedridden_N95_mask: z.number().int().min(0),
+  bedridden_surgical_mask: z.number().int().min(0),
+  disease_N95_mask: z.number().int().min(0),
+  disease_surgical_mask: z.number().int().min(0),
+  sky_doctor: z.number().int().min(0),
+  ambulance: z.number().int().min(0),
 });
 
 const handleApiError = (error: unknown) => {
@@ -55,8 +57,18 @@ const handleApiError = (error: unknown) => {
   return NextResponse.json({ message: "Unknown Error" }, { status: 500 });
 };
 
-export async function POST(request: Request) {
+// Utility function to validate token
+const validateToken = (token?: string) => {
+  if (!token) {
+    throw new Error("No token found. Please login.");
+  }
+  return token;
+};
+
+export async function POST(request: NextRequest) {
   try {
+    const token = validateToken(request.cookies.get("token")?.value);
+    const cookieHeader = `token=${token}`;
     const body = await request.json();
     const validatedData = Measure3Schema.parse(body);
 
@@ -65,7 +77,9 @@ export async function POST(request: Request) {
       "https://epinorth-api.ddc.moph.go.th/api/measure3",
       {
         method: "POST",
+        credentials: "include",
         headers: {
+          Cookie: cookieHeader,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(validatedData),

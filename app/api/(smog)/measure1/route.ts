@@ -1,6 +1,6 @@
 // app/api/measure1/route.ts
 "use server";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 
 // Zod Schema สำหรับ Measure1
@@ -30,9 +30,17 @@ const handleApiError = (error: unknown) => {
 
   return NextResponse.json({ message: "Unknown Error" }, { status: 500 });
 };
-
-export async function POST(request: Request) {
+const validateToken = (token?: string) => {
+  if (!token) {
+    throw new Error("No token found. Please login.");
+  }
+  return token;
+};
+export async function POST(request: NextRequest) {
   try {
+    const token = validateToken(request.cookies.get("token")?.value);
+    const cookieHeader = `token=${token}`;
+    // Parse and validate request body
     const body = await request.json();
     const validatedData = Measure1Schema.parse(body);
 
@@ -41,7 +49,9 @@ export async function POST(request: Request) {
       "https://epinorth-api.ddc.moph.go.th/api/measure1",
       {
         method: "POST",
+        credentials: "include",
         headers: {
+          Cookie: cookieHeader,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(validatedData),

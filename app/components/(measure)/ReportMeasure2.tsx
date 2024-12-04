@@ -1,34 +1,55 @@
+// components/ReportMeasure2.tsx
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import {
-  PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Measure2Data } from '../../interfaces/measure';
-
-interface Props { }
+import PieChartSection from '../(object)/PieChartSection';
+import DataTable from '../(object)/DataTable';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#8dd1e1', '#a4de6c', '#d0ed57', '#ffc0cb'];
 
-const ReportMeasure2: React.FC<Props> = () => {
+const ReportMeasure2: React.FC = () => {
   const [data, setData] = useState<Measure2Data[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+  // ใช้ useMemo สำหรับการคำนวณ
+  const calculateTotal = useMemo(() => (field: keyof Measure2Data): number => {
+    return data.reduce((acc, curr) => acc + (typeof curr[field] === 'number' ? curr[field] : 0), 0);
+  }, [data]);
+
+  const safeAdd = useMemo(() => (...nums: (number | undefined)[]): number => {
+    return nums.reduce((acc, num) => acc + (typeof num === 'number' ? num : 0), 0);
+  }, []);
+
+  // ใช้ useMemo สำหรับการกรองข้อมูลตาม searchTerm
+  const filteredData = useMemo(() => {
+    return data.filter(item =>
+      item.province.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [data, searchTerm]);
 
   useEffect(() => {
     const fetchMeasure2 = async () => {
       try {
-        const response = await fetch('/api/measure2', { method: 'GET' });
-        console.log('API Response Status:', response.status);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        // ตรวจสอบ localStorage ก่อน
+        const cachedData = localStorage.getItem('measure2Data');
+        if (cachedData) {
+          setData(JSON.parse(cachedData));
+        } else {
+          const response = await fetch('/api/measure2', { method: 'GET' });
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const fetchedData: Measure2Data[] = await response.json();
+          setData(fetchedData);
+          // เก็บข้อมูลใน localStorage
+          localStorage.setItem('measure2Data', JSON.stringify(fetchedData));
         }
-        const fetchedData: Measure2Data[] = await response.json();
-        console.log('Fetched Data:', fetchedData);
-        setData(fetchedData);
       } catch (err) {
         console.error('Error fetching Measure2 data:', err);
-        setError('Failed to fetch Measure2 data');
+        setError('ไม่สามารถดึงข้อมูล Measure2 ได้');
       } finally {
         setLoading(false);
       }
@@ -37,344 +58,197 @@ const ReportMeasure2: React.FC<Props> = () => {
     fetchMeasure2();
   }, []);
 
-  const calculateTotal = (field: keyof Measure2Data): number => {
-    return data.reduce((acc, curr) => acc + (typeof curr[field] === 'number' ? curr[field] : 0), 0);
-  };
-
-  const safeAdd = (...nums: (number | undefined)[]): number => {
-    return nums.reduce((acc, num) => acc + (typeof num === 'number' ? num : 0), 0);
-  };
-
   // ข้อมูลสำหรับ Pie Chart ในส่วน 2.1
-  const pieData2_1_1 = data.map(item => ({
-    name: item.province,
-    value: typeof item.risk_health_monitoring_1_1 === 'number' ? item.risk_health_monitoring_1_1 : 0,
-  }));
+  const pieData2_1_1 = useMemo(() => {
+    return filteredData.map(item => ({
+      name: item.province,
+      value: typeof item.risk_health_monitoring_1_1 === 'number' ? item.risk_health_monitoring_1_1 : 0,
+    }));
+  }, [filteredData]);
 
-  const pieData2_1_2 = data.map(item => ({
-    name: item.province,
-    value: typeof item.risk_health_monitoring_1_1 === 'number' ? item.risk_health_monitoring_1_1 : 0,
-  }));
+  const pieData2_1_2 = useMemo(() => {
+    return filteredData.map(item => ({
+      name: item.province,
+      value: typeof item.risk_health_monitoring_1_2 === 'number' ? item.risk_health_monitoring_1_2 : 0,
+    }));
+  }, [filteredData]);
 
   // ข้อมูลสำหรับ Pie Chart ในส่วน 2.2
-  const pieData2_2 = [
+  const pieData2_2 = useMemo(() => [
     { name: 'เด็กเล็ก', value: calculateTotal('child') },
     { name: 'ผู้สูงอายุ', value: calculateTotal('elderly') },
     { name: 'หญิงตั้งครรภ์', value: calculateTotal('pregnant') },
     { name: 'ติดเตียง', value: calculateTotal('bedridden') },
-    { name: 'ผู้มีโรคประจำตัว', value: calculateTotal('asthma') + calculateTotal('copd') + calculateTotal('asthma_copd') },
-  ];
+    { name: 'ผู้มีโรคประจำตัว', value: safeAdd(calculateTotal('asthma'), calculateTotal('copd'), calculateTotal('asthma_copd')) },
+  ], [calculateTotal, safeAdd]);
 
   // ข้อมูลสำหรับ Pie Chart ในส่วน 2.3
-  const pieData2_3 = [
-    { name: 'Asthma', value: calculateTotal('asthma') },
-    { name: 'COPD', value: calculateTotal('copd') },
-    { name: 'Asthma + COPD', value: calculateTotal('asthma_copd') },
-  ];
+  // const pieData2_3 = useMemo(() => [
+  //   { name: 'Asthma', value: calculateTotal('asthma') },
+  //   { name: 'COPD', value: calculateTotal('copd') },
+  //   { name: 'Asthma + COPD', value: calculateTotal('asthma_copd') },
+  // ], [calculateTotal]);
 
-  // ข้อมูลสำหรับ Pie Chart ในส่วน 4.1 และ 4.2
-  const pieData2_4_staff = [
+  // ข้อมูลสำหรับ Pie Chart ในส่วน 4.1
+  const pieData2_4_staff = useMemo(() => [
     { name: 'ตรวจสุขภาพโดยเจ้าหน้าที่', value: calculateTotal('health_check_staff') },
     { name: 'ตรวจสุขภาพโดยอาสาสมัคร', value: calculateTotal('health_check_volunteer') },
-  ];
+  ], [calculateTotal]);
 
   if (error) {
     return <div className="p-6 text-red-500">{error}</div>;
   }
 
   if (loading) {
-    return <div className="p-6 text-gray-500">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-opacity-75" />
+      </div>
+    );
+  }
+
+  if (!data.length) {
+    return <div className="p-6 text-gray-500">ไม่มีข้อมูลสำหรับรายงาน Measure2</div>;
   }
 
   return (
-    <div className="space-y-8 p-4 bg-gray-100 min-h-screen">
-      {/* 2.1 */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-bold mb-6 text-gray-800">2.1 เฝ้าระวังและแจ้งเตือนความเสี่ยงต่อสุขภาพ</h3>
+    <div className="space-y-8 p-6 bg-gray-100 min-h-screen">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* <h1 className="text-4xl font-bold text-gray-800 mb-8">รายงาน Measure 2</h1> */}
 
-        {/* Pie Charts สำหรับ 2.1.1 และ 2.1.2 */}
-        <div className="flex flex-col md:flex-row justify-center items-center mb-6">
-          <div className="w-full md:w-1/2 h-64">
-            {/* <h4 className="text-md font-semibold mb-2 text-gray-700">2.1.1 จัดทาสื่อ Info ประชาสัมพันธ์</h4> */}
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={pieData2_1_1}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {pieData2_1_1.map((entry, index) => (
-                    <Cell key={`cell-2.1.1-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="w-full md:w-1/2 h-64 mt-6 md:mt-0">
-            {/* <h4 className="text-md font-semibold mb-2 text-gray-700">2.1.2 แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ</h4> */}
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={pieData2_1_2}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {pieData2_1_2.map((entry, index) => (
-                    <Cell key={`cell-2.1.2-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+        {/* เพิ่ม Search Input */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="ค้นหาจังหวัด..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="p-2 border rounded w-full md:w-1/3"
+          />
         </div>
 
-        {/* ตารางข้อมูลสำหรับ 2.1 */}
-        <div className="mt-6 overflow-x-auto">
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b">จังหวัด</th>
-                <th className="py-2 px-4 border-b">จัดทาสื่อ Info ประชาสัมพันธ์ (ชิ้น)</th>
-                <th className="py-2 px-4 border-b">แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ (ครั้ง)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
-                <tr key={index} className="text-center">
-                  <td className="py-2 px-4 border-b">{item.province}</td>
-                  <td className="py-2 px-4 border-b">{item.risk_health_monitoring_1_1 ?? 0}</td>
-                  <td className="py-2 px-4 border-b">{item.risk_health_monitoring_1_2 ?? 0}</td>
-                </tr>
-              ))}
-              <tr className="font-bold text-center">
-                <td className="py-2 px-4 border-t">รวม</td>
-                <td className="py-2 px-4 border-t">{calculateTotal('risk_health_monitoring_1_1')}</td>
-                <td className="py-2 px-4 border-t">{calculateTotal('risk_health_monitoring_1_2')}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+        {/* 2.1 เฝ้าระวังและแจ้งเตือนความเสี่ยงต่อสุขภาพ */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800">2.1 เฝ้าระวังและแจ้งเตือนความเสี่ยงต่อสุขภาพ</h2>
 
-      {/* 2.2 */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-bold mb-6 text-gray-800">2.2 กลุ่มเปราะบาง</h3>
+          {/* Pie Charts สำหรับ 2.1.1 และ 2.1.2 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* 2.1.1 จัดทาสื่อ Info ประชาสัมพันธ์ */}
+            <PieChartSection
+              title="2.1.1 จัดทาสื่อ Info ประชาสัมพันธ์"
+              data={pieData2_1_1}
+              colors={COLORS}
+            />
 
-        {/* Pie Chart สำหรับ 2.2 */}
-        <div className="flex justify-center mb-6">
-          <div className="w-full md:w-1/2 h-64">
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={pieData2_2}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {pieData2_2.map((entry, index) => (
-                    <Cell key={`cell-2.2-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+            {/* 2.1.2 แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ */}
+            <PieChartSection
+              title="2.1.2 แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ"
+              data={pieData2_1_2}
+              colors={COLORS}
+            />
+          </div>
+
+          {/* ตารางข้อมูลสำหรับ 2.1 */}
+          <div className="mt-6 overflow-x-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* ตารางสำหรับ 2.1.1 */}
+              <DataTable
+                title=""
+                headers={['จังหวัด', 'จัดทาสื่อ Info ประชาสัมพันธ์ (ชิ้น)']}
+                data={filteredData.map(item => ({
+                  'จังหวัด': item.province,
+                  'จัดทาสื่อ Info ประชาสัมพันธ์ (ชิ้น)': item.risk_health_monitoring_1_1 ?? 0,
+                }))}
+                footer={{
+                  'จังหวัด': 'เขตสุขภาพที่ 1',
+                  'จัดทาสื่อ Info ประชาสัมพันธ์ (ชิ้น)': calculateTotal('risk_health_monitoring_1_1'),
+                }}
+              />
+
+              {/* ตารางสำหรับ 2.1.2 */}
+              <DataTable
+                title=""
+                headers={['จังหวัด', 'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ (ครั้ง)']}
+                data={filteredData.map(item => ({
+                  'จังหวัด': item.province,
+                  'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ (ครั้ง)': item.risk_health_monitoring_1_2 ?? 0,
+                }))}
+                footer={{
+                  'จังหวัด': 'เขตสุขภาพที่ 1',
+                  'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ (ครั้ง)': calculateTotal('risk_health_monitoring_1_2'),
+                }}
+              />
+            </div>
           </div>
         </div>
 
-        {/* ตารางข้อมูลสำหรับ 2.2 */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b">จังหวัด</th>
-                <th className="py-2 px-4 border-b">เด็กเล็ก (คน)</th>
-                <th className="py-2 px-4 border-b">ผู้สูงอายุ (คน)</th>
-                <th className="py-2 px-4 border-b">หญิงตั้งครรภ์ (คน)</th>
-                <th className="py-2 px-4 border-b">ติดเตียง (คน)</th>
-                <th className="py-2 px-4 border-b">ผู้มีโรคประจำตัว (คน)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
-                <tr key={index} className="text-center">
-                  <td className="py-2 px-4 border-b">{item.province}</td>
-                  <td className="py-2 px-4 border-b">{item.child ?? 0}</td>
-                  <td className="py-2 px-4 border-b">{item.elderly ?? 0}</td>
-                  <td className="py-2 px-4 border-b">{item.pregnant ?? 0}</td>
-                  <td className="py-2 px-4 border-b">{item.bedridden ?? 0}</td>
-                  <td className="py-2 px-4 border-b">
-                    {safeAdd(item.asthma, item.copd, item.asthma_copd)}
-                  </td>
-                </tr>
-              ))}
-              <tr className="font-bold text-center">
-                <td className="py-2 px-4 border-t">รวม</td>
-                <td className="py-2 px-4 border-t">{calculateTotal('child')}</td>
-                <td className="py-2 px-4 border-t">{calculateTotal('elderly')}</td>
-                <td className="py-2 px-4 border-t">{calculateTotal('pregnant')}</td>
-                <td className="py-2 px-4 border-t">{calculateTotal('bedridden')}</td>
-                <td className="py-2 px-4 border-t">
-                  {calculateTotal('asthma') + calculateTotal('copd') + calculateTotal('asthma_copd')}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+        {/* 2.2 กลุ่มเปราะบาง */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800">2.2 กลุ่มเปราะบาง</h2>
 
-      {/* 2.3 */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-bold mb-6 text-gray-800">2.3 ผู้ป่วยโรคเรื้อรัง</h3>
+          {/* Pie Chart สำหรับ 2.2 */}
+          <PieChartSection
+            title=""
+            data={pieData2_2}
+            colors={COLORS}
+          />
 
-        {/* Pie Chart สำหรับ 2.3 */}
-        <div className="flex justify-center mb-6">
-          <div className="w-full h-64">
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={pieData2_3}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {pieData2_3.map((entry, index) => (
-                    <Cell key={`cell-2.3-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+          {/* ตารางข้อมูลสำหรับ 2.2 */}
+          <div className="mt-6 overflow-x-auto">
+            <DataTable
+              title=""
+              headers={['จังหวัด', 'เด็กเล็ก (คน)', 'ผู้สูงอายุ (คน)', 'หญิงตั้งครรภ์ (คน)', 'ติดเตียง (คน)', 'ผู้มีโรคประจำตัว (คน)']}
+              data={filteredData.map(item => ({
+                'จังหวัด': item.province,
+                'เด็กเล็ก (คน)': item.child ?? 0,
+                'ผู้สูงอายุ (คน)': item.elderly ?? 0,
+                'หญิงตั้งครรภ์ (คน)': item.pregnant ?? 0,
+                'ติดเตียง (คน)': item.bedridden ?? 0,
+                'ผู้มีโรคประจำตัว (คน)': safeAdd(item.asthma, item.copd, item.asthma_copd),
+              }))}
+              footer={{
+                'จังหวัด': 'เขตสุขภาพที่ 1',
+                'เด็กเล็ก (คน)': calculateTotal('child'),
+                'ผู้สูงอายุ (คน)': calculateTotal('elderly'),
+                'หญิงตั้งครรภ์ (คน)': calculateTotal('pregnant'),
+                'ติดเตียง (คน)': calculateTotal('bedridden'),
+                'ผู้มีโรคประจำตัว (คน)': safeAdd(calculateTotal('asthma'), calculateTotal('copd'), calculateTotal('asthma_copd')),
+              }}
+            />
           </div>
         </div>
 
-        {/* ตารางข้อมูลสำหรับ 2.3 */}
-        <div className="mt-6">
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b">จังหวัด</th>
-                <th className="py-2 px-4 border-b">Asthma</th>
-                <th className="py-2 px-4 border-b">COPD</th>
-                <th className="py-2 px-4 border-b">Asthma + COPD</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
-                <tr key={index} className="text-center">
-                  <td className="py-2 px-4 border-b">{item.province}</td>
-                  <td className="py-2 px-4 border-b">{item.asthma ?? 0}</td>
-                  <td className="py-2 px-4 border-b">{item.copd ?? 0}</td>
-                  <td className="py-2 px-4 border-b">{item.asthma_copd ?? 0}</td>
-                </tr>
-              ))}
-              <tr className="font-bold text-center">
-                <td className="py-2 px-4 border-t">รวม</td>
-                <td className="py-2 px-4 border-t">{calculateTotal('asthma')}</td>
-                <td className="py-2 px-4 border-t">{calculateTotal('copd')}</td>
-                <td className="py-2 px-4 border-t">{calculateTotal('asthma_copd')}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+        {/* 4. การตรวจสุขภาพ */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800">2.3 การตรวจสุขภาพ</h2>
 
-      {/* 4. การตรวจสุขภาพ */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-bold mb-6 text-gray-800">4. การตรวจสุขภาพ</h3>
+          {/* Pie Charts สำหรับ 4.1 */}
 
-        {/* Pie Charts สำหรับ 4.1 และ 4.2 */}
-        <div className="flex flex-col md:flex-row justify-center items-center mb-6">
-          <div className="w-full md:w-1/2 h-64">
-            {/* <h4 className="text-md font-semibold mb-2 text-gray-700">4.1 ตรวจสุขภาพโดยเจ้าหน้าที่</h4> */}
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={pieData2_4_staff}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {pieData2_4_staff.map((entry, index) => (
-                    <Cell key={`cell-2.4.staff-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+          {/* 4.1 ตรวจสุขภาพโดยเจ้าหน้าที่ */}
+          <PieChartSection
+            title=""
+            data={pieData2_4_staff}
+            colors={COLORS}
+          />
+
+          {/* ตารางข้อมูลสำหรับ 4 */}
+          {/* <div className="overflow-x-auto"> */}
+          <div className='mt-6'>
+            <DataTable
+              title=""
+              headers={['จังหวัด', 'ตรวจสุขภาพโดยเจ้าหน้าที่ (คน)', 'ตรวจสุขภาพโดยอาสาสมัคร (คน)']}
+              data={filteredData.map(item => ({
+                'จังหวัด': item.province,
+                'ตรวจสุขภาพโดยเจ้าหน้าที่ (คน)': item.health_check_staff ?? 0,
+                'ตรวจสุขภาพโดยอาสาสมัคร (คน)': item.health_check_volunteer ?? 0,
+              }))}
+              footer={{
+                'จังหวัด': 'เขตสุขภาพที่ 1',
+                'ตรวจสุขภาพโดยเจ้าหน้าที่ (คน)': calculateTotal('health_check_staff'),
+                'ตรวจสุขภาพโดยอาสาสมัคร (คน)': calculateTotal('health_check_volunteer'),
+              }}
+            />
           </div>
-          {/* <div className="w-full md:w-1/2 h-64 mt-6 md:mt-0">
-            <h4 className="text-md font-semibold mb-2 text-gray-700">4.2 ตรวจสุขภาพโดยอาสาสมัคร</h4>
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={pieData2_4_volunteer}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {pieData2_4_volunteer.map((entry, index) => (
-                    <Cell key={`cell-2.4.volunteer-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div> */}
-        </div>
-
-        {/* ตารางข้อมูลสำหรับ 4 */}
-        <div className="mt-6 overflow-x-auto">
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b">จังหวัด</th>
-                <th className="py-2 px-4 border-b">ตรวจสุขภาพโดยเจ้าหน้าที่ (คน)</th>
-                <th className="py-2 px-4 border-b">ตรวจสุขภาพโดยอาสาสมัคร (คน)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
-                <tr key={index} className="text-center">
-                  <td className="py-2 px-4 border-b">{item.province}</td>
-                  <td className="py-2 px-4 border-b">{item.health_check_staff ?? 0}</td>
-                  <td className="py-2 px-4 border-b">{item.health_check_volunteer ?? 0}</td>
-                </tr>
-              ))}
-              <tr className="font-bold text-center">
-                <td className="py-2 px-4 border-t">รวม</td>
-                <td className="py-2 px-4 border-t">{calculateTotal('health_check_staff')}</td>
-                <td className="py-2 px-4 border-t">{calculateTotal('health_check_volunteer')}</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
     </div>
@@ -382,4 +256,3 @@ const ReportMeasure2: React.FC<Props> = () => {
 };
 
 export default ReportMeasure2;
-

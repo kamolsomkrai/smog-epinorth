@@ -1,18 +1,19 @@
 // app/api/measure4/route.ts
 "use server";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 
 // Zod Schema สำหรับ Measure4
+// Zod Schema สำหรับ Measure4
 const Measure4Schema = z.object({
   activity_id: z.number().int().min(1),
-  measure4_eoc_open_date: z
+  eoc_open_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง"),
+  eoc_close_date: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง"),
-  measure4_eoc_close_date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง"),
-  measure4_law_enforcement_fine: z.number().int().min(0),
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง")
+    .or(z.literal(""))
+    .optional(),
+  law_enforcement_fine: z.number().int().min(0),
 });
 
 // Centralized API Error Handling
@@ -36,8 +37,16 @@ const handleApiError = (error: unknown) => {
   return NextResponse.json({ message: "Unknown Error" }, { status: 500 });
 };
 
-export async function POST(request: Request) {
+const validateToken = (token?: string) => {
+  if (!token) {
+    throw new Error("No token found. Please login.");
+  }
+  return token;
+};
+export async function POST(request: NextRequest) {
   try {
+    const token = validateToken(request.cookies.get("token")?.value);
+    const cookieHeader = `token=${token}`;
     const body = await request.json();
     const validatedData = Measure4Schema.parse(body);
 
@@ -46,7 +55,9 @@ export async function POST(request: Request) {
       "https://epinorth-api.ddc.moph.go.th/api/measure4",
       {
         method: "POST",
+        credentials: "include",
         headers: {
+          Cookie: cookieHeader,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(validatedData),

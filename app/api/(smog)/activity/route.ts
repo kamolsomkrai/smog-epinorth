@@ -6,10 +6,10 @@ import { z } from "zod";
 
 // Zod Schema สำหรับการรับข้อมูล Activity
 const ActivitySchema = z.object({
-  hospcode: z.string().min(1, "รหัสโรงพยาบาลต้องไม่เป็นค่าว่าง"),
+  // hospcode: z.string().min(1, "รหัสโรงพยาบาลต้องไม่เป็นค่าว่าง"),
   measure_type: z.number().int().min(1).max(4),
   activity_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง"),
-  province_name: z.string().min(1, "ชื่อจังหวัดต้องไม่เป็นค่าว่าง"),
+  // province_name: z.string().min(1, "ชื่อจังหวัดต้องไม่เป็นค่าว่าง"),
 });
 
 // เพิ่ม Schema สำหรับการตอบกลับของ API
@@ -93,10 +93,10 @@ export async function POST(request: NextRequest) {
     const cookieHeader = `token=${token}`;
     // Parse and validate request body
     const rawBody = await request.json();
-    const validatedSupply = SupplySchema.parse(rawBody);
+    const validatedSupply = ActivitySchema.parse(rawBody);
 
     const res = await fetch(
-      "https://epinorth-api.ddc.moph.go.th/api/activity",
+      "https://epinorth-api.ddc.moph.go.th/api/activities",
       {
         method: "POST",
         credentials: "include",

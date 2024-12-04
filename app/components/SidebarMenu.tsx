@@ -49,7 +49,27 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ open, onClose }) => {
                 <ListItemIcon>
                   <SummaryIcon />
                 </ListItemIcon>
-                <ListItemText primary="Summary" />
+                <ListItemText primary="ภาพรวมเวชภัณฑ์" />
+              </ListItemButton>
+            </ListItem>
+          </Link>
+          <Link href="/activity_smog" passHref>
+            <ListItem disablePadding>
+              <ListItemButton onClick={onClose}>
+                <ListItemIcon>
+                  <InventoryIcon />
+                </ListItemIcon>
+                <ListItemText primary="มาตรการ" />
+              </ListItemButton>
+            </ListItem>
+          </Link>
+          <Link href="/summaryreportsmog" passHref>
+            <ListItem disablePadding>
+              <ListItemButton onClick={onClose}>
+                <ListItemIcon>
+                  <InventoryIcon />
+                </ListItemIcon>
+                <ListItemText primary="ภาพรวมมาตรการ" />
               </ListItemButton>
             </ListItem>
           </Link>
