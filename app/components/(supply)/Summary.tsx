@@ -50,7 +50,7 @@ const Summary: React.FC = () => {
   };
 
   // เตรียมข้อมูลสำหรับ Bar Chart
-  const barChartData = supplies.map(supply => ({
+  const barChartData = supplies?.map(supply => ({
     supplyname: supply.supplyname,
     ...provinces.reduce((acc, province) => {
       acc[province] = typeof supply[province] === 'number' ? (supply[province] as number) : parseFloat(supply[province] as string) || 0;
@@ -60,7 +60,7 @@ const Summary: React.FC = () => {
   }));
 
   // เตรียมข้อมูลสำหรับ Pie Chart (รวมทั้งหมด)
-  const pieChartData = supplies.map(supply => ({
+  const pieChartData = supplies?.map(supply => ({
     name: supply.supplyname,
     value: calculateTotal(supply),
   }));
@@ -95,7 +95,7 @@ const Summary: React.FC = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  {provinces.map((province, index) => (
+                  {provinces?.map((province, index) => (
                     <Bar key={province} dataKey={province} fill={COLORS[index % COLORS.length]} />
                   ))}
                   <Bar dataKey="total" fill="#d0ed57" />
@@ -118,7 +118,7 @@ const Summary: React.FC = () => {
                     fill="#8884d8"
                     label
                   >
-                    {pieChartData.map((entry, index) => (
+                    {pieChartData?.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -137,7 +137,7 @@ const Summary: React.FC = () => {
                       <th className="py-3 px-6 text-left font-medium uppercase tracking-wider">
                         เวชภัณฑ์
                       </th>
-                      {provinces.map(province => (
+                      {provinces?.map(province => (
                         <th key={province} className="py-3 px-6 text-right font-medium uppercase tracking-wider">
                           {province}
                         </th>
@@ -148,13 +148,13 @@ const Summary: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {supplies.map((supply, index) => {
+                    {supplies?.map((supply, index) => {
                       const total = calculateTotal(supply);
 
                       return (
                         <tr key={index} className="hover:bg-gray-100">
                           <td className="py-4 px-6 text-gray-800">{supply.supplyname}</td>
-                          {provinces.map(province => (
+                          {provinces?.map(province => (
                             <td key={province} className="py-4 px-6 text-gray-800 text-right">
                               {new Intl.NumberFormat().format(supply[province] || 0)}
                             </td>
@@ -173,8 +173,8 @@ const Summary: React.FC = () => {
             {/* เพิ่ม Pie Chart เพื่อแสดงสัดส่วนเวชภัณฑ์ในแต่ละจังหวัด */}
             <div className="bg-white rounded-lg shadow-md p-6 mt-8">
               <h2 className="text-2xl font-semibold mb-4 text-gray-700">สัดส่วนเวชภัณฑ์ในแต่ละจังหวัด</h2>
-              {provinces.map((province, index) => {
-                const provinceData = supplies.map(supply => ({
+              {provinces?.map((province, index) => {
+                const provinceData = supplies?.map(supply => ({
                   name: supply.supplyname,
                   value: typeof supply[province] === 'number' ? (supply[province] as number) : parseFloat(supply[province] as string) || 0,
                 }));
@@ -194,7 +194,7 @@ const Summary: React.FC = () => {
                           fill="#82ca9d"
                           label
                         >
-                          {provinceData.map((entry, idx) => (
+                          {provinceData?.map((entry, idx) => (
                             <Cell key={`cell-${province}-${idx}`} fill={COLORS[idx % COLORS.length]} />
                           ))}
                         </Pie>

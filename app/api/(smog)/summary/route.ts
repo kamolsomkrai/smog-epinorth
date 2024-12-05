@@ -11,18 +11,18 @@ const validateToken = (token?: string) => {
 
 export async function GET(request: NextRequest) {
   try {
-    const token = validateToken(request.cookies.get("token")?.value);
+    // const token = validateToken(request.cookies.get("token")?.value);
     // สร้างค่า Cookie ที่จะส่งไปยัง API ภายนอก
-    const cookieHeader = `token=${token}`;
+    // const cookieHeader = `token=${token}`;
 
     const res = await fetch(
       "https://epinorth-api.ddc.moph.go.th/api/frontend/summary",
       {
         method: "GET",
-        credentials: "include",
+        // credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Cookie: cookieHeader, // ส่งคุกกี้ไปยัง API ภายนอก
+          // Cookie: cookieHeader, // ส่งคุกกี้ไปยัง API ภายนอก
         },
       }
     );

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// app/components/LoginModal.tsx
 "use client";
 
 import React, { useState, useContext } from "react";
@@ -25,7 +25,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 350, // Increased width for better spacing
+  width: 350,
   bgcolor: "background.paper",
   borderRadius: "8px",
   boxShadow: 24,
@@ -41,7 +41,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null); // Clear previous errors
+    setError(null);
     setLoading(true);
 
     // Basic validation
@@ -50,7 +50,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
       setError("Username must be at least 3 characters long");
       return;
     }
-    if (password.length < 3) {
+    if (password.length < 4) {
       setLoading(false);
       setError("Password must be at least 6 characters long");
       return;
@@ -74,9 +74,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
         const data = await res.json();
         setError(data.message || "Login failed");
       }
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = error instanceof Error
       console.error("Error logging in:", error);
-      setError(error.message || "An unexpected error occurred");
+      setError(errorMessage || "An unexpected error occurred");
     } finally {
       setLoading(false);
     }

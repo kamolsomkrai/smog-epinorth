@@ -9,7 +9,7 @@ export function middleware(req: NextRequest) {
   // รายการเส้นทางที่ไม่ต้องตรวจสอบการเข้าสู่ระบบ
   const excludedPaths = [
     "/", // หน้า Main
-    // "/summary", // หน้า Summary
+    "/summary", // หน้า Summary
     "/login", // หน้า Login
     "/api", // API routes
     "/_next", // Next.js internal routes

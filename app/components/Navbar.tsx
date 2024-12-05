@@ -1,3 +1,4 @@
+// app/components/Navbar.tsx
 "use client";
 
 import React, { useState, useContext } from "react";
@@ -56,21 +57,21 @@ const Navbar = () => {
 
   return (
     <>
-      <AppBar position="static" className="bg-pink-200">
+      <AppBar position="static" className="bg-green-600">
         <Toolbar className="flex justify-between items-center">
           <IconButton
             edge="start"
             color="inherit"
             aria-label="menu"
             onClick={toggleSidebar}
-            className="hover:bg-pink-300 rounded-md transition-colors duration-200"
+            className="hover:bg-green-300 rounded-md transition-colors duration-200"
           >
-            <MenuIcon className="text-pink-800" />
+            <MenuIcon className="text-green-800" />
           </IconButton>
           <Typography
             variant="h6"
             component="div"
-            className="font-bold text-pink-800"
+            className="font-bold text-green-800"
           >
             ระบาดวิทยาและตอบโต้ ฯ
           </Typography>
@@ -83,11 +84,9 @@ const Navbar = () => {
                   aria-haspopup="true"
                   onClick={handleMenu}
                   color="inherit"
-
-                  className="hover:bg-pink-300   
- rounded-md transition-colors duration-200"
+                  className="hover:bg-green-300 rounded-md transition-colors duration-200"
                 >
-                  <AccountCircle className="text-pink-800" />
+                  <AccountCircle className="text-green-800" />
                 </IconButton>
                 <Menu
                   id="menu-appbar"
@@ -104,20 +103,19 @@ const Navbar = () => {
                   open={Boolean(anchorEl)}
                   onClose={handleCloseMenu}
                   PaperProps={{
-
                     sx: {
-                      backgroundColor: 'pink.100',
+                      backgroundColor: 'green.100',
                       boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
                       borderRadius: '8px',
                       mt: 1.5,
                       '& .MuiMenuItem-root': {
                         '&:hover': {
-                          backgroundColor: 'pink.200',
+                          backgroundColor: 'green.200',
                           transition: 'background-color 0.2s ease',
                         },
                         '& svg': {
                           mr: 2,
-                          color: 'pink.800',
+                          color: 'green.800',
                         },
                       },
                     }
@@ -133,9 +131,9 @@ const Navbar = () => {
                       color="inherit"
                       startIcon={<LogoutIcon />}
                       sx={{
-                        color: 'pink.800',
+                        color: 'green.800',
                         '&:hover': {
-                          backgroundColor: 'pink.200',
+                          backgroundColor: 'green.200',
                         }
                       }}
                     >
@@ -148,7 +146,7 @@ const Navbar = () => {
               <Button
                 color="inherit"
                 onClick={handleOpen}
-                className="bg-white hover:bg-pink-100 text-pink-800 font-medium rounded-md px-4 py-2 transition-colors duration-200"
+                className="bg-white hover:bg-green-100 text-green-800 font-medium rounded-md px-4 py-2 transition-colors duration-200"
               >
                 Login
               </Button>

@@ -28,7 +28,7 @@ const ReportPage: React.FC = () => {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold mb-6 text-gray-800">รายงานสรุป Measures</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">รายงานสรุป</h1>
 
         {/* ปุ่มสำหรับเลือก Measure */}
         <div className="mb-6 flex space-x-4">

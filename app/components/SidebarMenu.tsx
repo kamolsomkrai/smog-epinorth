@@ -1,3 +1,4 @@
+// app/components/SidebarMenu.tsx
 "use client";
 
 import React from "react";
@@ -24,55 +25,47 @@ interface SidebarMenuProps {
 
 const SidebarMenu: React.FC<SidebarMenuProps> = ({ open, onClose }) => {
   return (
-    <Drawer anchor="left" open={open} onClose={onClose} >
-      <Box sx={{ width: 250, bgcolor: 'background.paper' }}> {/* Set width and background */}
-        <Box sx={{ p: 2, display: 'flex', alignItems: 'center' }}> {/* Add header */}
-          <InventoryIcon sx={{ color: 'primary.main', mr: 1 }} /> {/* Add icon */}
+    <Drawer anchor="left" open={open} onClose={onClose}>
+      <Box sx={{ width: 250, bgcolor: 'background.paper' }}>
+        <Box sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
+          <InventoryIcon sx={{ color: 'primary.main', mr: 1 }} />
           <Typography variant="h6" component="div">
-            My Supplies
+            <ListItemButton component={Link} href="/" onClick={onClose}>หน้าหลัก</ListItemButton>
           </Typography>
         </Box>
         <List>
-          <Link href="/supplies" passHref>
-            <ListItem disablePadding>
-              <ListItemButton onClick={onClose}>
-                <ListItemIcon>
-                  <InventoryIcon />
-                </ListItemIcon>
-                <ListItemText primary="เวชภัณฑ์" />
-              </ListItemButton>
-            </ListItem>
-          </Link>
-          <Link href="/summary" passHref>
-            <ListItem disablePadding>
-              <ListItemButton onClick={onClose}>
-                <ListItemIcon>
-                  <SummaryIcon />
-                </ListItemIcon>
-                <ListItemText primary="ภาพรวมเวชภัณฑ์" />
-              </ListItemButton>
-            </ListItem>
-          </Link>
-          <Link href="/activity_smog" passHref>
-            <ListItem disablePadding>
-              <ListItemButton onClick={onClose}>
-                <ListItemIcon>
-                  <InventoryIcon />
-                </ListItemIcon>
-                <ListItemText primary="มาตรการ" />
-              </ListItemButton>
-            </ListItem>
-          </Link>
-          <Link href="/summaryreportsmog" passHref>
-            <ListItem disablePadding>
-              <ListItemButton onClick={onClose}>
-                <ListItemIcon>
-                  <InventoryIcon />
-                </ListItemIcon>
-                <ListItemText primary="ภาพรวมมาตรการ" />
-              </ListItemButton>
-            </ListItem>
-          </Link>
+          <ListItem disablePadding>
+            <ListItemButton component={Link} href="/supplies" onClick={onClose}>
+              <ListItemIcon>
+                <InventoryIcon />
+              </ListItemIcon>
+              <ListItemText primary="เวชภัณฑ์" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton component={Link} href="/summary" onClick={onClose}>
+              <ListItemIcon>
+                <SummaryIcon />
+              </ListItemIcon>
+              <ListItemText primary="ภาพรวมเวชภัณฑ์" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton component={Link} href="/activity_smog" onClick={onClose}>
+              <ListItemIcon>
+                <InventoryIcon />
+              </ListItemIcon>
+              <ListItemText primary="มาตรการ" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton component={Link} href="/summaryreportsmog" onClick={onClose}>
+              <ListItemIcon>
+                <InventoryIcon />
+              </ListItemIcon>
+              <ListItemText primary="ภาพรวมมาตรการ" />
+            </ListItemButton>
+          </ListItem>
         </List>
       </Box>
     </Drawer>

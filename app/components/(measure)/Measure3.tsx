@@ -1,5 +1,5 @@
 // components/Measure3.tsx
-
+"use client";
 import React from 'react';
 import { FormData } from '../../interfaces/measure';
 
