@@ -2,10 +2,11 @@
 "use server";
 import { NextResponse, NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
-
+import { cookies } from "next/headers";
+// ใช้ cookies() จาก Next.js ในการเข้าถึง cookies
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("token")?.value;
+    const token = cookies().get("token")?.value;
 
     if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
