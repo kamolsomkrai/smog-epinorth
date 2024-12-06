@@ -26,7 +26,7 @@ ENV NODE_ENV=production
 
 # สร้าง directory สำหรับแอป
 WORKDIR /app
-ADD /app/public
+
 # คัดลอกเฉพาะ dependencies จาก builder
 COPY package*.json ./
 
