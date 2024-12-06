@@ -2,13 +2,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Grid, Card, CardContent, CardMedia, Button, Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
+import { Container, Typography, Grid, Card, CardContent, CardMedia, Button, Dialog, DialogTitle, DialogContent, IconButton, Box, CardActions } from '@mui/material';
 import Image from 'next/image';
 import axios from 'axios';
 import { Document, Page, pdfjs } from 'react-pdf';
 import CloseIcon from '@mui/icons-material/Close';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -39,7 +39,7 @@ const HomePage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {
     const fetchNews = async () => {

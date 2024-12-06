@@ -1,5 +1,4 @@
-// components/BarChartSection.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
 
 interface BarChartSectionProps {
@@ -10,16 +9,6 @@ interface BarChartSectionProps {
 }
 
 const BarChartSection: React.FC<BarChartSectionProps> = ({ title, data, keys, colors }) => {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-  const onBarEnter = (_: unknown, index: number) => {
-    setActiveIndex(index);
-  };
-
-  const onBarLeave = () => {
-    setActiveIndex(null);
-  };
-
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h3 className="text-xl font-medium mb-4 text-gray-700">{title}</h3>
@@ -27,8 +16,6 @@ const BarChartSection: React.FC<BarChartSectionProps> = ({ title, data, keys, co
         <BarChart
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
-          onMouseEnter={onBarEnter}
-          onMouseLeave={onBarLeave}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />

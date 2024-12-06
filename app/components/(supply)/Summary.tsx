@@ -156,7 +156,9 @@ const Summary: React.FC = () => {
                           <td className="py-4 px-6 text-gray-800">{supply.supplyname}</td>
                           {provinces?.map(province => (
                             <td key={province} className="py-4 px-6 text-gray-800 text-right">
-                              {new Intl.NumberFormat().format(supply[province] || 0)}
+                              {new Intl.NumberFormat().format(
+                                typeof supply[province] === 'number' ? supply[province] : parseFloat(supply[province]) || 0
+                              )}
                             </td>
                           ))}
                           <td className="py-4 px-6 text-gray-800 text-right">
@@ -173,7 +175,7 @@ const Summary: React.FC = () => {
             {/* เพิ่ม Pie Chart เพื่อแสดงสัดส่วนเวชภัณฑ์ในแต่ละจังหวัด */}
             <div className="bg-white rounded-lg shadow-md p-6 mt-8">
               <h2 className="text-2xl font-semibold mb-4 text-gray-700">สัดส่วนเวชภัณฑ์ในแต่ละจังหวัด</h2>
-              {provinces?.map((province, index) => {
+              {provinces?.map((province) => {
                 const provinceData = supplies?.map(supply => ({
                   name: supply.supplyname,
                   value: typeof supply[province] === 'number' ? (supply[province] as number) : parseFloat(supply[province] as string) || 0,

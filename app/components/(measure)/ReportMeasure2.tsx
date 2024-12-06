@@ -20,7 +20,9 @@ const ReportMeasure2: React.FC = () => {
   }, [data]);
 
   const safeAdd = useMemo(() => (...nums: (number | undefined)[]): number => {
-    return nums.reduce((acc, num) => acc + (typeof num === 'number' ? num : 0), 0);
+    return nums
+      .filter((num): num is number => num !== undefined)
+      .reduce((acc, num) => acc + num, 0);
   }, []);
 
   // ใช้ useMemo สำหรับการกรองข้อมูลตาม searchTerm

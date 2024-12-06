@@ -15,7 +15,6 @@ const COLORS = [
 
 const ReportMeasure3: React.FC = () => {
   const [data, setData] = useState<Measure3Data[] | null>(null);
-  const [aggregate, setAggregate] = useState<Measure3Data | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -108,7 +107,6 @@ const ReportMeasure3: React.FC = () => {
         if (cachedData) {
           const parsedData: Measure3Data[] = JSON.parse(cachedData);
           setData(parsedData);
-          setAggregate(aggregateData(parsedData));
         } else {
           const response = await fetch('/api/measure3', { method: 'GET' });
           console.log('API Response Status:', response.status);
@@ -118,7 +116,6 @@ const ReportMeasure3: React.FC = () => {
           const fetchedData: Measure3Data[] = await response.json();
           console.log('Fetched Data:', fetchedData);
           setData(fetchedData);
-          setAggregate(aggregateData(fetchedData));
           // เก็บข้อมูลใน localStorage
           localStorage.setItem('measure3Data', JSON.stringify(fetchedData));
         }
@@ -189,23 +186,6 @@ const ReportMeasure3: React.FC = () => {
     { name: 'รถกู้ชีพ ALS', value: aggregateMemo?.ambulance || 0 },
   ], [aggregateMemo]);
 
-  // คำนวณรวมสำหรับตาราง
-  const aggregateTotals = useMemo(() => ({
-    'ผู้สูงอายุ': aggregateMemo?.elderly_N95_mask || 0,
-    'เด็กเล็ก': aggregateMemo?.children_N95_mask || 0,
-    'หญิงตั้งครรภ์': aggregateMemo?.pregnant_N95_mask || 0,
-    'ติดเตียง': aggregateMemo?.bedridden_N95_mask || 0,
-    'ผู้มีโรคประจำตัว': aggregateMemo?.disease_N95_mask || 0,
-  }), [aggregateMemo]);
-
-  const aggregateTotalsSurgical = useMemo(() => ({
-    'ผู้สูงอายุ': aggregateMemo?.elderly_surgical_mask || 0,
-    'เด็กเล็ก': aggregateMemo?.children_surgical_mask || 0,
-    'หญิงตั้งครรภ์': aggregateMemo?.pregnant_surgical_mask || 0,
-    'ติดเตียง': aggregateMemo?.bedridden_surgical_mask || 0,
-    'ผู้มีโรคประจำตัว': aggregateMemo?.disease_surgical_mask || 0,
-  }), [aggregateMemo]);
-
   return (
     <div className="space-y-8 p-6 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -228,6 +208,13 @@ const ReportMeasure3: React.FC = () => {
           </div>
         ) : (
           <>
+            {/* แสดงข้อความแสดงข้อผิดพลาดถ้ามี */}
+            {error && (
+              <div className="text-red-500 text-center">
+                {error}
+              </div>
+            )}
+
             {/* 4.2 การเปิดบริการคลินิก */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-2xl font-semibold mb-6 text-gray-800">4.2 การเปิดบริการคลินิก</h2>
@@ -284,7 +271,7 @@ const ReportMeasure3: React.FC = () => {
                   'ทีมดูแลประชาชน (เพิ่ม)': item.active_teams_citizens_add,
                 }))}
                 footer={{
-                  'จังหวัด': 'เขตสุขภาพที่ 1',
+                  'จังหวัด': '',
                   'ทีม 3 หมอ (รวม)': aggregateMemo?.active_teams_3_doctors_total || 0,
                   'ทีม 3 หมอ (เพิ่ม)': aggregateMemo?.active_teams_3_doctors_add || 0,
                   'ทีมแพทย์เคลื่อนที่ (รวม)': aggregateMemo?.active_teams_mobile_total || 0,
@@ -329,7 +316,7 @@ const ReportMeasure3: React.FC = () => {
                     'ผู้มีโรคประจำตัว': item.disease_N95_mask ?? 0,
                   }))}
                   footer={{
-                    'จังหวัด': 'เขตสุขภาพที่ 1',
+                    'จังหวัด': '',
                     'ผู้สูงอายุ': calculateTotal('elderly_N95_mask'),
                     'เด็กเล็ก': calculateTotal('children_N95_mask'),
                     'หญิงตั้งครรภ์': calculateTotal('pregnant_N95_mask'),
@@ -342,71 +329,72 @@ const ReportMeasure3: React.FC = () => {
               {/* 4.4.2 หน้ากากอนามัย */}
 
               {/* Pie Chart สำหรับหน้ากากอนามัย */}
-              <div className="mt-6"><PieChartSection
-                title="4.4.2 หน้ากากอนามัย"
-                data={pieDataMasksSurgical}
-                colors={COLORS}
-              /></div>
-              <div className="mt-6"><DataTable
-                title="รายละเอียดหน้ากากอนามัย"
-                headers={[
-                  'จังหวัด',
-                  'ผู้สูงอายุ',
-                  'เด็กเล็ก',
-                  'หญิงตั้งครรภ์',
-                  'ติดเตียง',
-                  'ผู้มีโรคประจำตัว'
-                ]}
-                data={filteredData.map(item => ({
-                  'จังหวัด': item.province,
-                  'ผู้สูงอายุ': item.elderly_surgical_mask ?? 0,
-                  'เด็กเล็ก': item.children_surgical_mask ?? 0,
-                  'หญิงตั้งครรภ์': item.pregnant_surgical_mask ?? 0,
-                  'ติดเตียง': item.bedridden_surgical_mask ?? 0,
-                  'ผู้มีโรคประจำตัว': item.disease_surgical_mask ?? 0,
-                }))}
-                footer={{
-                  'จังหวัด': 'เขตสุขภาพที่ 1',
-                  'ผู้สูงอายุ': calculateTotal('elderly_surgical_mask'),
-                  'เด็กเล็ก': calculateTotal('children_surgical_mask'),
-                  'หญิงตั้งครรภ์': calculateTotal('pregnant_surgical_mask'),
-                  'ติดเตียง': calculateTotal('bedridden_surgical_mask'),
-                  'ผู้มีโรคประจำตัว': calculateTotal('disease_surgical_mask'),
-                }}
-              /></div>
-
+              <div className="mt-6">
+                <PieChartSection
+                  title="4.4.2 หน้ากากอนามัย"
+                  data={pieDataMasksSurgical}
+                  colors={COLORS}
+                />
+              </div>
 
               {/* ตารางข้อมูลสำหรับหน้ากากอนามัย */}
-
+              <div className="mt-6">
+                <DataTable
+                  title="รายละเอียดหน้ากากอนามัย"
+                  headers={[
+                    'จังหวัด',
+                    'ผู้สูงอายุ',
+                    'เด็กเล็ก',
+                    'หญิงตั้งครรภ์',
+                    'ติดเตียง',
+                    'ผู้มีโรคประจำตัว'
+                  ]}
+                  data={filteredData.map(item => ({
+                    'จังหวัด': item.province,
+                    'ผู้สูงอายุ': item.elderly_surgical_mask ?? 0,
+                    'เด็กเล็ก': item.children_surgical_mask ?? 0,
+                    'หญิงตั้งครรภ์': item.pregnant_surgical_mask ?? 0,
+                    'ติดเตียง': item.bedridden_surgical_mask ?? 0,
+                    'ผู้มีโรคประจำตัว': item.disease_surgical_mask ?? 0,
+                  }))}
+                  footer={{
+                    'จังหวัด': '',
+                    'ผู้สูงอายุ': calculateTotal('elderly_surgical_mask'),
+                    'เด็กเล็ก': calculateTotal('children_surgical_mask'),
+                    'หญิงตั้งครรภ์': calculateTotal('pregnant_surgical_mask'),
+                    'ติดเตียง': calculateTotal('bedridden_surgical_mask'),
+                    'ผู้มีโรคประจำตัว': calculateTotal('disease_surgical_mask'),
+                  }}
+                />
+              </div>
             </div>
 
             {/* 4.5 อื่น ๆ */}
             <div className="bg-white rounded-lg shadow-md p-6">
-
               {/* Pie Chart สำหรับ SKY doctor และรถกู้ชีพ */}
-
-              <div className=""><PieChartSection
-                title="4.5 อื่น ๆ"
-                data={pieDataOthers}
-                colors={COLORS}
-              /></div>
-              <div className="mt-6"><DataTable
-                title="รายละเอียดอื่น ๆ"
-                headers={['จังหวัด', 'SKY doctor', 'รถกู้ชีพ ALS']}
-                data={filteredData.map(item => ({
-                  'จังหวัด': item.province,
-                  'SKY doctor': item.sky_doctor ?? 0,
-                  'รถกู้ชีพ ALS': item.ambulance ?? 0,
-                }))}
-                footer={{
-                  'จังหวัด': 'เขตสุขภาพที่ 1',
-                  'SKY doctor': aggregateMemo?.sky_doctor || 0,
-                  'รถกู้ชีพ ALS': aggregateMemo?.ambulance || 0,
-                }}
-              /></div>
-
-              {/* ตารางข้อมูลสำหรับ 4.5 */}
-
+              <div>
+                <PieChartSection
+                  title="4.5 อื่น ๆ"
+                  data={pieDataOthers}
+                  colors={COLORS}
+                />
+              </div>
+              <div className="mt-6">
+                <DataTable
+                  title="รายละเอียดอื่น ๆ"
+                  headers={['จังหวัด', 'SKY doctor', 'รถกู้ชีพ ALS']}
+                  data={filteredData.map(item => ({
+                    'จังหวัด': item.province,
+                    'SKY doctor': item.sky_doctor ?? 0,
+                    'รถกู้ชีพ ALS': item.ambulance ?? 0,
+                  }))}
+                  footer={{
+                    'จังหวัด': '',
+                    'SKY doctor': aggregateMemo?.sky_doctor || 0,
+                    'รถกู้ชีพ ALS': aggregateMemo?.ambulance || 0,
+                  }}
+                />
+              </div>
             </div>
           </>
         )}

@@ -75,9 +75,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
         setError(data.message || "Login failed");
       }
     } catch (error) {
-      const errorMessage = error instanceof Error
       console.error("Error logging in:", error);
-      setError(errorMessage || "An unexpected error occurred");
+      setError("An unexpected error occurred");
     } finally {
       setLoading(false);
     }

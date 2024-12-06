@@ -1,7 +1,7 @@
 // app/components/Supplies.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import EditSupplyModal from "./EditSupplyModal";
 import DeleteSupplyModal from "./DeleteSupplyModal";
@@ -27,11 +27,7 @@ const Supplies: React.FC = () => {
   const [selectedSupply, setSelectedSupply] = useState<Supply | null>(null);
 
   const router = useRouter();
-
-  useEffect(() => {
-    fetchSupplies();
-  }, []); // Empty dependency array
-  const fetchSupplies = async () => { // Define fetchSupplies inside useEffect
+  const fetchSupplies = useCallback(async () => { // ใช้ useCallback
     try {
       const res = await fetch("/api/supplies", {
         method: "GET",
@@ -56,7 +52,12 @@ const Supplies: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+  useEffect(() => {
+
+    fetchSupplies();
+  }, [fetchSupplies]); // Empty dependency array
+
   const handleAddSupply = () => {
     setShowAddModal(true);
   };
