@@ -4,7 +4,7 @@ import { NextResponse, NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 // ใช้ cookies() จาก Next.js ในการเข้าถึง cookies
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const token = cookies().get("token")?.value;
 
