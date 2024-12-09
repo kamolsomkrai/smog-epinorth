@@ -189,7 +189,7 @@ const ReportMeasure3: React.FC = () => {
   return (
     <div className="space-y-8 p-6 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto space-y-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">รายงาน Measure 3</h1>
+        {/* <h1 className="text-4xl font-bold text-gray-800 mb-8">รายงาน Measure 3</h1> */}
 
         {/* เพิ่ม Search Input */}
         <div className="mb-4">
