@@ -1,5 +1,4 @@
 // app/api/measure4/route.ts
-"use server";
 import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 

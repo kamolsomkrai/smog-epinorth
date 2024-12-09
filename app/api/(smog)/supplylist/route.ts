@@ -1,4 +1,3 @@
-"use server";
 import { NextResponse, NextRequest } from "next/server";
 
 // Utility function to validate token

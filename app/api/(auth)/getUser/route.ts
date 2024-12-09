@@ -1,10 +1,8 @@
 // app/api/(auth)/getUser/route.ts
-"use server";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-// ใช้ cookies() จาก Next.js ในการเข้าถึง cookies
 export async function GET() {
   try {
     const token = cookies().get("token")?.value;
@@ -13,7 +11,6 @@ export async function GET() {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // เนื่องจากคุณอาจไม่มี JWT_SECRET จาก API ภายนอก เราจะใช้ jwt.decode แทน
     const decoded = jwt.decode(token);
 
     if (!decoded) {

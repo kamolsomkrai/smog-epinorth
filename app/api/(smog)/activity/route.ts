@@ -1,6 +1,4 @@
 // app/api/supplies/route.ts
-"use server";
-
 import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 

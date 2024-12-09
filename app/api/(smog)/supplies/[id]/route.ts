@@ -1,5 +1,4 @@
 // app/api/supplies/[id]/route.ts
-"use server";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function PUT(
