@@ -2,20 +2,27 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { Measure1Data } from '../../interfaces/measure';
+// import { Measure1Data } from '../../interfaces/measure';
 import PieChartSection from '../(object)/PieChartSection';
 import DataTable from '../(object)/DataTable';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#8dd1e1', '#a4de6c', '#d0ed57', '#ffc0cb'];
 
+interface measure1_1 {
+  "province": string,
+  "measure1_1": number,
+  "measure1_2": number,
+
+}
+
 const ReportMeasure1: React.FC = () => {
-  const [data, setData] = useState<Measure1Data[]>([]);
+  const [data, setData] = useState<measure1_1[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   // ใช้ useMemo สำหรับการคำนวณ
-  const calculateTotal = useMemo(() => (field: keyof Measure1Data): number => {
+  const calculateTotal = useMemo(() => (field: keyof measure1_1): number => {
     return data.reduce((acc, curr) => acc + (typeof curr[field] === 'number' ? curr[field] : 0), 0);
   }, [data]);
 
@@ -36,12 +43,12 @@ const ReportMeasure1: React.FC = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const fetchedData: Measure1Data[] = await response.json();
+        const fetchedData: measure1_1[] = await response.json();
 
         // ตรวจสอบข้อมูลก่อนบันทึกลงใน localStorage
         if (Array.isArray(fetchedData) && fetchedData.length > 0) {
           setData(fetchedData);
-          localStorage.setItem('measure1Data', JSON.stringify(fetchedData));
+          localStorage.setItem('measure1_1', JSON.stringify(fetchedData));
         } else {
           console.warn("API Response ไม่ถูกต้อง:", fetchedData);
           setError("ข้อมูลไม่ถูกต้องจาก API");
