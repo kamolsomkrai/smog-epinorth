@@ -1,8 +1,9 @@
-// app/api/getUser/route.ts
+// app/api/(auth)/getUser/route.ts
 "use server";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+
 // ใช้ cookies() จาก Next.js ในการเข้าถึง cookies
 export async function GET() {
   try {

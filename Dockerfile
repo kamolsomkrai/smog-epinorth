@@ -1,19 +1,16 @@
 # Stage 1: Build the application
 FROM node:18-alpine AS builder
 
-# ตั้งค่าตัวแปรสิ่งแวดล้อม
-ENV NODE_ENV=production
-
 # สร้าง directory สำหรับแอป
 WORKDIR /app
 
 # คัดลอกไฟล์ package.json และ package-lock.json
 COPY package*.json ./
 
-# ติดตั้ง dependencies
+# ติดตั้ง dependencies รวมถึง devDependencies
 RUN npm ci
 
-# คัดลอกโค้ดทั้งหมด
+# คัดลอกโค้ดทั้งหมดของแอปพลิเคชัน
 COPY . .
 
 # สร้างแอป Next.js
@@ -22,14 +19,16 @@ RUN npm run build
 # Stage 2: Serve the application
 FROM node:18-alpine
 
+# ตั้งค่าตัวแปรสิ่งแวดล้อมสำหรับ production
 ENV NODE_ENV=production
 
 # สร้าง directory สำหรับแอป
 WORKDIR /app
 
-# คัดลอกเฉพาะ dependencies จาก builder
+# คัดลอกไฟล์ package.json และ package-lock.json จาก builder
 COPY package*.json ./
 
+# ติดตั้งเฉพาะ production dependencies
 RUN npm ci --only=production
 
 # คัดลอกผลลัพธ์การ build จาก builder
