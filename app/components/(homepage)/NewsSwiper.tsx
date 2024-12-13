@@ -15,34 +15,12 @@ interface News {
   description: string;
 }
 
-const newsData: News[] = [
-  {
-    id: 1,
-    title: 'ข่าวสารที่ 1',
-    image: '/images/news1.jpg',
-    description: 'รายละเอียดของข่าวสารที่ 1',
-  },
-  {
-    id: 2,
-    title: 'ข่าวสารที่ 2',
-    image: '/images/news2.jpg',
-    description: 'รายละเอียดของข่าวสารที่ 2',
-  },
-  {
-    id: 3,
-    title: 'ข่าวสารที่ 3',
-    image: '/images/news3.jpg',
-    description: 'รายละเอียดของข่าวสารที่ 3',
-  },
-  // เพิ่มข่าวสารเพิ่มเติมตามต้องการ
-];
-
-const NewsSwiper: React.FC = () => {
+const NewsSwiper: React.FC<{ newsData: News[] }> = ({ newsData }) => {
   return (
     <Box sx={{ width: '100%', mb: 4 }}>
       <Swiper
         modules={[Navigation, Autoplay]}
-        spaceBetween={50}
+        spaceBetween={30}
         slidesPerView={1}
         navigation
         autoplay={{ delay: 5000 }}
@@ -74,8 +52,12 @@ const NewsSwiper: React.FC = () => {
                   padding: 2,
                 }}
               >
-                <Typography variant="h5">{news.title}</Typography>
-                <Typography variant="body1">{news.description}</Typography>
+                <Typography variant="h5" fontWeight="bold">
+                  {news.title}
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  {news.description}
+                </Typography>
               </Box>
             </Box>
           </SwiperSlide>
