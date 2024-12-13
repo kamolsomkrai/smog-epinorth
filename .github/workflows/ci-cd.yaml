@@ -1,55 +1,37 @@
-name: CI/CD Pipeline
+name: Deploy to Production
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # Checkout Code จาก GitHub
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "22.2.0"
-
-      - name: Install dependencies
-        run: npm ci
-
-      # - name: Run tests
-      #   run: npm test
-
-      # - name: Build Next.js app
-      #   run: npm run build
-
-      # - name: Build Docker image
-      #   run: docker build -t kamolsomkrai/smog-epinorth:${{ github.sha }} .
-
-      # - name: Log in to Docker Hub
-      #   uses: docker/login-action@v2
-      #   with:
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # - name: Push Docker image
-      #   run: docker push kamolsomkrai/smog-epinorth:${{ github.sha }}
-
-      - name: Deploy to Server via SSH
+      # เชื่อมต่อและ Deploy ไปยังเซิร์ฟเวอร์
+      - name: Deploy to Production Server
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          host: ${{ secrets.PROD_SERVER_HOST }}
+          username: ${{ secrets.PROD_SERVER_USER }}
+          key: ${{ secrets.PROD_SERVER_SSH_KEY }}
+          port: ${{ secrets.PROD_SERVER_PORT }}
+
+          # คำสั่งบนเซิร์ฟเวอร์
           script: |
-            cd /CICD/epinorth
-            docker pull kamolsomkrai/smog-epinorth:${{ github.sha }}
-            docker-compose down
-            docker-compose up -d
+            cd ~/CICD/smog-epinorth
+            git fetch origin main
+            git diff --exit-code HEAD origin/main || (
+              echo "New changes detected. Pulling latest code..."
+              git reset --hard origin/main
+              git pull origin main
+              npm ci --production
+              pm2 restart app || pm2 start npm --name "app" -- run start
+            )
+            echo "Deployment finished."
