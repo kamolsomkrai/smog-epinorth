@@ -71,9 +71,9 @@ const Navbar = () => {
           <Typography
             variant="h6"
             component="div"
-            className="font-bold text-green-800"
+            className="font-bold text-white"
           >
-            ระบาดวิทยาและตอบโต้ ฯ
+            กลุ่มระบาดวิทยาและตอบโต้ภาวะฉุกเฉินทางสาธารณสุข
           </Typography>
           <div>
             {auth?.user ? (
