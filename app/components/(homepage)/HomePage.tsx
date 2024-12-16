@@ -11,7 +11,7 @@ import ReportModal from './ReportModal';
 interface News {
   id: number;
   title: string;
-  image_url: string;
+  image: string;
   description: string;
 }
 
@@ -21,7 +21,7 @@ interface Report {
   link: string;
   date: string;
   type: 'pdf' | 'image';
-  file_url: string;
+  file: string;
 }
 
 const HomePage: React.FC = () => {
@@ -69,10 +69,10 @@ const HomePage: React.FC = () => {
         ข่าวสารล่าสุด
       </Typography>
 
-      <NewsSwiper />
+      <NewsSwiper newsData={news} />
 
       <Typography variant="h4" align="center" gutterBottom sx={{ mt: 6 }}>
-        รายงานต่าง ๆ
+        {/* รายงานต่าง ๆ */}
       </Typography>
       <Grid container spacing={4}>
         {reports.map((report) => (
