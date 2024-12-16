@@ -11,7 +11,7 @@ interface Report {
   link: string;
   date: string;
   type: 'pdf' | 'image';
-  file: string; // URL to PDF or image
+  file: string;
 }
 
 interface ReportCardProps {
@@ -24,14 +24,19 @@ const ReportCard: React.FC<ReportCardProps> = ({ report, onClick }) => {
     <Card
       sx={{
         maxWidth: 345,
-        margin: 'auto',
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
         cursor: 'pointer',
-        transition: 'transform 0.2s',
-        '&:hover': { transform: 'scale(1.05)' }
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        boxShadow: 3,
+        '&:hover': { transform: 'scale(1.05)', boxShadow: 6 },
       }}
+      onClick={() => onClick(report)}
     >
       {report.type === 'image' && (
-        <CardMedia sx={{ position: 'relative', height: 200 }}>
+        <CardMedia sx={{ height: 200, position: 'relative' }}>
           <Image
             src={report.file}
             alt={report.name}
@@ -49,8 +54,8 @@ const ReportCard: React.FC<ReportCardProps> = ({ report, onClick }) => {
           วันที่: {report.date}
         </Typography>
       </CardContent>
-      <CardActions>
-        <Button size="small" onClick={() => onClick(report)}>ดูรายละเอียด</Button>
+      <CardActions sx={{ justifyContent: 'flex-end' }}>
+        <Button size="small">ดูรายละเอียด</Button>
       </CardActions>
     </Card>
   );
