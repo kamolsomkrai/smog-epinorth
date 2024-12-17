@@ -14,6 +14,7 @@ export function middleware(req: NextRequest) {
     "/api", // API routes
     "/_next", // Next.js internal routes
     "/favicon.ico", // ไอคอน favicon
+    "/symbol.png", // ไอคอน favicon
   ];
 
   // ฟังก์ชันตรวจสอบว่าเส้นทางนั้นถูกยกเว้นหรือไม่

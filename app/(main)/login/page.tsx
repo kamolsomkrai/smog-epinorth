@@ -1,7 +1,7 @@
 // app/login/page.tsx
 "use client";
 
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import LoginModal from "../../components/LoginModal";
 import { AuthContext } from "../../context/AuthContext";
@@ -9,6 +9,7 @@ import { AuthContext } from "../../context/AuthContext";
 const LoginPage = () => {
   const auth = useContext(AuthContext);
   const router = useRouter();
+  const [open, setOpen] = useState(true);
 
   useEffect(() => {
     if (auth?.user) {
@@ -16,9 +17,14 @@ const LoginPage = () => {
     }
   }, [auth?.user, router]);
 
+  const handleClose = () => {
+    setOpen(false);
+    router.push("/"); // ตัวอย่าง: นำทางไปหน้าแรกเมื่อปิด modal
+  };
+
   return (
     <div>
-      <LoginModal open={true} handleClose={() => { }} />
+      <LoginModal open={open} handleClose={handleClose} />
     </div>
   );
 };
