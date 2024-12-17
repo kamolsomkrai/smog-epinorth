@@ -27,22 +27,23 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   {
     href: "/supplies",
-    title: "เวชภัณฑ์",
+    title: "บันทึกข้อมูล เวชภัณฑ์",
     icon: <InventoryIcon fontSize="large" color="secondary" />
   },
   {
     href: "/summary",
-    title: "ภาพรวมเวชภัณฑ์",
+    title: "Dashboard ข้อมูลเวชภัณฑ์",
     icon: <SummaryIcon fontSize="large" color="success" />
   },
   {
     href: "/activity_smog",
-    title: "มาตรการ",
+    title: "บันทึกข้อมูล มาตรการ",
     icon: <BuildIcon fontSize="large" color="warning" />
   },
   {
     href: "/summaryreportsmog",
-    title: "ภาพรวมมาตรการ",
+    title: "Dashboard \
+    ข้อมูลภาพรวมมาตรการ",
     icon: <AssessmentIcon fontSize="large" color="error" />
   }
 ];

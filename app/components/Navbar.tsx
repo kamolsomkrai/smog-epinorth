@@ -10,12 +10,15 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Box,
 } from "@mui/material";
 import LoginModal from "./LoginModal";
 import { AuthContext } from "../context/AuthContext";
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Menu as MenuIcon, AccountCircle } from "@mui/icons-material";
 import SidebarMenu from "./SidebarMenu";
+import Link from "next/link";
+import Image from "next/image"; // นำเข้า Image จาก next/image
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -57,42 +60,62 @@ const Navbar = () => {
 
   return (
     <>
-      <AppBar position="static" className="">
+      <AppBar position="static">
         <Toolbar className="flex justify-between items-center">
+          {/* ส่วนของเมนู Sidebar */}
           <IconButton
             edge="start"
             color="inherit"
             aria-label="menu"
             onClick={toggleSidebar}
-            className="hover:bg-Purple-200 rounded-md transition-colors duration-200"
+            className="hover:bg-indigo-600 rounded-md transition-colors duration-200"
           >
             <MenuIcon className="text-white" />
           </IconButton>
-          <Typography
-            variant="h6"
-            component="div"
-            className="font-bold text-white"
-          >
-            กลุ่มระบาดวิทยาและตอบโต้ภาวะฉุกเฉินทางสาธารณสุข
-          </Typography>
+
+          {/* ส่วนของโลโก้และข้อความ */}
+          <Link href="/" className="flex items-center">
+            <Box display="flex" alignItems="center">
+              {/* ปรับขนาดโลโก้ให้พอดีกับข้อความ */}
+              <Image
+                src="/symbol.png" // ใช้เส้นทางที่ถูกต้องไปยังไฟล์ภาพใน public
+                alt="Logo" // คำอธิบายของภาพสำหรับ SEO และการเข้าถึง
+                width={40} // กำหนดความกว้างตามต้องการ
+                height={40} // กำหนดความสูงตามต้องการ
+                style={{ objectFit: 'contain', marginRight: '1rem' }} // ปรับให้ภาพไม่บิดเบี้ยว
+              />
+              <Typography
+                variant="h6"
+                component="div"
+                className="font-bold text-white ml-2"
+              >
+                ข้อมูลการดำเนินงานด้านการแพทย์และสาธารณสุข กรณีหมอกควันและฝุ่นละอองขนาดเล็ก เขตสุขภาพที่ 1
+              </Typography>
+            </Box>
+          </Link>
+
+          {/* ส่วนของการเข้าสู่ระบบ/เมนูผู้ใช้ */}
           <div>
             {auth?.user ? (
-              <>{auth.user.hospname}
-                <IconButton
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleMenu}
-                  color="inherit"
-                  className="hover:bg-Purple-200 rounded-md transition-colors duration-200"
-                >
-                  <AccountCircle className="text-white" />
-                </IconButton>
+              <>
+                <Box display="flex" alignItems="center">
+                  <span className="mr-4">{auth.user.hospname}</span>
+                  <IconButton
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleMenu}
+                    color="inherit"
+                    className="hover:bg-indigo-600 rounded-md transition-colors duration-200"
+                  >
+                    <AccountCircle className="text-white" />
+                  </IconButton>
+                </Box>
                 <Menu
                   id="menu-appbar"
                   anchorEl={anchorEl}
                   anchorOrigin={{
-                    vertical: "top",
+                    vertical: "bottom",
                     horizontal: "right",
                   }}
                   keepMounted
@@ -104,13 +127,13 @@ const Navbar = () => {
                   onClose={handleCloseMenu}
                   PaperProps={{
                     sx: {
-                      backgroundColor: 'green.100',
+                      backgroundColor: 'green.300',
                       boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
                       borderRadius: '8px',
-                      mt: 1.5,
+                      mt: '1rem', // ปรับระยะห่างจาก IconButton
                       '& .MuiMenuItem-root': {
                         '&:hover': {
-                          backgroundColor: 'green.200',
+                          backgroundColor: 'green.300',
                           transition: 'background-color 0.2s ease',
                         },
                         '& svg': {
@@ -133,7 +156,7 @@ const Navbar = () => {
                       sx={{
                         color: 'green.800',
                         '&:hover': {
-                          backgroundColor: 'green.200',
+                          backgroundColor: 'green.500',
                         }
                       }}
                     >
@@ -146,14 +169,14 @@ const Navbar = () => {
               <Button
                 color="inherit"
                 onClick={handleOpen}
-                className="bg-white hover:bg-green-100 text-green-800 font-medium rounded-md px-4 py-2 transition-colors duration-200"
+                className="bg-indigo-700 hover:bg-indigo-400 text-white font-medium rounded-md px-4 py-2 transition-colors duration-200"
               >
-                Login
+                เข้าสู่ระบบ
               </Button>
             )}
           </div>
-        </Toolbar >
-      </AppBar >
+        </Toolbar>
+      </AppBar>
 
       <SidebarMenu open={sidebarOpen} onClose={toggleSidebar} />
       <LoginModal open={open} handleClose={handleClose} />
