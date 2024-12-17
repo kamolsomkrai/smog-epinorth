@@ -48,6 +48,7 @@ export default function Home() {
       <div>
         <Typography variant="h5" component="div" sx={{ mt: 2, textAlign: 'center' }}>
           <span className="text-blue-800">ข้อมูลมาตรการ เขตสุขภาพที่ 1</span>
+          <span className="text-blue-800">ข้อมูลมาตรการ เขตสุขภาพที่ 1</span>
         </Typography>
         <Box><CardMenu menuItems={menuItems2} /></Box>
 
