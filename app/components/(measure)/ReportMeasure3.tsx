@@ -100,34 +100,34 @@ const ReportMeasure3: React.FC = () => {
   }, [data, searchTerm]);
 
   useEffect(() => {
-    const fetchMeasure3 = async () => {
+    const fetchMeasure1 = async () => {
+      setLoading(true); // ตั้งค่า loading ก่อนเรียก API
+
       try {
-        // ตรวจสอบ localStorage ก่อน
-        const cachedData = localStorage.getItem('measure3Data');
-        if (cachedData) {
-          const parsedData: Measure3Data[] = JSON.parse(cachedData);
-          setData(parsedData);
-        } else {
-          const response = await fetch('/api/measure3', { method: 'GET' });
-          console.log('API Response Status:', response.status);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const fetchedData: Measure3Data[] = await response.json();
-          console.log('Fetched Data:', fetchedData);
+        const response = await fetch('/api/measure3');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const fetchedData: Measure3Data[] = await response.json();
+
+        // ตรวจสอบข้อมูลก่อนบันทึกลงใน localStorage
+        if (Array.isArray(fetchedData) && fetchedData.length > 0) {
           setData(fetchedData);
-          // เก็บข้อมูลใน localStorage
-          localStorage.setItem('measure3Data', JSON.stringify(fetchedData));
+          localStorage.setItem('Measure3Data', JSON.stringify(fetchedData));
+        } else {
+          console.warn("API Response ไม่ถูกต้อง:", fetchedData);
+          setError("ข้อมูลไม่ถูกต้องจาก API");
         }
       } catch (err) {
         console.error('Error fetching Measure3 data:', err);
-        setError('ไม่สามารถดึงข้อมูล Measure3 ได้');
+        setError('ไม่สามารถดึงข้อมูล มาตรการที่ 3 ได้');
       } finally {
-        setLoading(false);
+        setLoading(false); // ยกเลิก loading เมื่อโหลดข้อมูลเสร็จ
       }
     };
 
-    fetchMeasure3();
+    fetchMeasure1();
   }, []);
 
   // เตรียมข้อมูลสำหรับ Pie Charts
@@ -271,7 +271,7 @@ const ReportMeasure3: React.FC = () => {
                   'ทีมดูแลประชาชน (เพิ่ม)': item.active_teams_citizens_add,
                 }))}
                 footer={{
-                  'จังหวัด': '',
+                  'จังหวัด': 'เขตสุขภาพที่ 1',
                   'ทีม 3 หมอ (รวม)': aggregateMemo?.active_teams_3_doctors_total || 0,
                   'ทีม 3 หมอ (เพิ่ม)': aggregateMemo?.active_teams_3_doctors_add || 0,
                   'ทีมแพทย์เคลื่อนที่ (รวม)': aggregateMemo?.active_teams_mobile_total || 0,
@@ -316,7 +316,7 @@ const ReportMeasure3: React.FC = () => {
                     'ผู้มีโรคประจำตัว': item.disease_N95_mask ?? 0,
                   }))}
                   footer={{
-                    'จังหวัด': '',
+                    'จังหวัด': 'เขตสุขภาพที่ 1',
                     'ผู้สูงอายุ': calculateTotal('elderly_N95_mask'),
                     'เด็กเล็ก': calculateTotal('children_N95_mask'),
                     'หญิงตั้งครรภ์': calculateTotal('pregnant_N95_mask'),
@@ -358,7 +358,7 @@ const ReportMeasure3: React.FC = () => {
                     'ผู้มีโรคประจำตัว': item.disease_surgical_mask ?? 0,
                   }))}
                   footer={{
-                    'จังหวัด': '',
+                    'จังหวัด': 'เขตสุขภาพที่ 1',
                     'ผู้สูงอายุ': calculateTotal('elderly_surgical_mask'),
                     'เด็กเล็ก': calculateTotal('children_surgical_mask'),
                     'หญิงตั้งครรภ์': calculateTotal('pregnant_surgical_mask'),
@@ -389,7 +389,7 @@ const ReportMeasure3: React.FC = () => {
                     'รถกู้ชีพ ALS': item.ambulance ?? 0,
                   }))}
                   footer={{
-                    'จังหวัด': '',
+                    'จังหวัด': 'เขตสุขภาพที่ 1',
                     'SKY doctor': aggregateMemo?.sky_doctor || 0,
                     'รถกู้ชีพ ALS': aggregateMemo?.ambulance || 0,
                   }}

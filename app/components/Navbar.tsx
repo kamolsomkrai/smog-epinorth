@@ -57,16 +57,16 @@ const Navbar = () => {
 
   return (
     <>
-      <AppBar position="static" className="bg-green-600">
+      <AppBar position="static" className="">
         <Toolbar className="flex justify-between items-center">
           <IconButton
             edge="start"
             color="inherit"
             aria-label="menu"
             onClick={toggleSidebar}
-            className="hover:bg-green-300 rounded-md transition-colors duration-200"
+            className="hover:bg-Purple-200 rounded-md transition-colors duration-200"
           >
-            <MenuIcon className="text-green-800" />
+            <MenuIcon className="text-white" />
           </IconButton>
           <Typography
             variant="h6"
@@ -77,16 +77,16 @@ const Navbar = () => {
           </Typography>
           <div>
             {auth?.user ? (
-              <>
+              <>{auth.user.hospname}
                 <IconButton
                   aria-label="account of current user"
                   aria-controls="menu-appbar"
                   aria-haspopup="true"
                   onClick={handleMenu}
                   color="inherit"
-                  className="hover:bg-green-300 rounded-md transition-colors duration-200"
+                  className="hover:bg-Purple-200 rounded-md transition-colors duration-200"
                 >
-                  <AccountCircle className="text-green-800" />
+                  <AccountCircle className="text-white" />
                 </IconButton>
                 <Menu
                   id="menu-appbar"
@@ -137,7 +137,7 @@ const Navbar = () => {
                         }
                       }}
                     >
-                      Logout
+                      ออกจากระบบ
                     </Button>
                   </MenuItem>
                 </Menu>
@@ -152,8 +152,8 @@ const Navbar = () => {
               </Button>
             )}
           </div>
-        </Toolbar>
-      </AppBar>
+        </Toolbar >
+      </AppBar >
 
       <SidebarMenu open={sidebarOpen} onClose={toggleSidebar} />
       <LoginModal open={open} handleClose={handleClose} />

@@ -47,31 +47,34 @@ const ReportMeasure4: React.FC = () => {
   }, [data, searchTerm]);
 
   useEffect(() => {
-    const fetchMeasure4 = async () => {
+    const fetchMeasure1 = async () => {
+      setLoading(true); // ตั้งค่า loading ก่อนเรียก API
+
       try {
-        // ตรวจสอบ localStorage ก่อน
-        const cachedData = localStorage.getItem('measure4Data');
-        if (cachedData) {
-          setData(JSON.parse(cachedData));
-        } else {
-          const response = await fetch('/api/measure4'); // เปลี่ยน URL หากจำเป็น
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const fetchedData: Measure4Data[] = await response.json();
+        const response = await fetch('/api/measure4');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const fetchedData: Measure4Data[] = await response.json();
+
+        // ตรวจสอบข้อมูลก่อนบันทึกลงใน localStorage
+        if (Array.isArray(fetchedData) && fetchedData.length > 0) {
           setData(fetchedData);
-          // เก็บข้อมูลใน localStorage
-          localStorage.setItem('measure4Data', JSON.stringify(fetchedData));
+          localStorage.setItem('Measure4Data', JSON.stringify(fetchedData));
+        } else {
+          console.warn("API Response ไม่ถูกต้อง:", fetchedData);
+          setError("ข้อมูลไม่ถูกต้องจาก API");
         }
       } catch (err) {
         console.error('Error fetching Measure4 data:', err);
-        setError('ไม่สามารถดึงข้อมูล Measure4 ได้');
+        setError('ไม่สามารถดึงข้อมูล มาตรการที่ 4 ได้');
       } finally {
-        setLoading(false);
+        setLoading(false); // ยกเลิก loading เมื่อโหลดข้อมูลเสร็จ
       }
     };
 
-    fetchMeasure4();
+    fetchMeasure1();
   }, []);
 
   // เตรียมข้อมูลสำหรับ Bar Chart (จำนวนวันที่เปิด EOC ต่อจังหวัด)
