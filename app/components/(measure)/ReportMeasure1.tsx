@@ -70,7 +70,7 @@ const ReportMeasure1: React.FC = () => {
   const pieChartData = useMemo(() => {
     const projectCount: { [key: string]: number } = {};
     filteredData.forEach(item => {
-      projectCount[item.province] = (projectCount[item.province] || 0) + 1;
+      projectCount[item.province] = (item.measure1_1 || 0);
     });
     return Object.entries(projectCount).map(([name, value]) => ({ name, value }));
   }, [filteredData]);
@@ -116,13 +116,13 @@ const ReportMeasure1: React.FC = () => {
               ]}
               data={filteredData.map(item => ({
                 'จังหวัด': item.province,
-                '1.1 สื่อสารสร้างความรอบรู้/สร้างความเข้มแข็งของชุมชนและประชาชน': item.measure1_1 ?? 0,
-                '1.2 ส่งเสริมองค์กรลดมลพิษ Green Energy': item.measure1_2 ?? 0,
+                '1.1 สื่อสารสร้างความรอบรู้/สร้างความเข้มแข็งของชุมชนและประชาชน (ครั้ง)': item.measure1_1 ?? 0,
+                '1.2 ส่งเสริมองค์กรลดมลพิษ Green Energy (ครั้ง)': item.measure1_2 ?? 0,
               }))}
               footer={{
                 'จังหวัด': 'เขตสุขภาพที่ 1',
-                '1.1 สื่อสารสร้างความรอบรู้/สร้างความเข้มแข็งของชุมชนและประชาชน': calculateTotal('measure1_1'),
-                '1.2 ส่งเสริมองค์กรลดมลพิษ Green Energy': calculateTotal('measure1_2'),
+                '1.1 สื่อสารสร้างความรอบรู้/สร้างความเข้มแข็งของชุมชนและประชาชน (ครั้ง)': calculateTotal('measure1_1'),
+                '1.2 ส่งเสริมองค์กรลดมลพิษ Green Energy (ครั้ง)': calculateTotal('measure1_2'),
               }}
             />
           </>

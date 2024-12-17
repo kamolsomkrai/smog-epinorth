@@ -33,33 +33,35 @@ const ReportMeasure2: React.FC = () => {
   }, [data, searchTerm]);
 
   useEffect(() => {
-    const fetchMeasure2 = async () => {
+    const fetchMeasure1 = async () => {
+      setLoading(true); // ตั้งค่า loading ก่อนเรียก API
+
       try {
-        // ตรวจสอบ localStorage ก่อน
-        const cachedData = localStorage.getItem('measure2Data');
-        if (cachedData) {
-          setData(JSON.parse(cachedData));
-        } else {
-          const response = await fetch('/api/measure2', { method: 'GET' });
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const fetchedData: Measure2Data[] = await response.json();
+        const response = await fetch('/api/measure2');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const fetchedData: Measure2Data[] = await response.json();
+
+        // ตรวจสอบข้อมูลก่อนบันทึกลงใน localStorage
+        if (Array.isArray(fetchedData) && fetchedData.length > 0) {
           setData(fetchedData);
-          // เก็บข้อมูลใน localStorage
-          localStorage.setItem('measure2Data', JSON.stringify(fetchedData));
+          localStorage.setItem('Measure2Data', JSON.stringify(fetchedData));
+        } else {
+          console.warn("API Response ไม่ถูกต้อง:", fetchedData);
+          setError("ข้อมูลไม่ถูกต้องจาก API");
         }
       } catch (err) {
-        console.error('Error fetching Measure2 data:', err);
-        setError('ไม่สามารถดึงข้อมูล Measure2 ได้');
+        console.error('Error fetching Measure1 data:', err);
+        setError('ไม่สามารถดึงข้อมูล มาตรการที่ 2 ได้');
       } finally {
-        setLoading(false);
+        setLoading(false); // ยกเลิก loading เมื่อโหลดข้อมูลเสร็จ
       }
     };
 
-    fetchMeasure2();
+    fetchMeasure1();
   }, []);
-
   // ข้อมูลสำหรับ Pie Chart ในส่วน 2.1
   const pieData2_1_1 = useMemo(() => {
     return filteredData.map(item => ({

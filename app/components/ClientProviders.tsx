@@ -1,4 +1,3 @@
-// app/components/ClientProviders.tsx
 "use client";
 
 import React, { ReactNode } from "react";
