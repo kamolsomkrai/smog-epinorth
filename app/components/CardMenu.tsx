@@ -11,12 +11,6 @@ import {
   Grid,
   Box
 } from "@mui/material";
-import {
-  Inventory2 as InventoryIcon,
-  Summarize as SummaryIcon,
-  Build as BuildIcon,
-  Assessment as AssessmentIcon
-} from "@mui/icons-material";
 
 interface MenuItem {
   href: string;
@@ -24,41 +18,28 @@ interface MenuItem {
   icon: React.ReactElement;
 }
 
-const menuItems: MenuItem[] = [
-  {
-    href: "/supplies",
-    title: "บันทึกข้อมูล เวชภัณฑ์",
-    icon: <InventoryIcon fontSize="large" color="secondary" />
-  },
-  {
-    href: "/summary",
-    title: "Dashboard ข้อมูลเวชภัณฑ์",
-    icon: <SummaryIcon fontSize="large" color="success" />
-  },
-  {
-    href: "/activity_smog",
-    title: "บันทึกข้อมูล มาตรการ",
-    icon: <BuildIcon fontSize="large" color="warning" />
-  },
-  {
-    href: "/summaryreportsmog",
-    title: "Dashboard \
-    ข้อมูลภาพรวมมาตรการ",
-    icon: <AssessmentIcon fontSize="large" color="error" />
-  }
-];
+interface CardMenuProps {
+  menuItems: MenuItem[];
+}
 
-const CardMenu: React.FC = () => {
+const CardMenu: React.FC<CardMenuProps> = ({ menuItems }) => {
   return (
     <Box sx={{ flexGrow: 1, p: 2 }}>
       <Grid container spacing={2}>
         {menuItems.map((item) => (
-          <Grid item xs={12} sm={6} md={4} key={item.href}>
+          <Grid item xs={12} sm={6} md={6} key={item.href}>
             <Card>
               <CardActionArea component={Link} href={item.href}>
-                <CardContent sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', p: 4 }}>
+                <CardContent
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                    p: 4
+                  }}
+                >
                   {item.icon}
-                  <Typography variant="h6" component="div" sx={{ mt: 2 }}>
+                  <Typography variant="h6" component="div" sx={{ mt: 2, textAlign: 'center' }}>
                     {item.title}
                   </Typography>
                 </CardContent>
