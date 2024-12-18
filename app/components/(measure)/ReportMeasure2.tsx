@@ -157,8 +157,8 @@ const ReportMeasure2: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* ตารางสำหรับ 2.1.1 */}
               <DataTable
-                title=""
-                headers={['จังหวัด', 'จัดทาสื่อ Info ประชาสัมพันธ์ (ชิ้น)']}
+                title="จำนวนโครงการสื่อสารและส่งเสริมต่อจังหวัด"
+                headers={['จังหวัด', 'จัดทำสื่อInfoประชาสัมพันธ์(ชิ้น)']}
                 data={filteredData.map(item => ({
                   'จังหวัด': item.province,
                   'จัดทาสื่อ Info ประชาสัมพันธ์ (ชิ้น)': item.risk_health_monitoring_1_1 ?? 0,
@@ -172,7 +172,7 @@ const ReportMeasure2: React.FC = () => {
               {/* ตารางสำหรับ 2.1.2 */}
               <DataTable
                 title=""
-                headers={['จังหวัด', 'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ (ครั้ง)']}
+                headers={['จังหวัด', 'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ(ครั้ง)']}
                 data={filteredData.map(item => ({
                   'จังหวัด': item.province,
                   'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ (ครั้ง)': item.risk_health_monitoring_1_2 ?? 0,
