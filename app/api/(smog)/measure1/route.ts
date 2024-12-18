@@ -76,6 +76,7 @@ export async function GET() {
       "https://epinorth-api.ddc.moph.go.th/api/measure1",
       {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

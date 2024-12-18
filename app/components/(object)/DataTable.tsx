@@ -48,7 +48,7 @@ const DataTable: React.FC<DataTableProps> = ({ title, headers, data, footer }) =
     const blob = new Blob([wbout], { type: 'application/octet-stream' });
 
     // จำกัดชื่อไฟล์ไม่เกิน 32 ตัวอักษรและแปลงเป็นไฟล์ .xlsx
-    // const limitedTitle = title.length > 32 ? `${title.slice(0, 29)}...` : title;
+    const limitedTitle = title.length > 32 ? `${title.slice(0, 29)}...` : title;
     saveAs(blob, `data.xlsx`);
   };
 

@@ -1,5 +1,5 @@
 // app/summary/components/DataTableComponent.tsx
-import React from 'react';
+import React, { memo } from 'react';
 
 interface SupplySummary {
   supplyname: string;
@@ -29,7 +29,7 @@ const DataTableComponent: React.FC<DataTableComponentProps> = ({ supplies, provi
                 </th>
               ))}
               <th className="py-3 px-6 text-right font-medium uppercase tracking-wider">
-                เขต1
+                เขต 1
               </th>
             </tr>
           </thead>
@@ -39,7 +39,7 @@ const DataTableComponent: React.FC<DataTableComponentProps> = ({ supplies, provi
 
               return (
                 <tr key={index} className="hover:bg-gray-100">
-                  <td className="py-4 px-6 text-gray-800">{supply.supplyname}</td>
+                  <td className="py-4 px-6 text-gray-800 font-medium">{supply.supplyname}</td>
                   {provinces.map(province => (
                     <td key={province} className="py-4 px-6 text-gray-800 text-right">
                       {new Intl.NumberFormat().format(
@@ -47,7 +47,7 @@ const DataTableComponent: React.FC<DataTableComponentProps> = ({ supplies, provi
                       )}
                     </td>
                   ))}
-                  <td className="py-4 px-6 text-gray-800 text-right">
+                  <td className="py-4 px-6 text-gray-800 text-right font-semibold">
                     {new Intl.NumberFormat().format(total)}
                   </td>
                 </tr>
@@ -60,4 +60,4 @@ const DataTableComponent: React.FC<DataTableComponentProps> = ({ supplies, provi
   );
 };
 
-export default DataTableComponent;
+export default memo(DataTableComponent);

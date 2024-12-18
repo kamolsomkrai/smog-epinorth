@@ -1,12 +1,12 @@
-// app/summary/page.tsx
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import BarChartComponent from '../(object)/BarChartComponent';
-import PieChartComponent from '../(object)/PieChartComponent';
-import ProvincePieChartComponent from '../(object)/ProvincePieChartComponent';
-import DataTableComponent from '../(object)/DataTableComponent';
-import ExportToExcelButton from '../(object)/ExportToExcelButton';
+import React, { useEffect, useState, useMemo } from "react";
+import BarChartComponent from "../(object)/BarChartComponent";
+import PieChartComponent from "../(object)/PieChartComponent";
+// import ProvincePieChartComponent from "../(object)/ProvincePieChartComponent";
+import DataTableComponent from "../(object)/DataTableComponent";
+import ExportToExcelButton from "../(object)/ExportToExcelButton";
+import Loading from "../(object)/Loading";
 
 interface SupplySummary {
   supplyname: string;
@@ -14,7 +14,16 @@ interface SupplySummary {
   [key: string]: string | number;
 }
 
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#8dd1e1', '#a4de6c', '#d0ed57', '#ffc0cb'];
+const COLORS = [
+  "#8884d8",
+  "#82ca9d",
+  "#ffc658",
+  "#ff7f50",
+  "#8dd1e1",
+  "#a4de6c",
+  "#d0ed57",
+  "#ffc0cb",
+];
 
 const Summary: React.FC = () => {
   const [provinces, setProvinces] = useState<string[]>([]);
@@ -22,96 +31,144 @@ const Summary: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const response = await fetch('/api/summary'); // Update URL if necessary
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setProvinces(data.provinces);
-        setSupplies(data.supplies);
-      } catch (err) {
-        console.error('Error fetching summary:', err);
-        setError('Failed to fetch summary data');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchSummary = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/summary");
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      setProvinces(data.provinces);
+      setSupplies(data.supplies);
+    } catch (err) {
+      console.error("Error fetching summary:", err);
+      setError("ไม่สามารถดึงข้อมูลได้ในขณะนี้");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchSummary();
   }, []);
 
-  const calculateTotal = (supply: SupplySummary) => {
-    return provinces.reduce((acc, province) => {
-      const value = typeof supply[province] === 'number' ? (supply[province] as number) : parseFloat(supply[province] as string) || 0;
-      return acc + value;
-    }, 0);
-  };
+  const calculateTotal = (supply: SupplySummary) =>
+    provinces.reduce(
+      (acc, province) =>
+        acc +
+        (typeof supply[province] === "number"
+          ? (supply[province] as number)
+          : parseFloat(supply[province] as string) || 0),
+      0
+    );
 
-  // Prepare data for Bar Chart
-  const barChartData = supplies.map(supply => ({
-    supplyname: supply.supplyname,
-    ...provinces.reduce((acc, province) => {
-      acc[province] = typeof supply[province] === 'number' ? (supply[province] as number) : parseFloat(supply[province] as string) || 0;
-      return acc;
-    }, {} as { [key: string]: number }),
-    total: calculateTotal(supply),
-  }));
+  const barChartData = useMemo(
+    () =>
+      supplies.map((supply) => ({
+        supplyname: supply.supplyname,
+        ...provinces.reduce(
+          (acc, province) => ({
+            ...acc,
+            [province]:
+              typeof supply[province] === "number"
+                ? (supply[province] as number)
+                : parseFloat(supply[province] as string) || 0,
+          }),
+          {}
+        ),
+        total: calculateTotal(supply),
+      })),
+    [supplies, provinces]
+  );
 
-  // Prepare data for Pie Chart (Total per supply)
-  const pieChartData = supplies.map(supply => ({
-    name: supply.supplyname,
-    value: calculateTotal(supply),
-  }));
+  const pieChartData = useMemo(
+    () =>
+      supplies.map((supply) => ({
+        name: supply.supplyname,
+        value: calculateTotal(supply),
+      })),
+    [supplies, provinces]
+  );
 
   if (error) {
-    return <div className="p-6">{error}</div>;
+    return (
+      <div className="p-6 text-center text-red-500 text-lg font-medium">
+        {error}
+      </div>
+    );
   }
 
   return (
     <div className="p-6 min-h-screen bg-gray-100">
       <div className="max-w-7xl mx-auto">
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-opacity-75" />
-          </div>
+          <><Loading /></>
         ) : (
           <div>
-            <h1 className="text-3xl font-bold mb-6 text-gray-800">สรุปรวมเวชภัณฑ์</h1>
+            <h1 className="text-4xl font-extrabold mb-6 text-gray-800 text-center">
+              สรุปรวมเวชภัณฑ์
+            </h1>
 
-            {/* Export to Excel Button */}
-            <ExportToExcelButton supplies={supplies} provinces={provinces} />
+            {/* Export to Excel */}
+            <div className="mb-6 flex justify-end">
+              <ExportToExcelButton supplies={supplies} provinces={provinces} />
+            </div>
 
             {/* Bar Chart */}
-            <BarChartComponent data={barChartData} provinces={provinces} colors={COLORS} />
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              {/* <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+                สรุปจำนวนเวชภัณฑ์ตามจังหวัด
+              </h2> */}
+              <BarChartComponent
+                data={barChartData}
+                provinces={provinces}
+                colors={COLORS}
+              />
+            </div>
 
             {/* Pie Chart */}
-            <PieChartComponent data={pieChartData} colors={COLORS} title="สัดส่วนเวชภัณฑ์ทั้งหมด" />
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              {/* <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+                สัดส่วนเวชภัณฑ์ทั้งหมด
+              </h2> */}
+              <PieChartComponent title="สัดส่วนเวชภัณฑ์ทั้งหมด" data={pieChartData} colors={COLORS} />
+            </div>
 
             {/* Data Table */}
-            <DataTableComponent supplies={supplies} provinces={provinces} calculateTotal={calculateTotal} />
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <DataTableComponent
+                supplies={supplies}
+                provinces={provinces}
+                calculateTotal={calculateTotal}
+              />
+            </div>
 
             {/* Pie Charts per Province */}
-            <div className="bg-white rounded-lg shadow-md p-6 mt-8">
-              <h2 className="text-2xl font-semibold mb-4 text-gray-700">สัดส่วนเวชภัณฑ์ในแต่ละจังหวัด</h2>
-              {provinces.map((province) => {
-                const provinceData = supplies.map(supply => ({
-                  name: supply.supplyname,
-                  value: typeof supply[province] === 'number' ? (supply[province] as number) : parseFloat(supply[province] as string) || 0,
-                }));
+            {/* <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+                สัดส่วนเวชภัณฑ์ในแต่ละจังหวัด
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {provinces.map((province) => {
+                  const provinceData = supplies.map((supply) => ({
+                    name: supply.supplyname,
+                    value:
+                      typeof supply[province] === "number"
+                        ? (supply[province] as number)
+                        : parseFloat(supply[province] as string) || 0,
+                  }));
 
-                return (
-                  <ProvincePieChartComponent
-                    key={province}
-                    province={province}
-                    data={provinceData}
-                    colors={COLORS}
-                  />
-                );
-              })}
-            </div>
+                  return (
+                    <ProvincePieChartComponent
+                      key={province}
+                      province={province}
+                      data={provinceData}
+                      colors={COLORS}
+                    />
+                  );
+                })}
+              </div>
+            </div> */}
           </div>
         )}
       </div>

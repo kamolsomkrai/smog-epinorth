@@ -2,6 +2,8 @@
 import React from 'react';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { Button } from "@mui/material";
+import { Download as DownloadIcon } from '@mui/icons-material'; // นำเข้าไอคอน Download
 
 interface SupplySummary {
   supplyname: string;
@@ -41,12 +43,20 @@ const ExportToExcelButton: React.FC<ExportToExcelButtonProps> = ({ supplies, pro
   };
 
   return (
-    <button
+    <Button
+      variant="contained"
+      color="primary"
       onClick={handleExport}
-      className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      startIcon={<DownloadIcon />} // เพิ่มไอคอน Download
     >
-      Export to Excel
-    </button>
+      Export
+    </Button>
+    // <button
+    //   onClick={handleExport}
+    //   className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+    // >
+    //   Export to Excel
+    // </button>
   );
 };
 
