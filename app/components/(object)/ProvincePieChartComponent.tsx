@@ -12,7 +12,7 @@ interface ProvincePieChartComponentProps {
 
 const ProvincePieChartComponent: React.FC<ProvincePieChartComponentProps> = ({ province, data, colors }) => {
   return (
-    <div key={province} className="mb-8">
+    <div className="mb-8">
       <h3 className="text-xl font-semibold mb-2 text-gray-600">{province}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
@@ -30,9 +30,9 @@ const ProvincePieChartComponent: React.FC<ProvincePieChartComponentProps> = ({ p
               <Cell key={`cell-${province}-${idx}`} fill={colors[idx % colors.length]} />
             ))}
           </Pie>
+          <Tooltip />
+          <Legend layout="vertical" align="right" verticalAlign="middle" />
         </PieChart>
-        <Tooltip />
-        <Legend layout="vertical" align="right" verticalAlign="middle" />
       </ResponsiveContainer>
     </div>
   );
