@@ -5,6 +5,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 // import { Measure1Data } from '../../interfaces/measure';
 import PieChartSection from '../(object)/PieChartSection';
 import DataTable from '../(object)/DataTable';
+import Loading from '../(object)/Loading';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#8dd1e1', '#a4de6c', '#d0ed57', '#ffc0cb'];
 
@@ -85,9 +86,7 @@ const ReportMeasure1: React.FC = () => {
 
 
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-opacity-75" />
-          </div>
+          <><Loading /></>
         ) : (
           <>
             <div className="mb-4">

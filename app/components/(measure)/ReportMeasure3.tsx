@@ -6,6 +6,7 @@ import { Measure3Data } from '../../interfaces/measure';
 import PieChartSection from '../(object)/PieChartSection';
 import BarChartSection from '../(object)/BarChartSection';
 import DataTable from '../(object)/DataTable';
+import Loading from '../(object)/Loading';
 
 // สีสำหรับกราฟ
 const COLORS = [
@@ -203,9 +204,7 @@ const ReportMeasure3: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-opacity-75" />
-          </div>
+          <><Loading /></>
         ) : (
           <>
             {/* แสดงข้อความแสดงข้อผิดพลาดถ้ามี */}
