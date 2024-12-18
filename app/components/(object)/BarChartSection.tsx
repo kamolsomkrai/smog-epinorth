@@ -1,5 +1,7 @@
+// components/BarChartSection.tsx
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
+import { Typography, Box } from '@mui/material';
 
 interface BarChartSectionProps {
   title: string;
@@ -10,8 +12,10 @@ interface BarChartSectionProps {
 
 const BarChartSection: React.FC<BarChartSectionProps> = ({ title, data, keys, colors }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-xl font-medium mb-4 text-gray-700">{title}</h3>
+    <Box className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <Typography variant="h5" className="mb-4 text-gray-700">
+        {title}
+      </Typography>
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
           data={data}
@@ -24,12 +28,12 @@ const BarChartSection: React.FC<BarChartSectionProps> = ({ title, data, keys, co
           <Legend verticalAlign="top" height={36} />
           {keys.map((key, index) => (
             <Bar key={key} dataKey={key} fill={colors[index % colors.length]} name={key}>
-              <LabelList dataKey={key} position="top" />
+              <LabelList dataKey={key} position="top" formatter={(value: number) => new Intl.NumberFormat().format(value)} />
             </Bar>
           ))}
         </BarChart>
       </ResponsiveContainer>
-    </div>
+    </Box>
   );
 };
 

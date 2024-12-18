@@ -1,6 +1,7 @@
 // components/PieChartSection.tsx
 import React, { useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Typography, Box } from '@mui/material';
 
 interface PieChartSectionProps {
   title: string;
@@ -20,8 +21,10 @@ const PieChartSection: React.FC<PieChartSectionProps> = ({ title, data, colors }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-xl font-medium mb-4 text-gray-700">{title}</h3>
+    <Box className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <Typography variant="h5" className="mb-4 text-gray-700">
+        {title}
+      </Typography>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
@@ -48,7 +51,7 @@ const PieChartSection: React.FC<PieChartSectionProps> = ({ title, data, colors }
           <Legend verticalAlign="bottom" height={36} />
         </PieChart>
       </ResponsiveContainer>
-    </div>
+    </Box>
   );
 };
 
