@@ -144,7 +144,7 @@ const ReportMeasure4: React.FC = () => {
 
             {/* ตารางข้อมูล */}
             <DataTable
-              title="รายละเอียด Measure 4"
+              title="จำนวนวันที่เปิดEOCต่อจังหวัด"
               headers={[
                 'จังหวัด',
                 'วันเปิด EOC',

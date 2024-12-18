@@ -2,9 +2,8 @@
 import React from 'react';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
-import {
-  Button
-} from "@mui/material";
+import { Button } from "@mui/material";
+import { Download as DownloadIcon } from '@mui/icons-material'; // นำเข้าไอคอน Download
 
 interface DataTableProps {
   title: string;
@@ -30,9 +29,17 @@ const DataTable: React.FC<DataTableProps> = ({ title, headers, data, footer }) =
     // สร้าง Worksheet จากข้อมูล
     const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
 
-    // สร้าง Workbook และเพิ่ม Worksheet เข้าไป
+    // สร้าง Workbook
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, title);
+
+    // จำกัดชื่อ sheet ไม่เกิน 31 ตัวอักษร
+    let sheetName = title;
+    if (sheetName.length > 31) {
+      sheetName = `${sheetName.slice(0, 28)}...`; // ใช้ slice(0, 28) เพื่อให้รวม '...' แล้วไม่เกิน 31
+    }
+
+    // เพิ่ม Worksheet เข้าไปใน Workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
 
     // แปลง Workbook เป็น binary
     const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
@@ -40,16 +47,22 @@ const DataTable: React.FC<DataTableProps> = ({ title, headers, data, footer }) =
     // สร้าง Blob จาก binary
     const blob = new Blob([wbout], { type: 'application/octet-stream' });
 
-    // ใช้ FileSaver เพื่อดาวน์โหลดไฟล์
-    saveAs(blob, `${title}.xlsx`);
+    // จำกัดชื่อไฟล์ไม่เกิน 32 ตัวอักษรและแปลงเป็นไฟล์ .xlsx
+    // const limitedTitle = title.length > 32 ? `${title.slice(0, 29)}...` : title;
+    saveAs(blob, `data.xlsx`);
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-medium text-gray-700">{title}</h3>
-        <Button variant="contained" color="primary" onClick={exportToExcel}>
-          Export to Excel
+        {/* เพิ่มปุ่ม Export พร้อมไอคอน */}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={exportToExcel}
+          startIcon={<DownloadIcon />} // เพิ่มไอคอน Download
+        >
+          Export
         </Button>
       </div>
       <div className="overflow-x-auto">

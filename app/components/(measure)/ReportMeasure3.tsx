@@ -217,20 +217,20 @@ const ReportMeasure3: React.FC = () => {
 
             {/* 4.2 การเปิดบริการคลินิก */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">4.2 การเปิดบริการคลินิก</h2>
+              <h2 className="text-2xl font-semibold mb-6 text-gray-800">การเปิดบริการคลินิก</h2>
 
               {/* Pie Charts สำหรับ 4.2.1 และ 4.2.2 */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* 4.2.1 เปิดคลินิกต่าง ๆ */}
                 <PieChartSection
-                  title="4.2.1 เปิดคลินิกต่าง ๆ"
+                  title="เปิดคลินิกต่าง ๆ"
                   data={pieDataClinicsOpen}
                   colors={COLORS}
                 />
 
                 {/* 4.2.2 บริการคลินิกต่าง ๆ */}
                 <PieChartSection
-                  title="4.2.2 บริการคลินิกต่าง ๆ"
+                  title="บริการคลินิกต่าง ๆ"
                   data={pieDataClinicsService}
                   colors={COLORS}
                 />
@@ -239,11 +239,11 @@ const ReportMeasure3: React.FC = () => {
 
             {/* 4.3 ทีมแพทย์ */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">4.3 ทีมแพทย์</h2>
+              <h2 className="text-2xl font-semibold mb-6 text-gray-800">ทีมแพทย์</h2>
 
               {/* Bar Chart สำหรับทีมแพทย์ */}
               <BarChartSection
-                title="4.3 ทีมแพทย์"
+                title="ทีมแพทย์"
                 data={barChartData}
                 keys={['Total', 'Add']}
                 colors={COLORS}
@@ -284,12 +284,12 @@ const ReportMeasure3: React.FC = () => {
 
             {/* 4.4 อุปกรณ์ป้องกันส่วนบุคคล */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">4.4 อุปกรณ์ป้องกันส่วนบุคคล</h2>
+              <h2 className="text-2xl font-semibold mb-6 text-gray-800">สนับสนุนอุปกรณ์ป้องกันส่วนบุคคลแก่กลุ่มเสี่ยง</h2>
 
               {/* Pie Chart สำหรับหน้ากาก N95 */}
               <div>
                 <PieChartSection
-                  title="4.4.1 หน้ากาก N95"
+                  title="หน้ากาก N95"
                   data={pieDataMasksN95}
                   colors={COLORS}
                 />
@@ -331,7 +331,7 @@ const ReportMeasure3: React.FC = () => {
               {/* Pie Chart สำหรับหน้ากากอนามัย */}
               <div className="mt-6">
                 <PieChartSection
-                  title="4.4.2 หน้ากากอนามัย"
+                  title="หน้ากากอนามัย"
                   data={pieDataMasksSurgical}
                   colors={COLORS}
                 />
@@ -374,14 +374,14 @@ const ReportMeasure3: React.FC = () => {
               {/* Pie Chart สำหรับ SKY doctor และรถกู้ชีพ */}
               <div>
                 <PieChartSection
-                  title="4.5 อื่น ๆ"
+                  title="ระบบรักษาส่งต่อผู้ป่วย"
                   data={pieDataOthers}
                   colors={COLORS}
                 />
               </div>
               <div className="mt-6">
                 <DataTable
-                  title="รายละเอียดอื่น ๆ"
+                  title="ระบบรักษาส่งต่อผู้ป่วย"
                   headers={['จังหวัด', 'SKY doctor', 'รถกู้ชีพ ALS']}
                   data={filteredData.map(item => ({
                     'จังหวัด': item.province,
