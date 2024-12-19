@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+
 import BarChartComponent from "../(object)/BarChartComponent";
 import PieChartComponent from "../(object)/PieChartComponent";
 // import ProvincePieChartComponent from "../(object)/ProvincePieChartComponent";
@@ -31,6 +32,7 @@ const Summary: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+
   const fetchSummary = async () => {
     setLoading(true);
     setError(null);
@@ -52,15 +54,19 @@ const Summary: React.FC = () => {
     fetchSummary();
   }, []);
 
-  const calculateTotal = (supply: SupplySummary) =>
-    provinces.reduce(
-      (acc, province) =>
-        acc +
-        (typeof supply[province] === "number"
-          ? (supply[province] as number)
-          : parseFloat(supply[province] as string) || 0),
-      0
-    );
+  const calculateTotal = useCallback(
+    (supply: SupplySummary) =>
+      provinces.reduce(
+        (acc, province) =>
+          acc +
+          (typeof supply[province] === "number"
+            ? (supply[province] as number)
+            : parseFloat(supply[province] as string) || 0),
+        0
+      ),
+    [provinces] // ใช้ provinces เป็น dependency
+  );
+
 
   const barChartData = useMemo(
     () =>
@@ -78,7 +84,7 @@ const Summary: React.FC = () => {
         ),
         total: calculateTotal(supply),
       })),
-    [supplies, provinces]
+    [supplies, provinces, calculateTotal]
   );
 
   const pieChartData = useMemo(
@@ -87,8 +93,9 @@ const Summary: React.FC = () => {
         name: supply.supplyname,
         value: calculateTotal(supply),
       })),
-    [supplies, provinces]
+    [supplies, calculateTotal] // เพิ่ม calculateTotal
   );
+
 
   if (error) {
     return (
