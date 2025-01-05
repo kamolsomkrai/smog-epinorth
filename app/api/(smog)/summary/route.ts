@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Cookie: cookieHeader, // ส่งคุกกี้ไปยัง API ภายนอก
+          // Cookie: cookieHeader, // ส่งคุกกี้ไปยัง API ภายนอก
         },
       }
     );
