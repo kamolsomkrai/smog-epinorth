@@ -1,17 +1,17 @@
 // app/api/(smog)/summary/route.ts
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 // Utility function to validate token
-const validateToken = (token?: string) => {
-  if (!token) {
-    throw new Error("No token found. Please login.");
-  }
-  return token;
-};
-export async function GET(request: NextRequest) {
-  const token = validateToken(request.cookies.get("token")?.value);
+// const validateToken = (token?: string) => {
+//   if (!token) {
+//     throw new Error("No token found. Please login.");
+//   }
+//   return token;
+// };
+export async function GET() {
+  // const token = validateToken(request.cookies.get("token")?.value);
 
   // สร้างค่า Cookie ที่จะส่งไปยัง API ภายนอก
-  const cookieHeader = `token=${token}`;
+  // const cookieHeader = `token=${token}`;
   // Utility function to validate token
 
   try {
