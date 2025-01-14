@@ -19,9 +19,10 @@ export async function GET() {
       "https://epinorth-api.ddc.moph.go.th/api/frontend/summary",
       {
         method: "GET",
-        credentials: "include",
+        // credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          // "Cache-Control": "no-cache",
           // Cookie: cookieHeader, // ส่งคุกกี้ไปยัง API ภายนอก
         },
       }
