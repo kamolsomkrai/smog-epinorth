@@ -1,10 +1,8 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-
 import BarChartComponent from "../(object)/BarChartComponent";
 import PieChartComponent from "../(object)/PieChartComponent";
-// import ProvincePieChartComponent from "../(object)/ProvincePieChartComponent";
 import DataTableComponent from "../(object)/DataTableComponent";
 import ExportToExcelButton from "../(object)/ExportToExcelButton";
 import Loading from "../(object)/Loading";
@@ -32,16 +30,30 @@ const Summary: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-
   const fetchSummary = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/summary");
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const response = await fetch(
+        "https://epinorth-api.ddc.moph.go.th/api/frontend/summary",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            // หาก API ต้องการ token หรือ headers อื่น ๆ ให้เพิ่มที่นี่
+            // "Authorization": "Bearer YOUR_TOKEN",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
-      setProvinces(data.provinces);
-      setSupplies(data.supplies);
+      setProvinces(data.provinces || []); // ตรวจสอบว่า API ส่ง provinces มาหรือไม่
+      setSupplies(data.supplies || []); // ตรวจสอบว่า API ส่ง supplies มาหรือไม่
     } catch (err) {
       console.error("Error fetching summary:", err);
       setError("ไม่สามารถดึงข้อมูลได้ในขณะนี้");
@@ -64,9 +76,8 @@ const Summary: React.FC = () => {
             : parseFloat(supply[province] as string) || 0),
         0
       ),
-    [provinces] // ใช้ provinces เป็น dependency
+    [provinces]
   );
-
 
   const barChartData = useMemo(
     () =>
@@ -93,9 +104,8 @@ const Summary: React.FC = () => {
         name: supply.supplyname,
         value: calculateTotal(supply),
       })),
-    [supplies, calculateTotal] // เพิ่ม calculateTotal
+    [supplies, calculateTotal]
   );
-
 
   if (error) {
     return (
@@ -109,7 +119,7 @@ const Summary: React.FC = () => {
     <div className="p-6 min-h-screen bg-gray-100">
       <div className="max-w-7xl mx-auto">
         {loading ? (
-          <><Loading /></>
+          <Loading />
         ) : (
           <div>
             <h1 className="text-4xl font-extrabold mb-6 text-gray-800 text-center">
@@ -123,9 +133,6 @@ const Summary: React.FC = () => {
 
             {/* Bar Chart */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              {/* <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-                สรุปจำนวนเวชภัณฑ์ตามจังหวัด
-              </h2> */}
               <BarChartComponent
                 data={barChartData}
                 provinces={provinces}
@@ -135,10 +142,11 @@ const Summary: React.FC = () => {
 
             {/* Pie Chart */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              {/* <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-                สัดส่วนเวชภัณฑ์ทั้งหมด
-              </h2> */}
-              <PieChartComponent title="สัดส่วนเวชภัณฑ์ทั้งหมด" data={pieChartData} colors={COLORS} />
+              <PieChartComponent
+                title="สัดส่วนเวชภัณฑ์ทั้งหมด"
+                data={pieChartData}
+                colors={COLORS}
+              />
             </div>
 
             {/* Data Table */}
@@ -149,33 +157,6 @@ const Summary: React.FC = () => {
                 calculateTotal={calculateTotal}
               />
             </div>
-
-            {/* Pie Charts per Province */}
-            {/* <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-                สัดส่วนเวชภัณฑ์ในแต่ละจังหวัด
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {provinces.map((province) => {
-                  const provinceData = supplies.map((supply) => ({
-                    name: supply.supplyname,
-                    value:
-                      typeof supply[province] === "number"
-                        ? (supply[province] as number)
-                        : parseFloat(supply[province] as string) || 0,
-                  }));
-
-                  return (
-                    <ProvincePieChartComponent
-                      key={province}
-                      province={province}
-                      data={provinceData}
-                      colors={COLORS}
-                    />
-                  );
-                })}
-              </div>
-            </div> */}
           </div>
         )}
       </div>
