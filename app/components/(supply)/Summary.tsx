@@ -37,7 +37,7 @@ const Summary: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("https://epinorth-api.ddc.moph.go.th/api/frontend/summary");
+      const response = await fetch("/api/summary");
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       setProvinces(data.provinces);

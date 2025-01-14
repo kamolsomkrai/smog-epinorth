@@ -1,39 +1,26 @@
 // app/api/(smog)/summary/route.ts
 import { NextResponse } from "next/server";
-// Utility function to validate token
-// const validateToken = (token?: string) => {
-//   if (!token) {
-//     throw new Error("No token found. Please login.");
-//   }
-//   return token;
-// };
+
 export async function GET() {
-  // const token = validateToken(request.cookies.get("token")?.value);
-
-  // สร้างค่า Cookie ที่จะส่งไปยัง API ภายนอก
-  // const cookieHeader = `token=${token}`;
-  // Utility function to validate token
-
   try {
     const res = await fetch(
       "https://epinorth-api.ddc.moph.go.th/api/frontend/summary",
       {
         method: "GET",
-        // credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          // "Cache-Control": "no-cache",
-          // Cookie: cookieHeader, // ส่งคุกกี้ไปยัง API ภายนอก
+          Accept: "application/json",
         },
       }
     );
 
     if (!res.ok) {
       const errorText = await res.text();
-      throw new Error(`การดึงข้อมูลล้มเหลว: ${res.status} ${errorText}`);
+      throw new Error(`Failed to fetch data: ${res.status} ${errorText}`);
     }
-    const data2 = await res.json();
-    return NextResponse.json(data2, { status: 201 });
+
+    const data = await res.json();
+    return NextResponse.json(data, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching summary:", error);
     return NextResponse.json(
