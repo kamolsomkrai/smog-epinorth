@@ -12,6 +12,7 @@ export function middleware(req: NextRequest) {
     "/summary", // หน้า Summary
     "/login", // หน้า Login
     "/api", // API routes
+    "/form",
     "/_next", // Next.js internal routes
     "/favicon.ico", // ไอคอน favicon
     "/symbol.png", // ไอคอน favicon
