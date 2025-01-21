@@ -14,6 +14,7 @@ export function middleware(req: NextRequest) {
     "/api", // API routes
     "/form",
     "/location",
+    "/uploads",
     "/_next", // Next.js internal routes
     "/favicon.ico", // ไอคอน favicon
     "/symbol.png", // ไอคอน favicon
