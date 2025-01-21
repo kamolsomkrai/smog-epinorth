@@ -7,6 +7,7 @@ export async function GET() {
     user: "root", // แทนที่ด้วย user ของคุณ
     password: "11111111", // แทนที่ด้วย password ของคุณ
     database: "accident", // แทนที่ด้วยชื่อ database ของคุณ
+    port: 3308,
   });
 
   try {
