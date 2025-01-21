@@ -19,6 +19,7 @@
     "@mui/x-data-grid": "^7.22.2",
     "@prisma/client": "^6.0.1",
     "@types/formidable": "^3.4.5",
+    "@types/leaflet": "^1.9.16",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.9",
     "chart.js": "^4.4.6",
@@ -41,7 +42,8 @@
     "xlsx": "^0.18.5",
     "zod": "^3.23.8",
     "uuid": "^11.0.5",
-    "mysql2": "^3.12.0"
+    "mysql2": "^3.12.0",
+    "leaflet": "^1.9.4"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",
