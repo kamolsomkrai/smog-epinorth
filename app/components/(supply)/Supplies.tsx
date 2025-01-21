@@ -57,7 +57,7 @@ const Supplies: React.FC = () => {
 
   useEffect(() => {
     fetchSupplies();
-  }, []);
+  }, [fetchSupplies]);
 
   const handleModalClose = (success = false) => {
     setModalState({ type: null, supply: null });
