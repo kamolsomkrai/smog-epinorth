@@ -7,7 +7,7 @@ import Navbar2 from "./Navbar2";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
-import { useRouter } from "next/router"; // สำหรับ Next.js
+import { usePathname } from "next/navigation"; // สำหรับ Next.js
 
 interface ClientProvidersProps {
   children: ReactNode;
@@ -30,8 +30,8 @@ const theme = createTheme({
 
 
 const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) => {
-  const router = useRouter(); // ใช้ useRouter เพื่อตรวจสอบ path ปัจจุบัน
-  const isFormOrLocationPage = router.pathname === "/form" || router.pathname === "/location";
+  const pathname = usePathname(); // ใช้ useRouter เพื่อตรวจสอบ path ปัจจุบัน
+  const isFormOrLocationPage = pathname === "/form" || pathname === "/location";
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
