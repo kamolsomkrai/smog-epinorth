@@ -6,6 +6,7 @@ import React, { createContext, useState, useEffect, ReactNode } from "react";
 interface AuthContextProps {
   user: any;
   setUser: React.Dispatch<React.SetStateAction<any>>;
+  getUser: () => Promise<void>; // เพิ่ม getUser ใน interface
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -13,30 +14,30 @@ export const AuthContext = createContext<AuthContextProps | undefined>(undefined
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(null);
 
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const res = await fetch("/api/getUser", {
-          method: "GET",
-          credentials: "include",
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
+  const getUser = async () => {
+    try {
+      const res = await fetch("/api/getUser", {
+        method: "GET",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+      } else {
         setUser(null);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      setUser(null);
+    }
+  };
 
+  useEffect(() => {
     getUser();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, getUser }}>
       {children}
     </AuthContext.Provider>
   );

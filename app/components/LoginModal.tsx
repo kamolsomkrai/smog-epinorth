@@ -68,8 +68,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
 
       if (res.ok) {
         const data = await res.json();
-        auth?.setUser(data.user);
-        handleClose();
+        auth?.setUser(data.user); // อัปเดต state ของผู้ใช้
+        await auth?.getUser(); // เรียก getUser เพื่อดึงข้อมูลผู้ใช้ล่าสุด
+        handleClose(); // ปิด modal
       } else {
         const data = await res.json();
         setError(data.message || "Login failed");
