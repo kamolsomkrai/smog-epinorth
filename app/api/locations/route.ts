@@ -4,9 +4,9 @@ import mysql from "mysql2/promise";
 export async function GET() {
   const connection = await mysql.createConnection({
     host: "172.18.1.43",
-    user: "root", // แทนที่ด้วย user ของคุณ
-    password: "11111111", // แทนที่ด้วย password ของคุณ
-    database: "accident", // แทนที่ด้วยชื่อ database ของคุณ
+    user: "root",
+    password: "11111111",
+    database: "accident",
     port: 3308,
   });
 
