@@ -131,6 +131,15 @@ const Summary: React.FC = () => {
               <ExportToExcelButton supplies={supplies} provinces={provinces} />
             </div>
 
+            {/* Data Table */}
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <DataTableComponent
+                supplies={supplies}
+                provinces={provinces}
+                calculateTotal={calculateTotal}
+              />
+            </div>
+
             {/* Bar Chart */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
               <BarChartComponent
@@ -146,15 +155,6 @@ const Summary: React.FC = () => {
                 title="สัดส่วนเวชภัณฑ์ทั้งหมด"
                 data={pieChartData}
                 colors={COLORS}
-              />
-            </div>
-
-            {/* Data Table */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <DataTableComponent
-                supplies={supplies}
-                provinces={provinces}
-                calculateTotal={calculateTotal}
               />
             </div>
           </div>
