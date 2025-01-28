@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { AuthContext } from "../context/AuthContext";
+import { useRouter } from "next/navigation"; // นำเข้า useRouter
 
 interface LoginModalProps {
   open: boolean;
@@ -38,21 +39,22 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const auth = useContext(AuthContext);
+  const router = useRouter(); // เริ่มต้น router
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    // Basic validation
+    // การตรวจสอบพื้นฐาน
     if (username.length < 3) {
       setLoading(false);
-      setError("Username must be at least 3 characters long");
+      setError("Username ต้องมีอย่างน้อย 3 ตัวอักษร");
       return;
     }
-    if (password.length < 4) {
+    if (password.length < 4) { // ปรับให้ตรงกับข้อความแสดงข้อผิดพลาด
       setLoading(false);
-      setError("Password must be at least 6 characters long");
+      setError("Password ต้องมีอย่างน้อย 4 ตัวอักษร");
       return;
     }
 
@@ -68,16 +70,16 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
 
       if (res.ok) {
         const data = await res.json();
-        auth?.setUser(data.user); // อัปเดต state ของผู้ใช้
-        await auth?.getUser(); // เรียก getUser เพื่อดึงข้อมูลผู้ใช้ล่าสุด
+        auth?.setUser(data.user); // อัพเดทสถานะผู้ใช้
         handleClose(); // ปิด modal
+        router.refresh() // นำทางไปยังหน้าแรก หรือหน้าอื่นที่ต้องการ
       } else {
         const data = await res.json();
-        setError(data.message || "Login failed");
+        setError(data.message || "การเข้าสู่ระบบล้มเหลว");
       }
     } catch (error) {
       console.error("Error logging in:", error);
-      setError("An unexpected error occurred");
+      setError("เกิดข้อผิดพลาดที่ไม่คาดคิด");
     } finally {
       setLoading(false);
     }
@@ -98,7 +100,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
           component="h2"
           className="mb-6 text-center font-bold text-blue-500"
         >
-          Login
+          เข้าสู่ระบบ
         </Typography>
         {error && (
           <Alert severity="error" className="mb-4">
@@ -133,7 +135,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
             {loading ? (
               <CircularProgress size={24} className="text-white" />
             ) : (
-              "Login"
+              "เข้าสู่ระบบ"
             )}
           </Button>
         </form>

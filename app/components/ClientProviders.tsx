@@ -1,3 +1,4 @@
+// app/components/ClientProviders.tsx
 "use client";
 
 import React, { ReactNode } from "react";
@@ -7,7 +8,7 @@ import Navbar2 from "./Navbar2";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
-import { usePathname } from "next/navigation"; // สำหรับ Next.js
+import { usePathname } from "next/navigation";
 
 interface ClientProvidersProps {
   children: ReactNode;
@@ -28,16 +29,14 @@ const theme = createTheme({
   },
 });
 
-
 const ClientProviders: React.FC<ClientProvidersProps> = ({ children }) => {
-  const pathname = usePathname(); // ใช้ useRouter เพื่อตรวจสอบ path ปัจจุบัน
+  const pathname = usePathname();
   const isFormOrLocationPage = pathname === "/form" || pathname === "/location";
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
         {isFormOrLocationPage ? <Navbar2 /> : <Navbar />}
-        {/* <Navbar /> */}
         {children}
         <ToastContainer
           position="top-right"

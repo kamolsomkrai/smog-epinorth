@@ -6,13 +6,15 @@ import React, { createContext, useState, useEffect, ReactNode } from "react";
 interface AuthContextProps {
   user: any;
   setUser: React.Dispatch<React.SetStateAction<any>>;
-  getUser: () => Promise<void>; // เพิ่ม getUser ใน interface
+  getUser: () => Promise<void>;
+  loading: boolean;
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const getUser = async () => {
     try {
@@ -29,6 +31,8 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error fetching user:", error);
       setUser(null);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -37,7 +41,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, getUser }}>
+    <AuthContext.Provider value={{ user, setUser, getUser, loading }}>
       {children}
     </AuthContext.Provider>
   );

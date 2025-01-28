@@ -1,4 +1,8 @@
 // app/page.tsx
+"use client"; // ทำให้คอมโพเนนต์เป็น Client Component
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Box, Container, Typography } from "@mui/material";
 import CardMenu from "./components/CardMenu";
 import {
@@ -7,7 +11,6 @@ import {
   Build as BuildIcon,
   Assessment as AssessmentIcon
 } from "@mui/icons-material";
-
 
 const menuItems1 = [
   {
@@ -36,6 +39,24 @@ const menuItems2 = [
 ];
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // ตรวจสอบว่าเพจนี้เคยรีเฟรชแล้วหรือยัง
+    const hasRefreshed = sessionStorage.getItem("homePageRefreshed");
+
+    if (!hasRefreshed) {
+      // ตั้งค่า flag เพื่อป้องกันการรีเฟรชซ้ำ
+      sessionStorage.setItem("homePageRefreshed", "true");
+
+      // รีเฟรชข้อมูลของเส้นทางปัจจุบัน
+      router.refresh();
+    } else {
+      // ลบ flag เพื่อให้สามารถรีเฟรชได้ในการนำทางครั้งถัดไป
+      sessionStorage.removeItem("homePageRefreshed");
+    }
+  }, [router]);
+
   return (
     <Container>
       <div>
@@ -43,14 +64,12 @@ export default function Home() {
           <span className="text-blue-800">ข้อมูลเวชภัณฑ์ เขตสุขภาพที่ 1</span>
         </Typography>
         <Box><CardMenu menuItems={menuItems1} /></Box>
-
       </div>
       <div>
         <Typography variant="h5" component="div" sx={{ mt: 2, textAlign: 'center' }}>
           <span className="text-blue-800">ข้อมูลมาตรการ เขตสุขภาพที่ 1</span>
         </Typography>
         <Box><CardMenu menuItems={menuItems2} /></Box>
-
       </div>
     </Container>
   );

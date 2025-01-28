@@ -18,13 +18,15 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { Menu as MenuIcon, AccountCircle } from "@mui/icons-material";
 import SidebarMenu from "./SidebarMenu";
 import Link from "next/link";
-import Image from "next/image"; // นำเข้า Image จาก next/image
+import Image from "next/image";
+import { useRouter } from "next/navigation"; // นำเข้า useRouter
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const auth = useContext(AuthContext);
+  const router = useRouter();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -46,6 +48,7 @@ const Navbar = () => {
       if (res.ok) {
         auth?.setUser(null);
         handleCloseMenu();
+        router.push("/"); // นำทางไปยังหน้าแรกหลังจากออกจากระบบ
       } else {
         alert("Logout failed");
       }

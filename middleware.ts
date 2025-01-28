@@ -1,48 +1,71 @@
 // middleware.ts
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import jwt from "jsonwebtoken";
 
-export function middleware(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
-  const url = req.nextUrl.clone();
+// กำหนดเส้นทางที่ต้องการยกเว้น
+const excludedPaths = [
+  "/",
+  "/login",
+  "/summary",
+  "/summaryreportsmog",
+  "/api/*",
+  "/public/*",
+  "/_next/*",
+  "/favicon.ico",
+  "/robots.txt",
+  // เพิ่มเส้นทางอื่น ๆ ที่คุณต้องการยกเว้น
+];
 
-  // รายการเส้นทางที่ไม่ต้องตรวจสอบการเข้าสู่ระบบ
-  const excludedPaths = [
-    "/", // หน้า Main
-    "/summary", // หน้า Summary
-    "/login", // หน้า Login
-    "/api", // API routes
-    "/form",
-    "/location",
-    "/uploads",
-    "/_next", // Next.js internal routes
-    "/favicon.ico", // ไอคอน favicon
-    "/symbol.png", // ไอคอน favicon
-  ];
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  // ฟังก์ชันตรวจสอบว่าเส้นทางนั้นถูกยกเว้นหรือไม่
   const isExcluded = excludedPaths.some((path) => {
-    if (path === "/") {
-      return url.pathname === "/";
+    if (path.endsWith("/*")) {
+      const basePath = path.replace("/*", "");
+      return pathname.startsWith(basePath);
     }
-    return url.pathname.startsWith(path);
+    return pathname === path;
   });
 
-  // หากเส้นทางถูกยกเว้น ให้ผ่านไปยัง Next.js ได้ทันที
   if (isExcluded) {
     return NextResponse.next();
   }
 
-  // หากไม่มี Token ให้ Redirect ไปยังหน้า Login
+  const token = request.cookies.get("token")?.value;
+
   if (!token) {
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(new URL("/login", request.url));
+    console.log("ไม่ได้ login");
   }
 
-  // หากมี Token ให้ผ่านไปยัง Next.js ได้ทันที
-  return NextResponse.next();
+  try {
+    // แค่ decode token โดยไม่ verify ลายเซ็น
+    const decoded = jwt.decode(token);
+
+    if (!decoded) {
+      return NextResponse.redirect(new URL("/login", request.url));
+      console.log("ไม่ได้ login");
+    }
+
+    // ตรวจสอบเวลา expired หากโทเค็นมี field exp
+    if (typeof decoded === "object" && "exp" in decoded) {
+      const exp = (decoded as any).exp;
+      if (Date.now() >= exp * 1000) {
+        return NextResponse.redirect(new URL("/login", request.url));
+        console.log("ไม่ได้ login");
+      }
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Middleware token verification error:", error);
+    return NextResponse.redirect(new URL("/login", request.url));
+    console.log("ไม่ได้ login");
+  }
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|favicon.ico).*)"],
+  matcher: "/:path*",
 };
