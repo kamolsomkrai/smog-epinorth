@@ -12,6 +12,7 @@ import {
   FaLocationArrow,
   FaCloudUploadAlt,
 } from 'react-icons/fa';
+import { toast } from 'react-toastify'; // เพิ่มการนำเข้า toast
 
 const ImageUploadForm = () => {
   const [files, setFiles] = useState<FileList | null>(null);
@@ -87,7 +88,27 @@ const ImageUploadForm = () => {
     }
   };
 
-  // ส่วนของการ submit ยังคงเดิม
+  // ฟังก์ชันสำหรับรีเซ็ตฟอร์ม
+  const resetForm = () => {
+    setFiles(null);
+    setPreviews([]);
+    setIsDragging(false);
+    setLocation(null);
+    setError(null);
+    setImageUrls([]);
+    setGender(0);
+    setGrade('');
+    setClassroom('');
+    setAge('');
+    setHasAccident('');
+    setAccidentType('');
+    setAccidentLocation('');
+    setAccidentDate('');
+    setHospitalTreatment('');
+    setRiskArea('');
+  };
+
+  // ส่วนของการ submit ยังคงเดิม พร้อมเพิ่มการรีเซ็ตฟอร์มและแสดง toast
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -129,12 +150,36 @@ const ImageUploadForm = () => {
         (file) => `/uploads/${file.name}`
       );
       setImageUrls(uploadedUrls);
+      console.log(imageUrls)
+      // รีเซ็ตฟอร์ม
+      resetForm();
+
+      // แสดงการแจ้งเตือนสำเร็จ
+      toast.success('บันทึกข้อมูลสำเร็จ!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     } catch (err) {
       console.error('Upload failed:', err);
       setError('Upload failed. Please try again.');
+      toast.error('การบันทึกข้อมูลล้มเหลว กรุณาลองใหม่อีกครั้ง.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
@@ -428,7 +473,7 @@ const ImageUploadForm = () => {
         </button>
 
         {/* แสดงภาพที่อัพโหลดแล้ว */}
-        {imageUrls.length > 0 && (
+        {/* {imageUrls.length > 0 && (
           <div className="mt-6">
             <h3 className="text-xl font-semibold mb-4">Uploaded Images:</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -449,7 +494,7 @@ const ImageUploadForm = () => {
               ))}
             </div>
           </div>
-        )}
+        )} */}
       </form>
     </div>
   );
