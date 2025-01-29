@@ -10,6 +10,8 @@ const excludedPaths = [
   "/login",
   "/summary",
   "/summaryreportsmog",
+  "/form",
+  "/location",
   "/api/*",
   "/public/*",
   "/_next/*",
