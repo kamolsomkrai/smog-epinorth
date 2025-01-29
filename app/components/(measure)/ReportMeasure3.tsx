@@ -234,6 +234,91 @@ const ReportMeasure3: React.FC = () => {
                   colors={COLORS}
                 />
               </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="mt-6">
+                  <DataTable
+                    title="บริการคลินิกต่าง"
+                    headers={[
+                      'จังหวัด',
+                      'คลินิคมลพิษ',
+                      'คลินิคมลพิษออนไลน์'
+                    ]}
+                    data={filteredData.map(item => ({
+                      'จังหวัด': item.province,
+                      'คลินิคมลพิษ': item.pollution_clinic_open ?? 0,
+                      'คลินิคมลพิษออนไลน์': item.online_clinic_open ?? 0,
+                    }))}
+                    footer={{
+                      'จังหวัด': 'เขตสุขภาพที่ 1',
+                      'คลินิคมลพิษ': calculateTotal('pollution_clinic_open'),
+                      'คลินิคมลพิษออนไลน์': calculateTotal('online_clinic_open'),
+                    }}
+                  />
+                </div>
+                <div className="mt-6">
+                  <DataTable
+                    title="บริการคลินิกต่าง"
+                    headers={[
+                      'จังหวัด',
+                      'คลินิคมลพิษ',
+                      'คลินิคมลพิษออนไลน์'
+                    ]}
+                    data={filteredData.map(item => ({
+                      'จังหวัด': item.province,
+                      'คลินิคมลพิษ': item.pollution_clinic_service ?? 0,
+                      'คลินิคมลพิษออนไลน์': item.online_clinic_service ?? 0,
+                    }))}
+                    footer={{
+                      'จังหวัด': 'เขตสุขภาพที่ 1',
+                      'คลินิคมลพิษ': calculateTotal('pollution_clinic_service'),
+                      'คลินิคมลพิษออนไลน์': calculateTotal('online_clinic_service'),
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="mt-6">
+                  <DataTable
+                    title="รายละเอียดหน้ากากอนามัย"
+                    headers={[
+                      'จังหวัด',
+                      'หน่วยงาน',
+                      'ศูนย์เด็กเล็ก'
+                    ]}
+                    data={filteredData.map(item => ({
+                      'จังหวัด': item.province,
+                      'หน่วยงาน': item.gov_dust_free_open ?? 0,
+                      'ศูนย์เด็กเล็ก': item.nursery_dust_free_open ?? 0,
+                    }))}
+                    footer={{
+                      'จังหวัด': 'เขตสุขภาพที่ 1',
+                      'หน่วยงาน': calculateTotal('gov_dust_free_open'),
+                      'ศูนย์เด็กเล็ก': calculateTotal('nursery_dust_free_open'),
+                    }}
+                  />
+                </div>
+
+                <div className="mt-6">
+                  <DataTable
+                    title="รายละเอียดหน้ากากอนามัย"
+                    headers={[
+                      'จังหวัด',
+                      'หน่วยงาน',
+                      'ศูนย์เด็กเล็ก'
+                    ]}
+                    data={filteredData.map(item => ({
+                      'จังหวัด': item.province,
+                      'หน่วยงาน': item.gov_dust_free_service ?? 0,
+                      'ศูนย์เด็กเล็ก': item.nursery_dust_free_service ?? 0,
+                    }))}
+                    footer={{
+                      'จังหวัด': 'เขตสุขภาพที่ 1',
+                      'หน่วยงาน': calculateTotal('gov_dust_free_service'),
+                      'ศูนย์เด็กเล็ก': calculateTotal('nursery_dust_free_service'),
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
             {/* 4.3 ทีมแพทย์ */}
@@ -398,7 +483,7 @@ const ReportMeasure3: React.FC = () => {
           </>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 
