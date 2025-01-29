@@ -15,13 +15,14 @@ const pool = mysql.createPool({
 
 export async function GET() {
   try {
-    // ใช้ pool เพื่อดึงการเชื่อมต่อและรัน query
     const [rows] = await pool.execute(
       "SELECT latitude AS lat, longitude AS lng, image_url AS imageUrl, hospital_treatment AS hospitalTreatment FROM images"
     );
     return NextResponse.json(rows, {
       headers: {
-        "Cache-Control": "no-store", // ปิดการแคช
+        "Cache-Control": "no-store",
+        "Access-Control-Allow-Origin": "*", // ปรับให้เป็นโดเมนของคุณแทน "*"
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
       },
     });
   } catch (error) {
@@ -31,7 +32,9 @@ export async function GET() {
       {
         status: 500,
         headers: {
-          "Cache-Control": "no-store", // ปิดการแคชในกรณีเกิดข้อผิดพลาด
+          "Cache-Control": "no-store",
+          "Access-Control-Allow-Origin": "*", // ปรับให้เป็นโดเมนของคุณแทน "*"
+          "Access-Control-Allow-Methods": "GET, OPTIONS",
         },
       }
     );
