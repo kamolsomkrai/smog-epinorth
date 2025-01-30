@@ -222,7 +222,7 @@ const ReportMeasure3: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* 4.2.1 เปิดคลินิกต่าง ๆ */}
                 <PieChartSection
-                  title="เปิดคลินิกต่าง ๆ"
+                  title="จำนวนคลินิกต่าง ๆ"
                   data={pieDataClinicsOpen}
                   colors={COLORS}
                 />
@@ -236,8 +236,10 @@ const ReportMeasure3: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="mt-6">
+
                   <DataTable
-                    title="บริการคลินิกต่าง"
+                    titlespan="จำนวนคลินิก"
+                    title="จำนวนคลินิก"
                     headers={[
                       'จังหวัด',
                       'คลินิคมลพิษ',
@@ -257,7 +259,8 @@ const ReportMeasure3: React.FC = () => {
                 </div>
                 <div className="mt-6">
                   <DataTable
-                    title="บริการคลินิกต่าง"
+                    titlespan="จำนวนการบริการคลินิก"
+                    title="จำนวนการบริการคลินิก"
                     headers={[
                       'จังหวัด',
                       'คลินิคมลพิษ',
@@ -279,7 +282,8 @@ const ReportMeasure3: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="mt-6">
                   <DataTable
-                    title="รายละเอียดหน้ากากอนามัย"
+                    titlespan="จำนวนห้องปลอดฝุ่น"
+                    title="จำนวนห้องปลอดฝุ่น"
                     headers={[
                       'จังหวัด',
                       'หน่วยงาน',
@@ -300,7 +304,8 @@ const ReportMeasure3: React.FC = () => {
 
                 <div className="mt-6">
                   <DataTable
-                    title="รายละเอียดหน้ากากอนามัย"
+                    titlespan="จำนวนการบริการห้องปลอดฝุ่น"
+                    title="จำนวนการบริการห้องปลอดฝุ่น"
                     headers={[
                       'จังหวัด',
                       'หน่วยงาน',
