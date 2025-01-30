@@ -6,13 +6,14 @@ import { Button } from "@mui/material";
 import { Download as DownloadIcon } from '@mui/icons-material'; // นำเข้าไอคอน Download
 
 interface DataTableProps {
+  titlespan?: string;
   title: string;
   headers: string[];
   data: { [key: string]: any }[];
   footer?: { [key: string]: any };
 }
 
-const DataTable: React.FC<DataTableProps> = ({ title, headers, data, footer }) => {
+const DataTable: React.FC<DataTableProps> = ({ titlespan, title, headers, data, footer }) => {
 
   const exportToExcel = () => {
     // เตรียมข้อมูลในรูปแบบที่ต้องการสำหรับ Excel
@@ -64,6 +65,8 @@ const DataTable: React.FC<DataTableProps> = ({ title, headers, data, footer }) =
           Export
         </Button>
       </div>
+      {titlespan && <p className='text-center'>{titlespan}</p>}
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border">
           <thead className="bg-green-600 text-white">
@@ -105,7 +108,7 @@ const DataTable: React.FC<DataTableProps> = ({ title, headers, data, footer }) =
           </tbody>
         </table>
       </div>
-    </div>
+    </div >
   );
 };
 

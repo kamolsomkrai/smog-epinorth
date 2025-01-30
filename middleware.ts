@@ -14,6 +14,7 @@ const excludedPaths = [
   "/location",
   "/api/*",
   "/public/*",
+  "/uploads/*",
   "/_next/*",
   "/favicon.ico",
   "/robots.txt",
