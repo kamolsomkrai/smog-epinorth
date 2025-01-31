@@ -134,21 +134,21 @@ const ReportMeasure4: React.FC = () => {
                 'วันเปิด EOC',
                 'วันปิด EOC',
                 'จำนวนวันที่เปิด EOC',
-                'การจับปรับ (บาท)'
+                'การจับปรับ (ครั้ง)'
               ]}
               data={filteredData.map(item => ({
                 'จังหวัด': item.province,
                 'วันเปิด EOC': formatDate(item.eoc_open_date),
                 'วันปิด EOC': item.eoc_close_date ? formatDate(item.eoc_close_date) : 'ยังไม่ปิด',
                 'จำนวนวันที่เปิด EOC': calculateDaysOpen(item.eoc_open_date, item.eoc_close_date),
-                'การจับปรับ (บาท)': new Intl.NumberFormat().format(item.law_enforcement_fine),
+                'การจับปรับ (ครั้ง)': new Intl.NumberFormat().format(item.law_enforcement_fine),
               }))}
               footer={{
                 'จังหวัด': 'เขตสุขภาพที่ 1',
                 'วันเปิด EOC': '',
                 'วันปิด EOC': '',
                 'จำนวนวันที่เปิด EOC': aggregateData.totalDaysOpen,
-                'การจับปรับ (บาท)': new Intl.NumberFormat().format(aggregateData.totalFine),
+                'การจับปรับ (ครั้ง)': new Intl.NumberFormat().format(aggregateData.totalFine),
               }}
             />
             {/* Bar Chart: จำนวนวันที่เปิด EOC ต่อจังหวัด */}
