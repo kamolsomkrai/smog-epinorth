@@ -91,8 +91,9 @@ const ActivityForm: React.FC = () => {
 
     // เพิ่มการตรวจสอบเพิ่มเติมตาม measureType หากจำเป็น
     if (measureType === 1) {
-      if (!formData.measure1_1) newErrors.push('Measure1_1 เป็นข้อมูลที่จำเป็น.');
-      if (!formData.measure1_2) newErrors.push('Measure1_2 เป็นข้อมูลที่จำเป็น.');
+      if (!formData.measure1_1 && !formData.measure1_2) {
+        newErrors.push('กรุณากรอกอย่างน้อยหนึ่งข้อมูลในมาตรการที่ 1.');
+      }
     }
     // เช่นเดียวกันสำหรับ measureType อื่น ๆ...
 
