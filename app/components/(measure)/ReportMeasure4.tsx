@@ -126,21 +126,6 @@ const ReportMeasure4: React.FC = () => {
           <><Loading /></>
         ) : (
           <>
-            {/* Bar Chart: จำนวนวันที่เปิด EOC ต่อจังหวัด */}
-            <BarChartSection
-              title="จำนวนวันที่เปิด EOC ต่อจังหวัด"
-              data={barChartData}
-              keys={['daysOpen']}
-              colors={['#8884d8']}
-            />
-
-            {/* Pie Chart: สัดส่วนการจับปรับ */}
-            <PieChartSection
-              title="สัดส่วนการจับปรับ"
-              data={pieChartData}
-              colors={COLORS}
-            />
-
             {/* ตารางข้อมูล */}
             <DataTable
               title="จำนวนวันที่เปิดEOCต่อจังหวัด"
@@ -166,6 +151,22 @@ const ReportMeasure4: React.FC = () => {
                 'การจับปรับ (บาท)': new Intl.NumberFormat().format(aggregateData.totalFine),
               }}
             />
+            {/* Bar Chart: จำนวนวันที่เปิด EOC ต่อจังหวัด */}
+            <BarChartSection
+              title="จำนวนวันที่เปิด EOC ต่อจังหวัด"
+              data={barChartData}
+              keys={['daysOpen']}
+              colors={['#8884d8']}
+            />
+
+            {/* Pie Chart: สัดส่วนการจับปรับ */}
+            <PieChartSection
+              title="สัดส่วนการจับปรับ"
+              data={pieChartData}
+              colors={COLORS}
+            />
+
+
           </>
         )}
       </div>
