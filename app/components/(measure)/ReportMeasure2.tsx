@@ -44,7 +44,7 @@ const ReportMeasure2: React.FC = () => {
         }
 
         const fetchedData: Measure2Data[] = await response.json();
-
+        console.log(fetchedData)
         // ตรวจสอบข้อมูลก่อนบันทึกลงใน localStorage
         if (Array.isArray(fetchedData) && fetchedData.length > 0) {
           setData(fetchedData);
@@ -96,8 +96,8 @@ const ReportMeasure2: React.FC = () => {
 
   // ข้อมูลสำหรับ Pie Chart ในส่วน 4.1
   const pieData2_4_staff = useMemo(() => [
-    { name: 'ตรวจสุขภาพโดยเจ้าหน้าที่', value: calculateTotal('health_check_staff') },
-    { name: 'ตรวจสุขภาพโดยอาสาสมัคร', value: calculateTotal('health_check_volunteer') },
+    { name: 'ตรวจสุขภาพเจ้าหน้าที่', value: calculateTotal('health_check_staff') },
+    { name: 'ตรวจสุขภาพอาสาสมัคร', value: calculateTotal('health_check_volunteer') },
   ], [calculateTotal]);
 
   if (error) {
@@ -150,21 +150,21 @@ const ReportMeasure2: React.FC = () => {
               colors={COLORS}
             />
           </div>
-
+          {filteredData.map(items => (items.risk_health_monitoring_1_1 + " "))}
           {/* ตารางข้อมูลสำหรับ 2.1 */}
           <div className="mt-6 overflow-x-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* ตารางสำหรับ 2.1.1 */}
               <DataTable
                 title="จำนวนโครงการสื่อสารและส่งเสริมต่อจังหวัด"
-                headers={['จังหวัด', 'จัดทำสื่อInfoประชาสัมพันธ์(ชิ้น)']}
-                data={filteredData.map(item => ({
-                  'จังหวัด': item.province,
-                  'จัดทาสื่อ Info ประชาสัมพันธ์ (ชิ้น)': item.risk_health_monitoring_1_1 ?? 0,
+                headers={['จังหวัด', 'จัดทำสื่อ Info ประชาสัมพันธ์ (ชิ้น)']}
+                data={filteredData.map(items => ({
+                  'จังหวัด': items.province,
+                  'จัดทำสื่อ Info ประชาสัมพันธ์ (ชิ้น)': items.risk_health_monitoring_1_1 ?? 0,
                 }))}
                 footer={{
                   'จังหวัด': 'เขตสุขภาพที่ 1',
-                  'จัดทาสื่อ Info ประชาสัมพันธ์ (ชิ้น)': calculateTotal('risk_health_monitoring_1_1'),
+                  'จัดทำสื่อ Info ประชาสัมพันธ์ (ชิ้น)': calculateTotal('risk_health_monitoring_1_1'),
                 }}
               />
 
@@ -174,11 +174,11 @@ const ReportMeasure2: React.FC = () => {
                 headers={['จังหวัด', 'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ(ครั้ง)']}
                 data={filteredData.map(item => ({
                   'จังหวัด': item.province,
-                  'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ (ครั้ง)': item.risk_health_monitoring_1_2 ?? 0,
+                  'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ(ครั้ง)': item.risk_health_monitoring_1_2 ?? 0,
                 }))}
                 footer={{
                   'จังหวัด': 'เขตสุขภาพที่ 1',
-                  'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ (ครั้ง)': calculateTotal('risk_health_monitoring_1_2'),
+                  'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ(ครั้ง)': calculateTotal('risk_health_monitoring_1_2'),
                 }}
               />
             </div>
@@ -223,7 +223,7 @@ const ReportMeasure2: React.FC = () => {
 
         {/* 4. การตรวจสุขภาพ */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800">2.3 การตรวจสุขภาพ</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800">2.3 การตรวจสุขภาพเจ้าหน้าที่/อาสาสมัครดับไฟป่า</h2>
 
           {/* Pie Charts สำหรับ 4.1 */}
 
@@ -239,16 +239,16 @@ const ReportMeasure2: React.FC = () => {
           <div className='mt-6'>
             <DataTable
               title=""
-              headers={['จังหวัด', 'ตรวจสุขภาพโดยเจ้าหน้าที่ (คน)', 'ตรวจสุขภาพโดยอาสาสมัคร (คน)']}
+              headers={['จังหวัด', 'ตรวจสุขภาพเจ้าหน้าที่ (คน)', 'ตรวจสุขภาพอาสาสมัคร (คน)']}
               data={filteredData.map(item => ({
                 'จังหวัด': item.province,
-                'ตรวจสุขภาพโดยเจ้าหน้าที่ (คน)': item.health_check_staff ?? 0,
-                'ตรวจสุขภาพโดยอาสาสมัคร (คน)': item.health_check_volunteer ?? 0,
+                'ตรวจสุขภาพเจ้าหน้าที่ (คน)': item.health_check_staff ?? 0,
+                'ตรวจสุขภาพอาสาสมัคร (คน)': item.health_check_volunteer ?? 0,
               }))}
               footer={{
                 'จังหวัด': 'เขตสุขภาพที่ 1',
-                'ตรวจสุขภาพโดยเจ้าหน้าที่ (คน)': calculateTotal('health_check_staff'),
-                'ตรวจสุขภาพโดยอาสาสมัคร (คน)': calculateTotal('health_check_volunteer'),
+                'ตรวจสุขภาพเจ้าหน้าที่ (คน)': calculateTotal('health_check_staff'),
+                'ตรวจสุขภาพอาสาสมัคร (คน)': calculateTotal('health_check_volunteer'),
               }}
             />
           </div>

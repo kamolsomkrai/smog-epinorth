@@ -1,9 +1,8 @@
-// app/components/ActivityForm.tsx
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FormData } from '../../interfaces/measure'; // ตรวจสอบเส้นทางให้ถูกต้อง
-import Measure1 from './Measure1';
+// import Measure1 from './Measure1';
 import Measure2 from './Measure2';
 import Measure3 from './Measure3';
 import Measure4 from './Measure4';
@@ -20,6 +19,7 @@ const ActivityForm: React.FC = () => {
   const [measureType, setMeasureType] = useState<number>(0);
   const [formData, setFormData] = useState<FormData>({
     activityDate: '',
+    activity_id: 0,
     measureType: 0,
     // Measures 1
     measure1_1: '',
@@ -71,6 +71,52 @@ const ActivityForm: React.FC = () => {
     law_enforcement_fine: 0,
   });
 
+  // ฟังก์ชันสำหรับดึงข้อมูลจาก API
+  const fetchMeasureData = async (measureType: number) => {
+    try {
+      let apiUrl = '';
+      switch (measureType) {
+        case 2:
+          apiUrl = '/api/getmeasure2';
+          break;
+        case 3:
+          apiUrl = '/api/getmeasure3';
+          break;
+        case 4:
+          apiUrl = '/api/getmeasure4';
+          break;
+        default:
+          return;
+      }
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch measure data for type ${measureType}`);
+      }
+
+      const data = await response.json();
+      const measureData = data[0];
+      setFormData(prev => ({ ...prev, ...measureData })); // อัปเดต formData ด้วยข้อมูลที่ได้จาก API
+    } catch (error) {
+      console.error('Error fetching measure data:', error);
+      toast.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
+    }
+  };
+
+  // useEffect เพื่อติดตามการเปลี่ยนแปลงของ measureType
+  useEffect(() => {
+    if (measureType >= 2 && measureType <= 4) {
+      fetchMeasureData(measureType);
+    }
+  }, [measureType]);
+  useEffect(() => {
+    console.log('formData updated:', formData); // ตรวจสอบการอัปเดต formData
+  }, [formData]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -89,16 +135,14 @@ const ActivityForm: React.FC = () => {
       newErrors.push('กรุณาเลือกประเภทมาตรการ.');
     }
 
-    // เพิ่มการตรวจสอบเพิ่มเติมตาม measureType หากจำเป็น
     if (measureType === 1) {
       if (!formData.measure1_1 && !formData.measure1_2) {
         newErrors.push('กรุณากรอกอย่างน้อยหนึ่งข้อมูลในมาตรการที่ 1.');
       }
     }
-    // เช่นเดียวกันสำหรับ measureType อื่น ๆ...
 
     if (newErrors.length > 0) {
-      newErrors.forEach(error => toast.error(error)); // แสดงข้อผิดพลาดด้วย toast
+      newErrors.forEach(error => toast.error(error));
       return false;
     }
 
@@ -113,7 +157,6 @@ const ActivityForm: React.FC = () => {
     try {
       toast.info('กำลังบันทึกข้อมูล...', { autoClose: 2000 });
 
-      // ส่งข้อมูล Activity
       const activityResponse = await fetch('/api/activity', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -134,7 +177,6 @@ const ActivityForm: React.FC = () => {
       console.log('Activity submitted successfully!', activityId);
       toast.success('กิจกรรมถูกบันทึกสำเร็จ!');
 
-      // เตรียมข้อมูล Measures
       const measurePayload: Record<string, any> = { activity_id: activityId };
       switch (measureType) {
         case 1:
@@ -142,6 +184,7 @@ const ActivityForm: React.FC = () => {
           measurePayload.sub_measure_1_2 = formData.measure1_2;
           break;
         case 2:
+          measurePayload.activity_id = formData.activity_id;
           measurePayload.risk_health_monitoring_1_1 = formData.risk_health_monitoring_1_1;
           measurePayload.risk_health_monitoring_1_2 = formData.risk_health_monitoring_1_2;
           measurePayload.child = formData.child;
@@ -155,6 +198,7 @@ const ActivityForm: React.FC = () => {
           measurePayload.health_check_volunteer = formData.health_check_volunteer;
           break;
         case 3:
+          measurePayload.activity_id = formData.activity_id;
           measurePayload.pollution_clinic_open = formData.pollution_clinic_open;
           measurePayload.pollution_clinic_service = formData.pollution_clinic_service;
           measurePayload.online_clinic_open = formData.online_clinic_open;
@@ -185,6 +229,7 @@ const ActivityForm: React.FC = () => {
           measurePayload.ambulance = formData.ambulance;
           break;
         case 4:
+          measurePayload.activity_id = formData.activity_id;
           measurePayload.eoc_open_date = formData.eoc_open_date;
           measurePayload.eoc_close_date = formData.eoc_close_date;
           measurePayload.law_enforcement_fine = formData.law_enforcement_fine;
@@ -194,7 +239,6 @@ const ActivityForm: React.FC = () => {
           return;
       }
 
-      // ส่งข้อมูล Measures
       const measureResponse = await fetch(measureApiMap[measureType], {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -211,10 +255,10 @@ const ActivityForm: React.FC = () => {
       console.log(`Measure${measureType} submitted successfully!`);
       toast.success(`มาตรการที่ ${measureType} ถูกบันทึกสำเร็จ!`);
 
-      // รีเซ็ตฟอร์ม
       setMeasureType(0);
       setFormData({
         activityDate: '',
+        activity_id: 0,
         measureType: 0,
         // Measures 1
         measure1_1: '',
@@ -316,7 +360,7 @@ const ActivityForm: React.FC = () => {
               required
             >
               <option value={0}>เลือกมาตรการ</option>
-              <option value={1}>มาตรการที่ 1 ส่งเสริมการลดมลพิษ/สื่อสารสร้างความรอบรู้</option>
+              {/* <option value={1}>มาตรการที่ 1 ส่งเสริมการลดมลพิษ/สื่อสารสร้างความรอบรู้</option> */}
               <option value={2}>มาตรการที่ 2 ลดและป้องกันผลกระทบต่อสุขภาพ</option>
               <option value={3}>มาตรการที่ 3 จัดบริการด้านการแพทย์และสาธารณสุข</option>
               <option value={4}>มาตรการที่ 4 เพิ่มประสิทธิภาพการบริหารจัดการ</option>
@@ -324,9 +368,9 @@ const ActivityForm: React.FC = () => {
           </div>
 
           {/* Conditional Measure Components */}
-          {measureType === 1 && (
+          {/* {measureType === 1 && (
             <Measure1 formData={formData} handleChange={handleChange} />
-          )}
+          )} */}
           {measureType === 2 && (
             <Measure2 formData={formData} handleChange={handleChange} />
           )}

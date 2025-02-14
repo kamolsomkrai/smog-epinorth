@@ -148,6 +148,7 @@ export interface Measure4Data {
 export interface ActivityData {
   // hospcode: string;
   activityDate: string;
+  activity_id: number;
   // provcode: string;
   measureType: number; // '1', '2', '3', '4'
 }
