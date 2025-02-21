@@ -16,7 +16,6 @@ const measureApiMap: Record<number, string> = {
 };
 
 const ActivityForm: React.FC = () => {
-  const [activity, setActivity] = useState<number>(0);
   const [measureType, setMeasureType] = useState<number>(0);
   const [formData, setFormData] = useState<FormData>({
     activityDate: '',
@@ -175,7 +174,7 @@ const ActivityForm: React.FC = () => {
       }
 
       const { id: activityId } = await activityResponse.json();
-      setActivity(activityId.id)
+      setFormData(prev => ({ ...prev, activity_id: activityId }));
       console.log('Activity submitted successfully!', activityId);
       toast.success('กิจกรรมถูกบันทึกสำเร็จ!');
 
@@ -186,7 +185,7 @@ const ActivityForm: React.FC = () => {
           measurePayload.sub_measure_1_2 = formData.measure1_2;
           break;
         case 2:
-          measurePayload.activity_id = activity;
+          measurePayload.activity_id = formData.activity_id;
           measurePayload.risk_health_monitoring_1_1 = formData.risk_health_monitoring_1_1;
           measurePayload.risk_health_monitoring_1_2 = formData.risk_health_monitoring_1_2;
           measurePayload.child = formData.child;
@@ -200,7 +199,7 @@ const ActivityForm: React.FC = () => {
           measurePayload.health_check_volunteer = formData.health_check_volunteer;
           break;
         case 3:
-          measurePayload.activity_id = activity;
+          measurePayload.activity_id = formData.activity_id;
           measurePayload.pollution_clinic_open = formData.pollution_clinic_open;
           measurePayload.pollution_clinic_service = formData.pollution_clinic_service;
           measurePayload.online_clinic_open = formData.online_clinic_open;
@@ -231,7 +230,7 @@ const ActivityForm: React.FC = () => {
           measurePayload.ambulance = formData.ambulance;
           break;
         case 4:
-          measurePayload.activity_id = activity;
+          measurePayload.activity_id = formData.activity_id;
           measurePayload.eoc_open_date = formData.eoc_open_date;
           measurePayload.eoc_close_date = formData.eoc_close_date;
           measurePayload.law_enforcement_fine = formData.law_enforcement_fine;
