@@ -1,12 +1,13 @@
+// components/ActivityForm.tsx
 "use client";
-
 import React, { useState } from 'react';
-import { FormData } from '../../interfaces/measure'; // ตรวจสอบเส้นทางให้ถูกต้อง
-// import Measure1 from './Measure1';
+import { toast } from 'react-toastify';
+import Measure1 from './Measure1';
 import Measure2 from './Measure2';
 import Measure3 from './Measure3';
 import Measure4 from './Measure4';
-import { toast } from 'react-toastify'; // นำเข้า toast
+import MeasureSelect from '../(global)/MeasureSelect';
+import { FormData } from '../../interfaces/measure';
 
 const measureApiMap: Record<number, string> = {
   1: '/api/measure1',
@@ -16,6 +17,7 @@ const measureApiMap: Record<number, string> = {
 };
 
 const ActivityForm: React.FC = () => {
+  const [files, setFiles] = useState<File[]>([]);
   const [measureType, setMeasureType] = useState<number>(0);
   const [formData, setFormData] = useState<FormData>({
     activityDate: '',
@@ -71,92 +73,51 @@ const ActivityForm: React.FC = () => {
     law_enforcement_fine: 0,
   });
 
-  // ฟังก์ชันสำหรับดึงข้อมูลจาก API
-  // const fetchMeasureData = async (measureType: number) => {
-  //   try {
-  //     let apiUrl = '';
-  //     switch (measureType) {
-  //       case 2:
-  //         apiUrl = '/api/getmeasure2';
-  //         break;
-  //       case 3:
-  //         apiUrl = '/api/getmeasure3';
-  //         break;
-  //       case 4:
-  //         apiUrl = '/api/getmeasure4';
-  //         break;
-  //       default:
-  //         return;
-  //     }
-
-  //     const response = await fetch(apiUrl, {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error(`Failed to fetch measure data for type ${measureType}`);
-  //     }
-
-  //     const data = await response.json();
-  //     const measureData = data[0];
-  //     setFormData(prev => ({ ...prev, ...measureData })); // อัปเดต formData ด้วยข้อมูลที่ได้จาก API
-  //   } catch (error) {
-  //     console.error('Error fetching measure data:', error);
-  //     toast.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
-  //   }
-  // };
-
-  // useEffect เพื่อติดตามการเปลี่ยนแปลงของ measureType
-  // useEffect(() => {
-  //   if (measureType >= 2 && measureType <= 4) {
-  //     fetchMeasureData(measureType);
-  //   }
-  // }, [measureType]);
-  // useEffect(() => {
-  //   console.log('formData updated:', formData); // ตรวจสอบการอัปเดต formData
-  // }, [formData]);
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
     const parsedValue = type === 'number' ? Number(value) : value;
-    setFormData(prev => ({ ...prev, [name]: parsedValue }));
+    setFormData((prev) => ({ ...prev, [name]: parsedValue }));
+  };
+
+  const handleFilesChange = (uploadedFiles: File[]) => {
+    setFiles(uploadedFiles);
+    console.log(files)
+  };
+
+  const handleMeasureSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = Number(e.target.value);
+    setMeasureType(selectedValue);
+    setFormData((prev) => ({ ...prev, measureType: selectedValue }));
   };
 
   const validateForm = (): boolean => {
     const newErrors: string[] = [];
-
     if (!formData.activityDate) {
       newErrors.push('กรุณาเลือกวันที่ดำเนินกิจกรรม.');
     }
     if (formData.measureType === 0) {
       newErrors.push('กรุณาเลือกประเภทมาตรการ.');
     }
-
     if (measureType === 1) {
       if (!formData.measure1_1 && !formData.measure1_2) {
         newErrors.push('กรุณากรอกอย่างน้อยหนึ่งข้อมูลในมาตรการที่ 1.');
       }
     }
-
     if (newErrors.length > 0) {
-      newErrors.forEach(error => toast.error(error));
+      newErrors.forEach((error) => toast.error(error));
       return false;
     }
-
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     try {
       toast.info('กำลังบันทึกข้อมูล...', { autoClose: 2000 });
-
       // ส่งข้อมูลกิจกรรมก่อน
       const activityResponse = await fetch('/api/activity', {
         method: 'POST',
@@ -174,14 +135,12 @@ const ActivityForm: React.FC = () => {
         return;
       }
 
-      // รับ response ที่ได้ { message, id }
       const activityData = await activityResponse.json();
       const activityId = activityData.id;
-      setFormData(prev => ({ ...prev, activity_id: activityId }));
-      console.log('Activity submitted successfully!', activityId);
+      setFormData((prev) => ({ ...prev, activity_id: activityId }));
       toast.success('กิจกรรมถูกบันทึกสำเร็จ!');
 
-      // จัดเตรียม payload สำหรับ measure โดยใช้ activityId ที่ได้จาก api/activity
+      // จัดเตรียม payload สำหรับมาตรการ
       const measurePayload: Record<string, any> = { activity_id: activityId };
       switch (measureType) {
         case 1:
@@ -240,8 +199,7 @@ const ActivityForm: React.FC = () => {
           console.warn('Unknown measure type');
           return;
       }
-
-      // ส่งข้อมูล measure หลังจากที่ api/activity เสร็จสิ้นแล้ว
+      console.log(measurePayload)
       const measureResponse = await fetch(measureApiMap[measureType], {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -251,23 +209,20 @@ const ActivityForm: React.FC = () => {
       if (!measureResponse.ok) {
         const measureErrorData = await measureResponse.json();
         console.error(`Failed to submit Measure${measureType}:`, measureErrorData);
-        toast.error(`การบันทึก มาตรการที่ ${measureType} ล้มเหลว`);
+        toast.error(`การบันทึกมาตรการที่ ${measureType} ล้มเหลว`);
         return;
       }
 
-      console.log(`Measure${measureType} submitted successfully!`);
       toast.success(`มาตรการที่ ${measureType} ถูกบันทึกสำเร็จ!`);
-
-      // รีเซ็ตค่า formData และ measureType หลังจากบันทึกสำเร็จ
+      // รีเซ็ตค่า formData, measureType และไฟล์
       setMeasureType(0);
+      setFiles([]);
       setFormData({
         activityDate: '',
         activity_id: 0,
         measureType: 0,
-        // Measures 1
         measure1_1: '',
         measure1_2: '',
-        // Measures 2
         risk_health_monitoring_1_1: 0,
         risk_health_monitoring_1_2: 0,
         child: 0,
@@ -279,7 +234,6 @@ const ActivityForm: React.FC = () => {
         asthma_copd: 0,
         health_check_staff: 0,
         health_check_volunteer: 0,
-        // Measures 3
         pollution_clinic_open: 0,
         pollution_clinic_service: 0,
         online_clinic_open: 0,
@@ -308,7 +262,6 @@ const ActivityForm: React.FC = () => {
         disease_surgical_mask: 0,
         sky_doctor: 0,
         ambulance: 0,
-        // Measures 4
         eoc_open_date: '',
         eoc_close_date: '',
         law_enforcement_fine: 0,
@@ -319,7 +272,6 @@ const ActivityForm: React.FC = () => {
     }
   };
 
-
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
@@ -329,64 +281,18 @@ const ActivityForm: React.FC = () => {
         <h2 className="text-xl font-semibold mb-6 text-gray-700 text-center">
           กรณีหมอกควันและฝุ่นละอองขนาดเล็ก เขตสุขภาพที่ 1
         </h2>
-
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Activity Date */}
-          <div>
-            <label htmlFor="activityDate" className="block text-gray-700 font-medium mb-2">
-              วันที่ดำเนินกิจกรรม:
-            </label>
-            <input
-              type="date"
-              id="activityDate"
-              name="activityDate"
-              value={formData.activityDate}
-              onChange={handleChange}
-              className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
-              required
+          <MeasureSelect measureType={formData.measureType} onChange={handleMeasureSelectChange} />
+          {measureType === 1 && (
+            <Measure1
+              formData={formData}
+              handleChange={handleChange}
+              onFilesChange={handleFilesChange}
             />
-          </div>
-
-          {/* Measure Type */}
-          <div>
-            <label htmlFor="measureType" className="block text-gray-700 font-medium mb-2">
-              มาตรการ:
-            </label>
-            <select
-              id="measureType"
-              name="measureType"
-              value={formData.measureType}
-              onChange={(e) => {
-                const selectedValue = Number(e.target.value);
-                setMeasureType(selectedValue);
-                setFormData(prev => ({ ...prev, measureType: selectedValue }));
-              }}
-              className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
-              required
-            >
-              <option value={0}>เลือกมาตรการ</option>
-              {/* <option value={1}>มาตรการที่ 1 ส่งเสริมการลดมลพิษ/สื่อสารสร้างความรอบรู้</option> */}
-              <option value={2}>มาตรการที่ 2 ลดและป้องกันผลกระทบต่อสุขภาพ</option>
-              <option value={3}>มาตรการที่ 3 จัดบริการด้านการแพทย์และสาธารณสุข</option>
-              <option value={4}>มาตรการที่ 4 เพิ่มประสิทธิภาพการบริหารจัดการ</option>
-            </select>
-          </div>
-
-          {/* Conditional Measure Components */}
-          {/* {measureType === 1 && (
-            <Measure1 formData={formData} handleChange={handleChange} />
-          )} */}
-          {measureType === 2 && (
-            <Measure2 formData={formData} handleChange={handleChange} />
           )}
-          {measureType === 3 && (
-            <Measure3 formData={formData} handleChange={handleChange} />
-          )}
-          {measureType === 4 && (
-            <Measure4 formData={formData} handleChange={handleChange} />
-          )}
-
-          {/* Submit Button */}
+          {measureType === 2 && <Measure2 formData={formData} handleChange={handleChange} />}
+          {measureType === 3 && <Measure3 formData={formData} handleChange={handleChange} />}
+          {measureType === 4 && <Measure4 formData={formData} handleChange={handleChange} />}
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md px-4 py-2 transition-colors duration-200"
