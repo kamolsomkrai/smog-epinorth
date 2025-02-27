@@ -1,13 +1,16 @@
+// components/(global)/Previews.tsx
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
+import { v4 as uuidv4 } from 'uuid';
+import { Measure1UploadData } from '../../interfaces/newmeasure';
 
 interface FileWithPreview extends File {
   preview: string;
 }
 
 interface PreviewsProps {
-  onFilesChange: (files: FileWithPreview[]) => void;
+  onFilesChange: (files: Measure1UploadData[]) => void;
 }
 
 const Previews: React.FC<PreviewsProps> = ({ onFilesChange }) => {
@@ -20,11 +23,26 @@ const Previews: React.FC<PreviewsProps> = ({ onFilesChange }) => {
     },
     maxFiles: 5,
     onDrop: (acceptedFiles: File[]) => {
-      const mappedFiles = acceptedFiles.map((file) =>
+      const mappedFiles: FileWithPreview[] = acceptedFiles.map((file) =>
         Object.assign(file, { preview: URL.createObjectURL(file) })
-      ) as FileWithPreview[];
+      );
       setFiles(mappedFiles);
-      onFilesChange(mappedFiles);
+
+      // แปลงข้อมูลไฟล์ให้ตรงกับ Measure1UploadData โดยเปลี่ยนชื่อไฟล์ใหม่ด้วย uuid
+      const uploadDataFiles: Measure1UploadData[] = mappedFiles.map((file) => {
+        const parts = file.name.split('.');
+        const extension = parts.length > 1 ? parts.pop() || '' : '';
+        const newFileName = extension ? `${uuidv4()}.${extension}` : uuidv4();
+        return {
+          activityId: 0, // กำหนดค่า default ให้ activityId เป็น 0 หรือปรับแก้ให้เหมาะสมในภายหลัง
+          filePath: file.preview,
+          fileName: newFileName,
+          fileType: file.type,
+          extension: extension,
+          fileSize: file.size.toString(),
+        };
+      });
+      onFilesChange(uploadDataFiles);
     },
   });
 
@@ -53,9 +71,7 @@ const Previews: React.FC<PreviewsProps> = ({ onFilesChange }) => {
     <section className="max-w-xl mx-auto p-4">
       <div
         {...getRootProps({
-          className: `border-2 border-dashed p-6 rounded cursor-pointer text-center transition-colors duration-300 ${isDragActive
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-300 bg-white hover:bg-gray-50'
+          className: `border-2 border-dashed p-6 rounded cursor-pointer text-center transition-colors duration-300 ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white hover:bg-gray-50'
             }`,
         })}
       >

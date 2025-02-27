@@ -1,6 +1,6 @@
 "use client";
-import React from 'react';
-import { FormData } from '../../interfaces/measure';
+import React from "react";
+import { FormData } from "../../interfaces/newmeasure";
 
 interface Props {
   formData: FormData;
@@ -9,87 +9,85 @@ interface Props {
 
 const Measure4: React.FC<Props> = ({ formData, handleChange }) => (
   <div className="mt-6">
+    {/* Fieldset สำหรับ PHEOC */}
     <fieldset className="border border-gray-300 p-6 rounded-lg">
       <legend className="text-lg font-semibold text-gray-800">EOC</legend>
       <div className="mb-4">
-        <label htmlFor="eoc_open_date" className="block text-gray-700 font-medium mb-2">
-          4.1 วันเดือนปี ที่เปิด EOC:
+        <label htmlFor="openPheocDate" className="block text-gray-700 font-medium mb-2">
+          4.1 วันเดือนปี ที่เปิด PHEOC:
         </label>
         <input
           type="date"
-          id="eoc_open_date"
-          name="eoc_open_date"
-          value={formData.eoc_open_date || ''}
+          id="openPheocDate"
+          name="openPheocDate"
+          value={formData.openPheocDate || ""}
           onChange={handleChange}
           className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
-
       <div className="mb-4">
-        <label htmlFor="eoc_close_date" className="block text-gray-700 font-medium mb-2">
-          4.2 วันเดือนปี ที่ปิด EOC:
+        <label htmlFor="closePheocDate" className="block text-gray-700 font-medium mb-2">
+          4.2 วันเดือนปี ที่ปิด PHEOC:
         </label>
         <input
           type="date"
-          id="eoc_close_date"
-          name="eoc_close_date"
-          value={formData.eoc_close_date || ''}
+          id="closePheocDate"
+          name="closePheocDate"
+          value={formData.closePheocDate || ""}
           onChange={handleChange}
           className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
     </fieldset>
-    <fieldset className="border border-gray-300 p-6 rounded-lg">
+
+    {/* Fieldset สำหรับมาตรการห้ามเผา */}
+    <fieldset className="border border-gray-300 p-6 rounded-lg mt-6">
       <legend className="text-lg font-semibold text-gray-800">มาตรการห้ามเผา</legend>
       <div className="mb-4">
-        <label htmlFor="eoc_open_date" className="block text-gray-700 font-medium mb-2">
+        <label htmlFor="openDontBurnDate" className="block text-gray-700 font-medium mb-2">
           4.3 วันเดือนปี ที่เริ่ม มาตรการห้ามเผา:
         </label>
         <input
           type="date"
-          id="eoc_open_date"
-          name="eoc_open_date"
-          value={formData.eoc_open_date || ''}
+          id="openDontBurnDate"
+          name="openDontBurnDate"
+          value={formData.openDontBurnDate || ""}
           onChange={handleChange}
           className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
-
       <div className="mb-4">
-        <label htmlFor="eoc_close_date" className="block text-gray-700 font-medium mb-2">
+        <label htmlFor="closeDontBurnDate" className="block text-gray-700 font-medium mb-2">
           4.4 วันเดือนปี ที่สิ้นสุด มาตรการห้ามเผา:
         </label>
         <input
           type="date"
-          id="eoc_close_date"
-          name="eoc_close_date"
-          value={formData.eoc_close_date || ''}
+          id="closeDontBurnDate"
+          name="closeDontBurnDate"
+          value={formData.closeDontBurnDate || ""}
           onChange={handleChange}
           className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
     </fieldset>
 
-
-
-
-    <fieldset className="border border-gray-300 p-6 rounded-lg">
+    {/* Fieldset สำหรับจับปรับ */}
+    <fieldset className="border border-gray-300 p-6 rounded-lg mt-6">
       <legend className="text-lg font-semibold text-gray-800">จับปรับ</legend>
       <div>
-        <label htmlFor="law_enforcement_fine" className="block text-gray-700 font-medium mb-2">
+        <label htmlFor="lawEnforcement" className="block text-gray-700 font-medium mb-2">
           4.5 จับ - ปรับ การเผา (ครั้ง):
         </label>
         <input
           type="number"
-          id="law_enforcement_fine"
-          name="law_enforcement_fine"
-          value={formData.law_enforcement_fine || 0}
+          id="lawEnforcement"
+          name="lawEnforcement"
+          value={formData.lawEnforcement || 0}
           onChange={handleChange}
           className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
     </fieldset>
-
   </div>
 );
 
