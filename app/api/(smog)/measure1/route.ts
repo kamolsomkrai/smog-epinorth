@@ -2,17 +2,26 @@
 import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 
-// Zod Schema สำหรับ Measure1
+// Zod Schema สำหรับ Measure1 พร้อมไฟล์อัปโหลด
 const Measure1Schema = z.object({
   activity_id: z.number().int().min(1),
   sub_measure_1_1: z.string().optional(),
   sub_measure_1_2: z.string().optional(),
+  files: z
+    .array(
+      z.object({
+        filePath: z.string(),
+        fileName: z.string(),
+        fileType: z.string(),
+        extension: z.string(),
+        fileSize: z.string(),
+      })
+    )
+    .optional(),
 });
 
-// Centralized API Error Handling
 const handleApiError = (error: unknown) => {
   console.error("API Error:", error);
-
   if (error instanceof z.ZodError) {
     return NextResponse.json(
       {
@@ -22,32 +31,31 @@ const handleApiError = (error: unknown) => {
       { status: 400 }
     );
   }
-
   if (error instanceof Error) {
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
-
   return NextResponse.json({ message: "Unknown Error" }, { status: 500 });
 };
+
 const validateToken = (token?: string) => {
   if (!token) {
     throw new Error("No token found. Please login.");
   }
   return token;
 };
-export async function POST(request: NextRequest) {
+
+export async function PUT(request: NextRequest) {
   try {
     const token = validateToken(request.cookies.get("token")?.value);
     const cookieHeader = `token=${token}`;
-    // Parse and validate request body
     const body = await request.json();
     const validatedData = Measure1Schema.parse(body);
 
-    // ส่งข้อมูลไปยัง Express API
+    // ส่งข้อมูลไปยัง Express API โดยใช้ method PUT สำหรับ update
     const res = await fetch(
       "https://epinorth-api.ddc.moph.go.th/api/measure1",
       {
-        method: "POST",
+        method: "PUT",
         credentials: "include",
         headers: {
           Cookie: cookieHeader,
@@ -61,9 +69,8 @@ export async function POST(request: NextRequest) {
       const errorText = await res.text();
       throw new Error(`Express API Error: ${res.status} ${errorText}`);
     }
-
     const responseData = await res.json();
-    return NextResponse.json(responseData, { status: 201 });
+    return NextResponse.json(responseData, { status: 200 });
   } catch (error) {
     return handleApiError(error);
   }
@@ -71,15 +78,12 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    // ส่งคำขอ GET ไปยัง Express API
     const res = await fetch(
       "https://epinorth-api.ddc.moph.go.th/api/measure1",
       {
         method: "GET",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       }
     );
 

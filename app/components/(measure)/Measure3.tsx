@@ -1,7 +1,32 @@
+// components/Measure3.tsx
 "use client";
-import React from 'react';
-import { FormData } from '../../interfaces/measure';
-import InputRow from '../(global)/InputRow';
+import React from "react";
+import { FormData } from "../../interfaces/newmeasure";
+import InputRow from "../(global)/InputRow";
+import {
+  getSection31Fields,
+  getSection32Fields,
+  getSection331Fields,
+  getSection332Fields,
+  getSection333Fields,
+  getSection334Fields,
+  getSection335Fields,
+  getSection341Fields,
+  getSection342Fields,
+  getSection343Fields,
+  getSection344Fields,
+  getSection345Fields,
+  getEnvoCccuFields,
+  getSection351Fields,
+  getSection352Fields,
+  getSection353Fields,
+  getSection354Fields,
+  getSection355Fields,
+  getSection356Fields,
+  getSection357Fields,
+  getSection358Fields,
+  getSection36Fields,
+} from "../../fields/measure3Fields";
 
 interface Props {
   formData: FormData;
@@ -13,272 +38,143 @@ const Measure3: React.FC<Props> = ({ formData, handleChange }) => (
     {/* 3.1 คลินิกมลพิษ */}
     <fieldset className="border border-gray-300 p-6 rounded-lg">
       <legend className="text-lg font-semibold text-gray-800">3.1 คลินิกมลพิษ</legend>
-      <InputRow
-        fields={[
-          { id: "pollution_clinic_open", name: "pollution_clinic_open", label: "เปิดบริการสะสม (แห่ง):", value: formData.pollution_clinic_open },
-          { id: "pollution_clinic_service", name: "pollution_clinic_service", label: "ผู้รับบริการสะสม (ราย):", value: formData.pollution_clinic_service },
-        ]}
-        handleChange={handleChange}
-      />
+      <InputRow fields={getSection31Fields(formData)} handleChange={handleChange} />
     </fieldset>
 
     {/* 3.2 คลินิกมลพิษออนไลน์ */}
     <fieldset className="border border-gray-300 p-6 rounded-lg">
       <legend className="text-lg font-semibold text-gray-800">3.2 คลินิกมลพิษออนไลน์</legend>
-      <InputRow
-        fields={[
-          { id: "online_clinic_open", name: "online_clinic_open", label: "เปิดบริการสะสม (แห่ง):", value: formData.online_clinic_open },
-          { id: "online_clinic_service", name: "online_clinic_service", label: "ผู้รับบริการสะสม (ราย):", value: formData.online_clinic_service },
-        ]}
-        handleChange={handleChange}
-      />
+      <InputRow fields={getSection32Fields(formData)} handleChange={handleChange} />
     </fieldset>
 
     {/* 3.3 จัดเตรียมห้องปลอดฝุ่น */}
     <fieldset className="border border-gray-300 p-6 rounded-lg">
       <legend className="text-lg font-semibold text-gray-800">3.3 จัดเตรียมห้องปลอดฝุ่น</legend>
-
       {/* 3.3.1 ห้องปลอดฝุ่นในศูนย์เด็กเล็ก */}
       <div className="mt-4">
-        <h4 className="text-md font-semibold text-gray-700 mb-2">3.3.1 ห้องปลอดฝุ่นในศูนย์เด็กเล็ก (สะสม)</h4>
-        <InputRow
-          fields={[
-            { id: "nursery_dust_free_open", name: "nursery_dust_free_open", label: "เปิดบริการสะสม (ห้อง):", value: formData.nursery_dust_free_open },
-            { id: "nursery_dust_free_service", name: "nursery_dust_free_service", label: "มีผู้รับบริการสะสม (ราย):", value: formData.nursery_dust_free_service },
-          ]}
-          handleChange={handleChange}
-        />
+        <h4 className="text-md font-semibold text-gray-700 mb-2">
+          3.3.1 ห้องปลอดฝุ่นในศูนย์เด็กเล็ก (สะสม)
+        </h4>
+        <InputRow fields={getSection331Fields(formData)} handleChange={handleChange} />
       </div>
-
       {/* 3.3.2 ห้องปลอดฝุ่นในหน่วยงานราชการ */}
       <div className="mt-6">
-        <h4 className="text-md font-semibold text-gray-700 mb-2">3.3.3 ห้องปลอดฝุ่นในสถานบริการสาธารณสุข (สะสม)</h4>
-        <InputRow
-          fields={[
-            { id: "gov_dust_free_open", name: "gov_dust_free_open", label: "เปิดบริการสะสม (ห้อง):", value: formData.gov_dust_free_open },
-            { id: "gov_dust_free_service", name: "gov_dust_free_service", label: "มีผู้รับบริการสะสม (ราย):", value: formData.gov_dust_free_service },
-          ]}
-          handleChange={handleChange}
-        />
+        <h4 className="text-md font-semibold text-gray-700 mb-2">
+          3.3.2 ห้องปลอดฝุ่นในหน่วยงานราชการ (สะสม)
+        </h4>
+        <InputRow fields={getSection332Fields(formData)} handleChange={handleChange} />
       </div>
-
+      {/* 3.3.3 ห้องปลอดฝุ่นในอาคารสำนักงาน */}
       <div className="mt-6">
-        <h4 className="text-md font-semibold text-gray-700 mb-2">3.3.4 ห้องปลอดฝุ่นในอาคารสำนักงาน (สะสม)</h4>
-        <InputRow
-          fields={[
-            { id: "gov_dust_free_open", name: "gov_dust_free_open", label: "เปิดบริการสะสม (ห้อง):", value: formData.gov_dust_free_open },
-            { id: "gov_dust_free_service", name: "gov_dust_free_service", label: "มีผู้รับบริการสะสม (ราย):", value: formData.gov_dust_free_service },
-          ]}
-          handleChange={handleChange}
-        />
+        <h4 className="text-md font-semibold text-gray-700 mb-2">
+          3.3.3 ห้องปลอดฝุ่นในอาคารสำนักงาน (สะสม)
+        </h4>
+        <InputRow fields={getSection333Fields(formData)} handleChange={handleChange} />
       </div>
-
+      {/* 3.3.4 ห้องปลอดฝุ่นในร้านอาหาร/กาแฟ/โรงแรม */}
       <div className="mt-6">
-        <h4 className="text-md font-semibold text-gray-700 mb-2">3.3.5 ห้องปลอดฝุ่นในร้านอาหาร/กาแฟ/โรงแรม (สะสม) ณ ปัจจุบัน</h4>
-        <InputRow
-          fields={[
-            { id: "gov_dust_free_open", name: "gov_dust_free_open", label: "เปิดบริการสะสม (ห้อง):", value: formData.gov_dust_free_open },
-            { id: "gov_dust_free_service", name: "gov_dust_free_service", label: "มีผู้รับบริการสะสม (ราย):", value: formData.gov_dust_free_service },
-          ]}
-          handleChange={handleChange}
-        />
+        <h4 className="text-md font-semibold text-gray-700 mb-2">
+          3.3.4 ห้องปลอดฝุ่นในร้านอาหาร/กาแฟ/โรงแรม (สะสม)
+        </h4>
+        <InputRow fields={getSection334Fields(formData)} handleChange={handleChange} />
       </div>
-
+      {/* 3.3.5 ห้องปลอดฝุ่นในสถานที่อื่นๆ */}
       <div className="mt-6">
-        <h4 className="text-md font-semibold text-gray-700 mb-2">3.3.6 ห้องปลอดฝุ่นในสถานที่อื่นๆ เช่นศูนย์ประชุม ศาสนสถาน เป็นต้น (สะสม)</h4>
-        <InputRow
-          fields={[
-            { id: "gov_dust_free_open", name: "gov_dust_free_open", label: "เปิดบริการสะสม (ห้อง):", value: formData.gov_dust_free_open },
-            { id: "gov_dust_free_service", name: "gov_dust_free_service", label: "มีผู้รับบริการสะสม (ราย):", value: formData.gov_dust_free_service },
-          ]}
-          handleChange={handleChange}
-        />
+        <h4 className="text-md font-semibold text-gray-700 mb-2">
+          3.3.5 ห้องปลอดฝุ่นในสถานที่อื่นๆ (สะสม)
+        </h4>
+        <InputRow fields={getSection335Fields(formData)} handleChange={handleChange} />
       </div>
     </fieldset>
 
     {/* 3.4 จัดระบบบริการเชิงรุก เพื่อดูแลประชาชน */}
     <fieldset className="border border-gray-300 p-6 rounded-lg">
-      <legend className="text-lg font-semibold text-gray-800">3.4 จัดระบบบริการเชิงรุก เพื่อดูแลประชาชน</legend>
-
+      <legend className="text-lg font-semibold text-gray-800">
+        3.4 จัดระบบบริการเชิงรุก เพื่อดูแลประชาชน
+      </legend>
       {/* 3.4.1 ทีม 3 หมอ */}
       <div className="mt-4">
         <h4 className="text-md font-semibold text-gray-700 mb-2">3.4.1 ทีม 3 หมอ</h4>
-        <InputRow
-          fields={[
-            { id: "active_teams_3_doctors_total", name: "active_teams_3_doctors_total", label: "ทีมสะสม (ทีม):", value: formData.active_teams_3_doctors_total },
-            { id: "active_teams_3_doctors_add", name: "active_teams_3_doctors_add", label: "ลงพื้นที่ (ทีม):", value: formData.active_teams_3_doctors_add },
-          ]}
-          handleChange={handleChange}
-        />
+        <InputRow fields={getSection341Fields(formData)} handleChange={handleChange} />
       </div>
-
       {/* 3.4.2 ทีมหน่วยแพทย์เคลื่อนที่ */}
       <div className="mt-6">
         <h4 className="text-md font-semibold text-gray-700 mb-2">3.4.2 ทีมหน่วยแพทย์เคลื่อนที่</h4>
-        <InputRow
-          fields={[
-            { id: "active_teams_mobile_total", name: "active_teams_mobile_total", label: "ทีมสะสม (ทีม):", value: formData.active_teams_mobile_total },
-            { id: "active_teams_mobile_add", name: "active_teams_mobile_add", label: "ลงพื้นที่ (ทีม):", value: formData.active_teams_mobile_add },
-          ]}
-          handleChange={handleChange}
-        />
+        <InputRow fields={getSection342Fields(formData)} handleChange={handleChange} />
       </div>
-
-      {/* 3.4.3 ทีม หน่วยดูแลประชาชน */}
+      {/* 3.4.3 ทีมดูแลประชาชน */}
       <div className="mt-6">
-        <h4 className="text-md font-semibold text-gray-700 mb-2">3.4.3 ทีม หน่วยดูแลประชาชน</h4>
-        <InputRow
-          fields={[
-            { id: "active_teams_citizens_total", name: "active_teams_citizens_total", label: "ทีมสะสม (ทีม):", value: formData.active_teams_citizens_total },
-            { id: "active_teams_citizens_add", name: "active_teams_citizens_add", label: "ลงพื้นที่ (ทีม):", value: formData.active_teams_citizens_add },
-          ]}
-          handleChange={handleChange}
-        />
+        <h4 className="text-md font-semibold text-gray-700 mb-2">3.4.3 ทีมดูแลประชาชน</h4>
+        <InputRow fields={getSection343Fields(formData)} handleChange={handleChange} />
       </div>
-
+      {/* 3.4.4 ทีม SHERT จังหวัด */}
       <div className="mt-6">
-        <h4 className="text-md font-semibold text-gray-700 mb-2">3.4.3 ทีม SHERT จังหวัด</h4>
-        <InputRow
-          fields={[
-            { id: "active_teams_citizens_total", name: "active_teams_citizens_total", label: "ทีมสะสม (ทีม):", value: formData.active_teams_citizens_total },
-            { id: "active_teams_citizens_add", name: "active_teams_citizens_add", label: "ลงพื้นที่ (ทีม):", value: formData.active_teams_citizens_add },
-          ]}
-          handleChange={handleChange}
-        />
+        <h4 className="text-md font-semibold text-gray-700 mb-2">3.4.4 ทีม SHERT จังหวัด</h4>
+        <InputRow fields={getSection344Fields(formData)} handleChange={handleChange} />
       </div>
-
+      {/* 3.4.5 ทีม SHERT อำเภอ */}
       <div className="mt-6">
-        <h4 className="text-md font-semibold text-gray-700 mb-2">3.4.3 ทีม ทีม SHERT อำเภอ</h4>
-        <InputRow
-          fields={[
-            { id: "active_teams_citizens_total", name: "active_teams_citizens_total", label: "ทีมสะสม (ทีม):", value: formData.active_teams_citizens_total },
-            { id: "active_teams_citizens_add", name: "active_teams_citizens_add", label: "ลงพื้นที่ (ทีม):", value: formData.active_teams_citizens_add },
-          ]}
-          handleChange={handleChange}
-        />
+        <h4 className="text-md font-semibold text-gray-700 mb-2">3.4.5 ทีม SHERT อำเภอ</h4>
+        <InputRow fields={getSection345Fields(formData)} handleChange={handleChange} />
       </div>
-
+      {/* 3.4.6 ทีม EnvOcc CU */}
       <div className="mt-6">
-        <h4 className="text-md font-semibold text-gray-700 mb-2">3.4.3 ทีม EnvOcc CU</h4>
-        <InputRow
-          fields={[
-            { id: "active_teams_citizens_total", name: "active_teams_citizens_total", label: "ทีมสะสม (ทีม):", value: formData.active_teams_citizens_total },
-            { id: "active_teams_citizens_add", name: "active_teams_citizens_add", label: "ลงพื้นที่ (ทีม):", value: formData.active_teams_citizens_add },
-          ]}
-          handleChange={handleChange}
-        />
+        <h4 className="text-md font-semibold text-gray-700 mb-2">3.4.6 ทีม EnvOcc CU</h4>
+        <InputRow fields={getEnvoCccuFields(formData)} handleChange={handleChange} />
       </div>
     </fieldset>
 
     {/* 3.5 สนับสนุนอุปกรณ์ป้องกันส่วนบุคคลแก่กลุ่มเสี่ยง */}
     <fieldset className="border border-gray-300 p-6 rounded-lg">
-      <legend className="text-lg font-semibold text-gray-800">3.5 สนับสนุนอุปกรณ์ป้องกันส่วนบุคคลแก่กลุ่มเสี่ยง</legend>
-
-      {/* 3.5.1 ประชาชน (สะสม) */}
+      <legend className="text-lg font-semibold text-gray-800">
+        3.5 สนับสนุนอุปกรณ์ป้องกันส่วนบุคคลแก่กลุ่มเสี่ยง
+      </legend>
+      {/* 3.5.1 ประชาชน */}
       <div className="mt-4">
         <h4 className="text-md font-semibold text-gray-700 mb-2">3.5.1 ประชาชน (สะสม)</h4>
-        <InputRow
-          fields={[
-            { id: "pop_N95_mask", name: "pop_N95_mask", label: "N95 Mask (ชิ้น):", value: formData.pop_N95_mask },
-            { id: "pop_surgical_mask", name: "pop_surgical_mask", label: "Surgical Mask (ชิ้น):", value: formData.pop_surgical_mask },
-          ]}
-          handleChange={handleChange}
-        />
+        <InputRow fields={getSection351Fields(formData)} handleChange={handleChange} />
       </div>
-
-      {/* 3.5.2 เด็กเล็ก (สะสม) */}
+      {/* 3.5.2 เด็กเล็ก */}
       <div className="mt-6">
         <h4 className="text-md font-semibold text-gray-700 mb-2">3.5.2 เด็กเล็ก (สะสม)</h4>
-        <InputRow
-          fields={[
-            { id: "children_N95_mask", name: "children_N95_mask", label: "N95 Mask (ชิ้น):", value: formData.children_N95_mask },
-            { id: "children_surgical_mask", name: "children_surgical_mask", label: "Surgical Mask (ชิ้น):", value: formData.children_surgical_mask },
-          ]}
-          handleChange={handleChange}
-        />
+        <InputRow fields={getSection352Fields(formData)} handleChange={handleChange} />
       </div>
-
-      {/* 3.5.3 ผู้สูงอายุ (สะสม) */}
+      {/* 3.5.3 ผู้สูงอายุ */}
       <div className="mt-6">
         <h4 className="text-md font-semibold text-gray-700 mb-2">3.5.3 ผู้สูงอายุ (สะสม)</h4>
-        <InputRow
-          fields={[
-            { id: "elderly_N95_mask", name: "elderly_N95_mask", label: "N95 Mask (ชิ้น):", value: formData.elderly_N95_mask },
-            { id: "elderly_surgical_mask", name: "elderly_surgical_mask", label: "Surgical Mask (ชิ้น):", value: formData.elderly_surgical_mask },
-          ]}
-          handleChange={handleChange}
-        />
+        <InputRow fields={getSection353Fields(formData)} handleChange={handleChange} />
       </div>
-
-      {/* 3.5.4 หญิงตั้งครรภ์ (สะสม) */}
+      {/* 3.5.4 หญิงตั้งครรภ์ */}
       <div className="mt-6">
         <h4 className="text-md font-semibold text-gray-700 mb-2">3.5.4 หญิงตั้งครรภ์ (สะสม)</h4>
-        <InputRow
-          fields={[
-            { id: "pregnant_N95_mask", name: "pregnant_N95_mask", label: "N95 Mask (ชิ้น):", value: formData.pregnant_N95_mask },
-            { id: "pregnant_surgical_mask", name: "pregnant_surgical_mask", label: "Surgical Mask (ชิ้น):", value: formData.pregnant_surgical_mask },
-          ]}
-          handleChange={handleChange}
-        />
+        <InputRow fields={getSection354Fields(formData)} handleChange={handleChange} />
       </div>
-
-      {/* 3.5.5 ผู้ป่วยติดเตียง (สะสม) */}
+      {/* 3.5.5 ผู้ป่วยติดเตียง */}
       <div className="mt-6">
         <h4 className="text-md font-semibold text-gray-700 mb-2">3.5.5 ผู้ป่วยติดเตียง (สะสม)</h4>
-        <InputRow
-          fields={[
-            { id: "bedridden_N95_mask", name: "bedridden_N95_mask", label: "N95 Mask (ชิ้น):", value: formData.bedridden_N95_mask },
-            { id: "bedridden_surgical_mask", name: "bedridden_surgical_mask", label: "Surgical Mask (ชิ้น):", value: formData.bedridden_surgical_mask },
-          ]}
-          handleChange={handleChange}
-        />
+        <InputRow fields={getSection355Fields(formData)} handleChange={handleChange} />
       </div>
-
-      {/* 3.5.6 ผู้มีโรคประจำตัว (สะสม) */}
+      {/* 3.5.6 ผู้มีโรคประจำตัว */}
       <div className="mt-6">
         <h4 className="text-md font-semibold text-gray-700 mb-2">3.5.6 ผู้มีโรคประจำตัว (สะสม)</h4>
-        <InputRow
-          fields={[
-            { id: "disease_N95_mask", name: "disease_N95_mask", label: "N95 Mask (ชิ้น):", value: formData.disease_N95_mask },
-            { id: "disease_surgical_mask", name: "disease_surgical_mask", label: "Surgical Mask (ชิ้น):", value: formData.disease_surgical_mask },
-          ]}
-          handleChange={handleChange}
-        />
+        <InputRow fields={getSection356Fields(formData)} handleChange={handleChange} />
       </div>
-
+      {/* 3.5.7 ผู้ที่มีโรคหัวใจ */}
       <div className="mt-6">
         <h4 className="text-md font-semibold text-gray-700 mb-2">3.5.7 ผู้ที่มีโรคหัวใจ (สะสม)</h4>
-        <InputRow
-          fields={[
-            { id: "disease_N95_mask", name: "disease_N95_mask", label: "N95 Mask (ชิ้น):", value: formData.disease_N95_mask },
-            { id: "disease_surgical_mask", name: "disease_surgical_mask", label: "Surgical Mask (ชิ้น):", value: formData.disease_surgical_mask },
-          ]}
-          handleChange={handleChange}
-        />
+        <InputRow fields={getSection357Fields(formData)} handleChange={handleChange} />
       </div>
-
+      {/* 3.5.8 ผู้ที่มีโรคระบบทางเดินหายใจ */}
       <div className="mt-6">
         <h4 className="text-md font-semibold text-gray-700 mb-2">3.5.8 ผู้ที่มีโรคระบบทางเดินหายใจ (สะสม)</h4>
-        <InputRow
-          fields={[
-            { id: "disease_N95_mask", name: "disease_N95_mask", label: "N95 Mask (ชิ้น):", value: formData.disease_N95_mask },
-            { id: "disease_surgical_mask", name: "disease_surgical_mask", label: "Surgical Mask (ชิ้น):", value: formData.disease_surgical_mask },
-          ]}
-          handleChange={handleChange}
-        />
+        <InputRow fields={getSection358Fields(formData)} handleChange={handleChange} />
       </div>
     </fieldset>
 
     {/* 3.6 ระบบรักษาส่งต่อผู้ป่วย */}
     <fieldset className="border border-gray-300 p-6 rounded-lg">
       <legend className="text-lg font-semibold text-gray-800">3.6 ระบบรักษาส่งต่อผู้ป่วย</legend>
-      <InputRow
-        fields={[
-          { id: "sky_doctor", name: "sky_doctor", label: "SKY doctor (ทีม):", value: formData.sky_doctor },
-          { id: "ambulance", name: "ambulance", label: "ทีมกู้ชีพ ALS (ทีม):", value: formData.ambulance },
-        ]}
-        handleChange={handleChange}
-      />
+      <InputRow fields={getSection36Fields(formData)} handleChange={handleChange} />
     </fieldset>
   </div>
 );

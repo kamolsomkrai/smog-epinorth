@@ -2,25 +2,27 @@
 import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 
-// Zod Schema สำหรับการรับข้อมูล Activity
+// Zod Schema สำหรับข้อมูล Activity ตามตารางที่ออกแบบไว้
 const ActivitySchema = z.object({
-  // hospcode: z.string().min(1, "รหัสโรงพยาบาลต้องไม่เป็นค่าว่าง"),
-  measure_type: z.number().int().min(1).max(4),
+  activity_type: z.number().int().min(1),
   activity_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง"),
-  // province_name: z.string().min(1, "ชื่อจังหวัดต้องไม่เป็นค่าว่าง"),
+  hosp_code: z.string().min(1, "รหัสโรงพยาบาลต้องไม่เป็นค่าว่าง"),
+  prov_code: z.string().min(1, "รหัสจังหวัดต้องไม่เป็นค่าว่าง"),
+  dist_code: z.string().min(1, "รหัสอำเภอหรือเขตต้องไม่เป็นค่าว่าง"),
+  year: z.number().int().min(2000).max(2100),
 });
 
-// เพิ่ม Schema สำหรับการตอบกลับของ API
+// Schema สำหรับการตอบกลับของ API
 const ApiResponseSchema = z.object({
   page: z.number(),
   limit: z.number(),
   total: z.number(),
   data: z.array(ActivitySchema),
 });
+
 // Centralized API Error Handling
 const handleApiError = (error: unknown) => {
   console.error("API Error:", error);
-
   if (error instanceof z.ZodError) {
     return NextResponse.json(
       {
@@ -30,15 +32,13 @@ const handleApiError = (error: unknown) => {
       { status: 400 }
     );
   }
-
   if (error instanceof Error) {
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
-
   return NextResponse.json({ message: "Unknown Error" }, { status: 500 });
 };
 
-// Utility function to validate token
+// Utility function เพื่อ validate token
 const validateToken = (token?: string) => {
   if (!token) {
     throw new Error("No token found. Please login.");
@@ -49,10 +49,7 @@ const validateToken = (token?: string) => {
 export async function GET(request: NextRequest) {
   try {
     const token = validateToken(request.cookies.get("token")?.value);
-
-    // สร้างค่า Cookie ที่จะส่งไปยัง API ภายนอก
     const cookieHeader = `token=${token}`;
-
     const res = await fetch(
       "https://epinorth-api.ddc.moph.go.th/api/activities",
       {
@@ -60,21 +57,16 @@ export async function GET(request: NextRequest) {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Cookie: cookieHeader, // ส่งคุกกี้ไปยัง API ภายนอก
+          Cookie: cookieHeader,
         },
       }
     );
-
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(`การดึงข้อมูลล้มเหลว: ${res.status} ${errorText}`);
     }
-
     const data = await res.json();
-    // console.log("Received data from API:", data);
-    // Validate and parse supplies data
     const apiResponse = ApiResponseSchema.parse(data);
-    // const supplies = z.array(SupplySchema).parse(data.supplies || data);
     const supplies = apiResponse.data;
     return NextResponse.json({
       supplies,
@@ -89,10 +81,11 @@ export async function POST(request: NextRequest) {
   try {
     const token = validateToken(request.cookies.get("token")?.value);
     const cookieHeader = `token=${token}`;
-    // Parse and validate request body
+    // Parse และ validate request body
     const rawBody = await request.json();
-    const validatedSupply = ActivitySchema.parse(rawBody);
+    const validatedActivity = ActivitySchema.parse(rawBody);
 
+    // ส่งข้อมูลไปยัง Express API ที่จัดการกับตาราง activity
     const res = await fetch(
       "https://epinorth-api.ddc.moph.go.th/api/activities",
       {
@@ -102,7 +95,7 @@ export async function POST(request: NextRequest) {
           Cookie: cookieHeader,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(validatedSupply),
+        body: JSON.stringify(validatedActivity),
       }
     );
 
