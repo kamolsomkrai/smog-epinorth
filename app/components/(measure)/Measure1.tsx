@@ -1,18 +1,18 @@
 // components/Measure1.tsx
 "use client";
 import React from 'react';
-import { FormData, Measure1UploadData } from '../../interfaces/newmeasure';
+import { ActivityFormData, Measure1UploadData } from '../../interfaces/newmeasure';
 import Previews from '../(global)/Previews';
 
 interface Measure1Props {
-  formData: FormData;
+  activityFormData: ActivityFormData;
   handleChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
   onFilesChange: (files: Measure1UploadData[]) => void;
 }
 
-const Measure1: React.FC<Measure1Props> = ({ formData, handleChange, onFilesChange }) => {
+const Measure1: React.FC<Measure1Props> = ({ activityFormData, handleChange, onFilesChange }) => {
   return (
     <div className="mt-6">
       <fieldset className="border border-gray-300 p-6 rounded-lg">
@@ -25,7 +25,7 @@ const Measure1: React.FC<Measure1Props> = ({ formData, handleChange, onFilesChan
             type="date"
             id="activityDate"
             name="activityDate"
-            value={formData.activityDate}
+            value={activityFormData.activityDate}
             onChange={handleChange}
             className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
             required
@@ -38,7 +38,7 @@ const Measure1: React.FC<Measure1Props> = ({ formData, handleChange, onFilesChan
           <textarea
             id="activityDetail"
             name="activityDetail"
-            value={formData.activityDetail || ''}
+            value={activityFormData.activityDetail || ''}
             onChange={handleChange}
             className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
           />

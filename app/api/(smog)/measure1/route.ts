@@ -4,9 +4,10 @@ import { z } from "zod";
 
 // Zod Schema สำหรับ Measure1 พร้อมไฟล์อัปโหลด
 const Measure1Schema = z.object({
-  activity_id: z.number().int().min(1),
-  sub_measure_1_1: z.string().optional(),
-  sub_measure_1_2: z.string().optional(),
+  activityId: z.number().int().min(1),
+  activityDetail: z.string().optional(),
+  activityDate: z.string().optional(),
+  year: z.string().optional(),
   files: z
     .array(
       z.object({

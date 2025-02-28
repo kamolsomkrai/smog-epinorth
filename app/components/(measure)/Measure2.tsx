@@ -1,29 +1,29 @@
 "use client";
 
 import React from 'react';
-import { FormData } from '../../interfaces/newmeasure';
+import { ActivityFormData } from '../../interfaces/newmeasure';
 import InputRow from '../(global)/InputRow';
 
 interface Props {
-  formData: FormData;
+  activityFormData: ActivityFormData;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
-const Measure2: React.FC<Props> = ({ formData, handleChange }) => {
+const Measure2: React.FC<Props> = ({ activityFormData, handleChange }) => {
   const section1Fields = [
     {
       id: "riskHealthInfo",
       name: "riskHealthInfo",
       label: "จัดทาสื่อ Info ประชาสัมพันธ์:",
       type: "number",
-      value: formData.riskHealthInfo || 0,
+      value: activityFormData.riskHealthInfo || 0,
     },
     {
       id: "riskHealthSocial",
       name: "riskHealthSocial",
       label: "แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ:",
       type: "number",
-      value: formData.riskHealthSocial || 0,
+      value: activityFormData.riskHealthSocial || 0,
     },
   ];
 
@@ -33,84 +33,84 @@ const Measure2: React.FC<Props> = ({ formData, handleChange }) => {
       name: "riskChildTotal",
       label: "เด็กเล็ก (คน):",
       type: "number",
-      value: formData.riskChildTotal || 0,
+      value: activityFormData.riskChildTotal || 0,
     },
     {
       id: "riskChildTakeCare",
       name: "riskChildTakeCare",
       label: "เด็กเล็กได้รับการดูแล (คน):",
       type: "number",
-      value: formData.riskChildTakeCare || 0,
+      value: activityFormData.riskChildTakeCare || 0,
     },
     {
       id: "riskOlderTotal",
       name: "riskOlderTotal",
       label: "ผู้สูงอายุ (คน):",
       type: "number",
-      value: formData.riskOlderTotal || 0,
+      value: activityFormData.riskOlderTotal || 0,
     },
     {
       id: "riskOlderTakeCare",
       name: "riskOlderTakeCare",
       label: "ผู้สูงอายุได้รับการดูแล (คน):",
       type: "number",
-      value: formData.riskOlderTakeCare || 0,
+      value: activityFormData.riskOlderTakeCare || 0,
     },
     {
       id: "riskPregnantTotal",
       name: "riskPregnantTotal",
       label: "หญิงตั้งครรภ์ (คน):",
       type: "number",
-      value: formData.riskPregnantTotal || 0,
+      value: activityFormData.riskPregnantTotal || 0,
     },
     {
       id: "riskPregnantTakeCare",
       name: "riskPregnantTakeCare",
       label: "หญิงตั้งครรภ์ได้รับการดูแล (คน):",
       type: "number",
-      value: formData.riskPregnantTakeCare || 0,
+      value: activityFormData.riskPregnantTakeCare || 0,
     },
     {
       id: "riskBedriddenTotal",
       name: "riskBedriddenTotal",
       label: "ผู้ป่วยติดเตียง (คน):",
       type: "number",
-      value: formData.riskBedriddenTotal || 0,
+      value: activityFormData.riskBedriddenTotal || 0,
     },
     {
       id: "riskBedriddenTakeCare",
       name: "riskBedriddenTakeCare",
       label: "ผู้ป่วยติดเตียงได้รับการดูแล (คน):",
       type: "number",
-      value: formData.riskBedriddenTakeCare || 0,
+      value: activityFormData.riskBedriddenTakeCare || 0,
     },
     {
       id: "riskHeartTotal",
       name: "riskHeartTotal",
       label: "ผู้ที่มีโรคหัวใจ (คน):",
       type: "number",
-      value: formData.riskHeartTotal || 0,
+      value: activityFormData.riskHeartTotal || 0,
     },
     {
       id: "riskHeartTakeCare",
       name: "riskHeartTakeCare",
       label: "ผู้ที่มีโรคหัวใจได้รับการดูแล (คน):",
       type: "number",
-      value: formData.riskHeartTakeCare || 0,
+      value: activityFormData.riskHeartTakeCare || 0,
     },
     {
       id: "riskCopdTotal",
       name: "riskCopdTotal",
       label: "ผู้ที่มีโรคระบบทางเดินหายใจ (คน):",
       type: "number",
-      value: formData.riskCopdTotal || 0,
+      value: activityFormData.riskCopdTotal || 0,
     },
     {
       id: "riskCopdTakeCare",
       name: "riskCopdTakeCare",
       label: "ผู้ที่มีโรคระบบทางเดินหายใจได้รับการดูแล (คน):",
       type: "number",
-      value: formData.riskCopdTakeCare || 0,
+      value: activityFormData.riskCopdTakeCare || 0,
     },
   ];
 
@@ -120,7 +120,7 @@ const Measure2: React.FC<Props> = ({ formData, handleChange }) => {
       name: "healthcareOfficer",
       label: "ตรวจสุขภาพเจ้าหน้าที่/อาสาสมัคร ดับไฟป่า (คน):",
       type: "number",
-      value: formData.healthcareOfficer || 0,
+      value: activityFormData.healthcareOfficer || 0,
     },
   ];
 

@@ -27,6 +27,8 @@ export interface Measure3Data {
   pollutionCliniService: number;
   onlinePollutionClinicTotal: number;
   onlinePollutionCliniService: number;
+  mosquitoNetTotal: number;
+  mosquitoNetService: number;
   nurseryDustFreeTotal: number;
   nurseryDustFreeService: number;
   publicHealthDustFreeTotal: number;
@@ -91,9 +93,10 @@ export interface Measure1UploadData {
   fileType: string;
   extension: string;
   fileSize: string;
+  rawFile?: File; // เพิ่ม property สำหรับเก็บ File object จริง (ใช้ในการอัปโหลด)
 }
 
-export interface FormData extends ActivityData,
+export interface ActivityFormData extends ActivityData,
   Partial<Measure1Data>,
   Partial<Measure2Data>,
   Partial<Measure3Data>,

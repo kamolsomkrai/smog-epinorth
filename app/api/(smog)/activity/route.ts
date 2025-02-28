@@ -4,12 +4,8 @@ import { z } from "zod";
 
 // Zod Schema สำหรับข้อมูล Activity ตามตารางที่ออกแบบไว้
 const ActivitySchema = z.object({
-  activity_type: z.number().int().min(1),
-  activity_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง"),
-  hosp_code: z.string().min(1, "รหัสโรงพยาบาลต้องไม่เป็นค่าว่าง"),
-  prov_code: z.string().min(1, "รหัสจังหวัดต้องไม่เป็นค่าว่าง"),
-  dist_code: z.string().min(1, "รหัสอำเภอหรือเขตต้องไม่เป็นค่าว่าง"),
-  year: z.number().int().min(2000).max(2100),
+  activityType: z.number().int().min(1).optional(),
+  year: z.string().optional(),
 });
 
 // Schema สำหรับการตอบกลับของ API
