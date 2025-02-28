@@ -55,10 +55,16 @@ const Previews: React.FC<PreviewsProps> = ({ onFilesChange }) => {
       className="relative inline-flex rounded overflow-hidden border border-gray-200 mb-2 mr-2 w-[100px] h-[100px] p-1 shadow-md"
     >
       <div className="relative w-full h-full">
-        <Image src={file.preview} alt={file.name} fill style={{ objectFit: "cover" }} unoptimized />
+        {/* ใช้ <img> แทน <Image> สำหรับ blob URL */}
+        <img
+          src={file.preview}
+          alt={file.name}
+          style={{ objectFit: "cover", width: "100%", height: "100%" }}
+        />
       </div>
     </div>
   ));
+
 
   useEffect(() => {
     return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
