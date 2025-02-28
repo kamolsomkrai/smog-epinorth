@@ -3,15 +3,11 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 
-export const config = {
-  api: {
-    bodyParser: false, // ปิด body parser ของ Next.js
-  },
-};
+// ลบ export const config ออกไป เนื่องจากถูกยกเลิกใช้งานแล้ว
 
 export async function POST(request: Request) {
   try {
-    // ใช้ request.formData() แทน unstable_parseMultipartFormData
+    // ใช้ request.formData() สำหรับดึงข้อมูล multipart form data
     const formData = await request.formData();
     const files = formData.getAll("files");
     const uploadDir = path.join(process.cwd(), "public/uploads");
