@@ -1,13 +1,13 @@
 "use client";
 import React from "react";
-import { FormData } from "../../interfaces/newmeasure";
+import { ActivityFormData } from "../../interfaces/newmeasure";
 
 interface Props {
-  formData: FormData;
+  activityFormData: ActivityFormData;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
-const Measure4: React.FC<Props> = ({ formData, handleChange }) => (
+const Measure4: React.FC<Props> = ({ activityFormData, handleChange }) => (
   <div className="mt-6">
     {/* Fieldset สำหรับ PHEOC */}
     <fieldset className="border border-gray-300 p-6 rounded-lg">
@@ -20,7 +20,7 @@ const Measure4: React.FC<Props> = ({ formData, handleChange }) => (
           type="date"
           id="openPheocDate"
           name="openPheocDate"
-          value={formData.openPheocDate || ""}
+          value={activityFormData.openPheocDate || ""}
           onChange={handleChange}
           className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
         />
@@ -33,7 +33,7 @@ const Measure4: React.FC<Props> = ({ formData, handleChange }) => (
           type="date"
           id="closePheocDate"
           name="closePheocDate"
-          value={formData.closePheocDate || ""}
+          value={activityFormData.closePheocDate || ""}
           onChange={handleChange}
           className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
         />
@@ -51,7 +51,7 @@ const Measure4: React.FC<Props> = ({ formData, handleChange }) => (
           type="date"
           id="openDontBurnDate"
           name="openDontBurnDate"
-          value={formData.openDontBurnDate || ""}
+          value={activityFormData.openDontBurnDate || ""}
           onChange={handleChange}
           className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
         />
@@ -64,7 +64,7 @@ const Measure4: React.FC<Props> = ({ formData, handleChange }) => (
           type="date"
           id="closeDontBurnDate"
           name="closeDontBurnDate"
-          value={formData.closeDontBurnDate || ""}
+          value={activityFormData.closeDontBurnDate || ""}
           onChange={handleChange}
           className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
         />
@@ -82,7 +82,7 @@ const Measure4: React.FC<Props> = ({ formData, handleChange }) => (
           type="number"
           id="lawEnforcement"
           name="lawEnforcement"
-          value={formData.lawEnforcement || 0}
+          value={activityFormData.lawEnforcement || 0}
           onChange={handleChange}
           className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
         />

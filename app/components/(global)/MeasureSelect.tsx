@@ -3,19 +3,19 @@
 import React from 'react';
 
 interface MeasureSelectProps {
-  measureType: number;
+  activityType: number;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-const MeasureSelect: React.FC<MeasureSelectProps> = ({ measureType, onChange }) => (
+const MeasureSelect: React.FC<MeasureSelectProps> = ({ activityType, onChange }) => (
   <div className="mb-4">
-    <label htmlFor="measureType" className="block text-gray-700 font-medium mb-2">
+    <label htmlFor="activityType" className="block text-gray-700 font-medium mb-2">
       มาตรการ:
     </label>
     <select
-      id="measureType"
-      name="measureType"
-      value={measureType}
+      id="activityType"
+      name="activityType"
+      value={activityType}
       onChange={onChange}
       className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
       required

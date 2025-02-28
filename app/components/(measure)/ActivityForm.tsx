@@ -7,7 +7,7 @@ import Measure1 from "./Measure1";
 import Measure2 from "./Measure2";
 import Measure3 from "./Measure3";
 import Measure4 from "./Measure4";
-import { FormData, Measure1UploadData } from "../../interfaces/newmeasure";
+import { ActivityFormData, Measure1UploadData } from "../../interfaces/newmeasure";
 
 // Map API endpoint สำหรับแต่ละมาตรการ
 const measureApiMap: Record<number, string> = {
@@ -18,23 +18,18 @@ const measureApiMap: Record<number, string> = {
 };
 
 const ActivityForm: React.FC = () => {
-  // เปลี่ยน state files เป็น Measure1UploadData[]
+  // เปลี่ยน state files ให้เป็น Measure1UploadData[] ซึ่งในแต่ละตัวเราจะเก็บ property rawFile (File object จริง) สำหรับอัปโหลด
   const [files, setFiles] = useState<Measure1UploadData[]>([]);
-  // ใช้ state สำหรับ measureType แยกออกจาก formData
-  const [measureType, setMeasureType] = useState<number>(0);
-  const [formData, setFormData] = useState<FormData>({
-    // ActivityData
+  const [activityType, setActivityType] = useState<number>(0);
+  const [activityFormData, setActivityFormData] = useState<ActivityFormData>({
     activityId: 0,
     activityType: 0,
     hospCode: "",
     provCode: "",
     distCode: "",
-    // เพิ่ม measureType ลงใน formData (ถ้าต้องการเก็บไว้ใน formData ด้วย)
-    // Measure1Data
-    activityName: "",
     activityDetail: "",
     activityDate: "",
-    // Measure2Data
+    // ค่า default สำหรับมาตรการที่ 2, 3, 4
     riskHealthInfo: 0,
     riskHealthSocial: 0,
     riskChildTotal: 0,
@@ -50,11 +45,12 @@ const ActivityForm: React.FC = () => {
     riskCopdTotal: 0,
     riskCopdTakeCare: 0,
     healthcareOfficer: 0,
-    // Measure3Data
     pollutionClinicTotal: 0,
     pollutionCliniService: 0,
     onlinePollutionClinicTotal: 0,
     onlinePollutionCliniService: 0,
+    mosquitoNetTotal: 0,
+    mosquitoNetService: 0,
     nurseryDustFreeTotal: 0,
     nurseryDustFreeService: 0,
     publicHealthDustFreeTotal: 0,
@@ -95,51 +91,44 @@ const ActivityForm: React.FC = () => {
     surgicalMaskGiveCopd: 0,
     skyDoctor: 0,
     ambulance: 0,
-    // Measure4Data
     openPheocDate: "",
     closePheocDate: "",
     openDontBurnDate: "",
     closeDontBurnDate: "",
     lawEnforcement: 0,
-    // Measure1UploadData
-    filePath: "",
-    fileName: "",
-    fileType: "",
-    extension: "",
-    fileSize: "",
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value, type } = e.target;
     const parsedValue = type === "number" ? Number(value) : value;
-    setFormData((prev) => ({ ...prev, [name]: parsedValue }));
+    setActivityFormData((prev) => ({ ...prev, [name]: parsedValue }));
   };
 
-  // รับ parameter เป็น Measure1UploadData[] แล้ว set state files
+  // ปรับ type parameter ให้ตรงกับ Measure1UploadData[]
   const handleFilesChange = (uploadedFiles: Measure1UploadData[]) => {
     setFiles(uploadedFiles);
-    console.log(files);
   };
 
-  const handleMeasureSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleMeasureSelectChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const selectedValue = Number(e.target.value);
-    setMeasureType(selectedValue);
-    setFormData((prev) => ({ ...prev, measureType: selectedValue }));
+    setActivityType(selectedValue);
+    setActivityFormData((prev) => ({ ...prev, activityType: selectedValue }));
   };
 
   const validateForm = (): boolean => {
     const errors: string[] = [];
-    if (!formData.activityDate) {
-      errors.push("กรุณาเลือกวันที่ดำเนินกิจกรรม.");
-    }
-    if (formData.activityType === 0) {
+    if (activityFormData.activityType === 0) {
       errors.push("กรุณาเลือกประเภทกิจกรรม.");
     }
-    if (measureType === 1) {
-      if (!formData.activityName && !formData.activityDetail) {
-        errors.push("กรุณากรอกอย่างน้อยหนึ่งข้อมูลในมาตรการที่ 1.");
+    if (activityType === 1) {
+      if (!activityFormData.activityDetail && !activityFormData.activityDate) {
+        errors.push("กรุณากรอกข้อมูลอย่างน้อยหนึ่งรายการในมาตรการที่ 1.");
       }
     }
     if (errors.length > 0) {
@@ -149,8 +138,37 @@ const ActivityForm: React.FC = () => {
     return true;
   };
 
+  // ฟังก์ชันสำหรับอัปโหลดไฟล์จริง โดยใช้ property rawFile ที่เก็บ File object ใน Measure1UploadData
+  const handleFileUpload = async (): Promise<any[]> => {
+    if (files.length === 0) return [];
+    // ใช้ FormData ของ browser แทนการใช้ ActivityFormData (ซึ่งเป็น type เท่านั้น)
+    const formDataUpload = new FormData();
+    files.forEach((fileData) => {
+      if (fileData.rawFile) {
+        formDataUpload.append("files", fileData.rawFile);
+      }
+    });
+
+    const res = await fetch("/api/uploadactivity", {
+      method: "POST",
+      body: formDataUpload,
+    });
+
+    if (!res.ok) {
+      toast.error("การอัปโหลดไฟล์ล้มเหลว");
+      return [];
+    } else {
+      const data = await res.json();
+      console.log("อัปโหลดไฟล์สำเร็จ", data);
+      return data.files || [];
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const now = new Date();
+    const year = now.getFullYear().toString();
+
     if (!validateForm()) return;
     try {
       toast.info("กำลังบันทึกข้อมูล...", { autoClose: 2000 });
@@ -159,8 +177,8 @@ const ActivityForm: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          activityType: formData.activityType,
-          activityDate: formData.activityDate,
+          activityType: activityFormData.activityType,
+          year: year,
         }),
       });
 
@@ -173,118 +191,127 @@ const ActivityForm: React.FC = () => {
 
       const activityData = await activityResponse.json();
       const activityId = activityData.id;
-      setFormData((prev) => ({ ...prev, activityId }));
+      setActivityFormData((prev) => ({ ...prev, activityId }));
       toast.success("กิจกรรมถูกบันทึกสำเร็จ!");
 
       // เตรียม payload สำหรับมาตรการแต่ละประเภท
-      const measurePayload: Record<string, any> = { activityId };
+      const measurePayload: Record<string, any> = { activityId, year };
 
-      switch (measureType) {
-        case 1:
-          measurePayload.activityName = formData.activityName;
-          measurePayload.activityDetail = formData.activityDetail;
-          measurePayload.activityDate = formData.activityDate;
-          break;
-        case 2:
-          measurePayload.riskHealthInfo = formData.riskHealthInfo;
-          measurePayload.riskHealthSocial = formData.riskHealthSocial;
-          measurePayload.riskChildTotal = formData.riskChildTotal;
-          measurePayload.riskChildTakeCare = formData.riskChildTakeCare;
-          measurePayload.riskOlderTotal = formData.riskOlderTotal;
-          measurePayload.riskOlderTakeCare = formData.riskOlderTakeCare;
-          measurePayload.riskPregnantTotal = formData.riskPregnantTotal;
-          measurePayload.riskPregnantTakeCare = formData.riskPregnantTakeCare;
-          measurePayload.riskBedriddenTotal = formData.riskBedriddenTotal;
-          measurePayload.riskBedriddenTakeCare = formData.riskBedriddenTakeCare;
-          measurePayload.riskHeartTotal = formData.riskHeartTotal;
-          measurePayload.riskHeartTakeCare = formData.riskHeartTakeCare;
-          measurePayload.riskCopdTotal = formData.riskCopdTotal;
-          measurePayload.riskCopdTakeCare = formData.riskCopdTakeCare;
-          measurePayload.healthcareOfficer = formData.healthcareOfficer;
-          break;
-        case 3:
-          measurePayload.pollutionClinicTotal = formData.pollutionClinicTotal;
-          measurePayload.pollutionCliniService = formData.pollutionCliniService;
-          measurePayload.onlinePollutionClinicTotal = formData.onlinePollutionClinicTotal;
-          measurePayload.onlinePollutionCliniService = formData.onlinePollutionCliniService;
-          measurePayload.nurseryDustFreeTotal = formData.nurseryDustFreeTotal;
-          measurePayload.nurseryDustFreeService = formData.nurseryDustFreeService;
-          measurePayload.publicHealthDustFreeTotal = formData.publicHealthDustFreeTotal;
-          measurePayload.publicHealthDustFreeService = formData.publicHealthDustFreeService;
-          measurePayload.officeDustFreeTotal = formData.officeDustFreeTotal;
-          measurePayload.officeDustFreeService = formData.officeDustFreeService;
-          measurePayload.buildingDustFreeTotal = formData.buildingDustFreeTotal;
-          measurePayload.buildingDustFreeService = formData.buildingDustFreeService;
-          measurePayload.otherDustFreeTotal = formData.otherDustFreeTotal;
-          measurePayload.otherDustFreeService = formData.otherDustFreeService;
-          measurePayload.team3DoctorTotal = formData.team3DoctorTotal;
-          measurePayload.team3DoctorService = formData.team3DoctorService;
-          measurePayload.mobileDoctorTotal = formData.mobileDoctorTotal;
-          measurePayload.mobileDoctorService = formData.mobileDoctorService;
-          measurePayload.civilTakeCareTotal = formData.civilTakeCareTotal;
-          measurePayload.civilTakeCareService = formData.civilTakeCareService;
-          measurePayload.shertTeamProvTotal = formData.shertTeamProvTotal;
-          measurePayload.shertTeamProvService = formData.shertTeamProvService;
-          measurePayload.shertTeamDistTotal = formData.shertTeamDistTotal;
-          measurePayload.shertTeamDistService = formData.shertTeamDistService;
-          measurePayload.envoCccuTotal = formData.envoCccuTotal;
-          measurePayload.envoCccuService = formData.envoCccuService;
-          measurePayload.n95MaskGiveCivil = formData.n95MaskGiveCivil;
-          measurePayload.surgicalMaskGiveCivil = formData.surgicalMaskGiveCivil;
-          measurePayload.n95MaskGiveChild = formData.n95MaskGiveChild;
-          measurePayload.surgicalMaskGiveChild = formData.surgicalMaskGiveChild;
-          measurePayload.n95MaskGiveOlder = formData.n95MaskGiveOlder;
-          measurePayload.surgicalMaskGiveOlder = formData.surgicalMaskGiveOlder;
-          measurePayload.n95MaskGivePregnant = formData.n95MaskGivePregnant;
-          measurePayload.surgicalMaskGivePregnant = formData.surgicalMaskGivePregnant;
-          measurePayload.n95MaskGiveBedridden = formData.n95MaskGiveBedridden;
-          measurePayload.surgicalMaskGiveBedridden = formData.surgicalMaskGiveBedridden;
-          measurePayload.n95MaskGiveSick = formData.n95MaskGiveSick;
-          measurePayload.surgicalMaskGiveSick = formData.surgicalMaskGiveSick;
-          measurePayload.n95MaskGiveHeart = formData.n95MaskGiveHeart;
-          measurePayload.surgicalMaskGiveHeart = formData.surgicalMaskGiveHeart;
-          measurePayload.n95MaskGiveCopd = formData.n95MaskGiveCopd;
-          measurePayload.surgicalMaskGiveCopd = formData.surgicalMaskGiveCopd;
-          measurePayload.skyDoctor = formData.skyDoctor;
-          measurePayload.ambulance = formData.ambulance;
-          break;
-        case 4:
-          measurePayload.openPheocDate = formData.openPheocDate;
-          measurePayload.closePheocDate = formData.closePheocDate;
-          measurePayload.openDontBurnDate = formData.openDontBurnDate;
-          measurePayload.closeDontBurnDate = formData.closeDontBurnDate;
-          measurePayload.lawEnforcement = formData.lawEnforcement;
-          break;
-        default:
-          console.warn("Unknown measure type");
-          return;
+      if (activityType === 1) {
+        // อัปโหลดไฟล์แล้วรวมข้อมูลไฟล์ที่อัปโหลดลงใน payload
+        const uploadedFiles = await handleFileUpload();
+        measurePayload.files = uploadedFiles;
+        measurePayload.activityDetail = activityFormData.activityDetail;
+        measurePayload.activityDate = activityFormData.activityDate;
+      } else if (activityType === 2) {
+        measurePayload.riskHealthInfo = activityFormData.riskHealthInfo;
+        measurePayload.riskHealthSocial = activityFormData.riskHealthSocial;
+        measurePayload.riskChildTotal = activityFormData.riskChildTotal;
+        measurePayload.riskChildTakeCare = activityFormData.riskChildTakeCare;
+        measurePayload.riskOlderTotal = activityFormData.riskOlderTotal;
+        measurePayload.riskOlderTakeCare = activityFormData.riskOlderTakeCare;
+        measurePayload.riskPregnantTotal = activityFormData.riskPregnantTotal;
+        measurePayload.riskPregnantTakeCare = activityFormData.riskPregnantTakeCare;
+        measurePayload.riskBedriddenTotal = activityFormData.riskBedriddenTotal;
+        measurePayload.riskBedriddenTakeCare = activityFormData.riskBedriddenTakeCare;
+        measurePayload.riskHeartTotal = activityFormData.riskHeartTotal;
+        measurePayload.riskHeartTakeCare = activityFormData.riskHeartTakeCare;
+        measurePayload.riskCopdTotal = activityFormData.riskCopdTotal;
+        measurePayload.riskCopdTakeCare = activityFormData.riskCopdTakeCare;
+        measurePayload.healthcareOfficer = activityFormData.healthcareOfficer;
+      } else if (activityType === 3) {
+        measurePayload.pollutionClinicTotal = activityFormData.pollutionClinicTotal;
+        measurePayload.pollutionCliniService = activityFormData.pollutionCliniService;
+        measurePayload.onlinePollutionClinicTotal = activityFormData.onlinePollutionClinicTotal;
+        measurePayload.onlinePollutionCliniService = activityFormData.onlinePollutionCliniService;
+        measurePayload.mosquitoNetTotal = activityFormData.mosquitoNetTotal;
+        measurePayload.mosquitoNetService = activityFormData.mosquitoNetService;
+        measurePayload.nurseryDustFreeTotal = activityFormData.nurseryDustFreeTotal;
+        measurePayload.nurseryDustFreeService = activityFormData.nurseryDustFreeService;
+        measurePayload.publicHealthDustFreeTotal = activityFormData.publicHealthDustFreeTotal;
+        measurePayload.publicHealthDustFreeService = activityFormData.publicHealthDustFreeService;
+        measurePayload.officeDustFreeTotal = activityFormData.officeDustFreeTotal;
+        measurePayload.officeDustFreeService = activityFormData.officeDustFreeService;
+        measurePayload.buildingDustFreeTotal = activityFormData.buildingDustFreeTotal;
+        measurePayload.buildingDustFreeService = activityFormData.buildingDustFreeService;
+        measurePayload.otherDustFreeTotal = activityFormData.otherDustFreeTotal;
+        measurePayload.otherDustFreeService = activityFormData.otherDustFreeService;
+        measurePayload.team3DoctorTotal = activityFormData.team3DoctorTotal;
+        measurePayload.team3DoctorService = activityFormData.team3DoctorService;
+        measurePayload.mobileDoctorTotal = activityFormData.mobileDoctorTotal;
+        measurePayload.mobileDoctorService = activityFormData.mobileDoctorService;
+        measurePayload.civilTakeCareTotal = activityFormData.civilTakeCareTotal;
+        measurePayload.civilTakeCareService = activityFormData.civilTakeCareService;
+        measurePayload.shertTeamProvTotal = activityFormData.shertTeamProvTotal;
+        measurePayload.shertTeamProvService = activityFormData.shertTeamProvService;
+        measurePayload.shertTeamDistTotal = activityFormData.shertTeamDistTotal;
+        measurePayload.shertTeamDistService = activityFormData.shertTeamDistService;
+        measurePayload.envoCccuTotal = activityFormData.envoCccuTotal;
+        measurePayload.envoCccuService = activityFormData.envoCccuService;
+        measurePayload.n95MaskGiveCivil = activityFormData.n95MaskGiveCivil;
+        measurePayload.surgicalMaskGiveCivil = activityFormData.surgicalMaskGiveCivil;
+        measurePayload.n95MaskGiveChild = activityFormData.n95MaskGiveChild;
+        measurePayload.surgicalMaskGiveChild = activityFormData.surgicalMaskGiveChild;
+        measurePayload.n95MaskGiveOlder = activityFormData.n95MaskGiveOlder;
+        measurePayload.surgicalMaskGiveOlder = activityFormData.surgicalMaskGiveOlder;
+        measurePayload.n95MaskGivePregnant = activityFormData.n95MaskGivePregnant;
+        measurePayload.surgicalMaskGivePregnant = activityFormData.surgicalMaskGivePregnant;
+        measurePayload.n95MaskGiveBedridden = activityFormData.n95MaskGiveBedridden;
+        measurePayload.surgicalMaskGiveBedridden = activityFormData.surgicalMaskGiveBedridden;
+        measurePayload.n95MaskGiveSick = activityFormData.n95MaskGiveSick;
+        measurePayload.surgicalMaskGiveSick = activityFormData.surgicalMaskGiveSick;
+        measurePayload.n95MaskGiveHeart = activityFormData.n95MaskGiveHeart;
+        measurePayload.surgicalMaskGiveHeart = activityFormData.surgicalMaskGiveHeart;
+        measurePayload.n95MaskGiveCopd = activityFormData.n95MaskGiveCopd;
+        measurePayload.surgicalMaskGiveCopd = activityFormData.n95MaskGiveCopd;
+        measurePayload.skyDoctor = activityFormData.skyDoctor;
+        measurePayload.ambulance = activityFormData.ambulance;
+      } else if (activityType === 4) {
+        measurePayload.openPheocDate = activityFormData.openPheocDate;
+        measurePayload.closePheocDate = activityFormData.closePheocDate;
+        measurePayload.openDontBurnDate = activityFormData.openDontBurnDate;
+        measurePayload.closeDontBurnDate = activityFormData.closeDontBurnDate;
+        measurePayload.lawEnforcement = activityFormData.lawEnforcement;
+      }
+      const excludeKeys = [
+        "openPheocDate",
+        "closePheocDate",
+        "openDontBurnDate",
+        "closeDontBurnDate",
+      ];
+
+      for (const key in measurePayload) {
+        if (!excludeKeys.includes(key)) {
+          if (typeof measurePayload[key] === "string" && !isNaN(parseInt(measurePayload[key]))) {
+            measurePayload[key] = parseInt(measurePayload[key]);
+          }
+        }
       }
 
-      const measureResponse = await fetch(measureApiMap[measureType], {
-        method: "POST",
+      const measureResponse = await fetch(measureApiMap[activityType], {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(measurePayload),
       });
 
       if (!measureResponse.ok) {
         const measureErrorData = await measureResponse.json();
-        console.error(`Failed to submit Measure${measureType}:`, measureErrorData);
-        toast.error(`การบันทึกมาตรการที่ ${measureType} ล้มเหลว`);
+        console.error(`Failed to submit Measure${activityType}:`, measureErrorData);
+        toast.error(`การบันทึกมาตรการที่ ${activityType} ล้มเหลว`);
         return;
       }
 
-      toast.success(`มาตรการที่ ${measureType} ถูกบันทึกสำเร็จ!`);
+      toast.success(`มาตรการที่ ${activityType} ถูกบันทึกสำเร็จ!`);
 
-      // รีเซ็ตข้อมูลแบบฟอร์ม, ประเภทมาตรการ และไฟล์
-      setMeasureType(0);
+      // รีเซ็ตฟอร์มหลังบันทึกสำเร็จ
+      setActivityType(0);
       setFiles([]);
-      setFormData({
+      setActivityFormData({
         activityId: 0,
         activityType: 0,
         hospCode: "",
         provCode: "",
         distCode: "",
-        activityName: "",
         activityDetail: "",
         activityDate: "",
         riskHealthInfo: 0,
@@ -306,6 +333,8 @@ const ActivityForm: React.FC = () => {
         pollutionCliniService: 0,
         onlinePollutionClinicTotal: 0,
         onlinePollutionCliniService: 0,
+        mosquitoNetTotal: 0,
+        mosquitoNetService: 0,
         nurseryDustFreeTotal: 0,
         nurseryDustFreeService: 0,
         publicHealthDustFreeTotal: 0,
@@ -351,11 +380,6 @@ const ActivityForm: React.FC = () => {
         openDontBurnDate: "",
         closeDontBurnDate: "",
         lawEnforcement: 0,
-        filePath: "",
-        fileName: "",
-        fileType: "",
-        extension: "",
-        fileSize: "",
       });
     } catch (error) {
       console.error("Error submitting activity:", error);
@@ -374,24 +398,24 @@ const ActivityForm: React.FC = () => {
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <MeasureSelect
-            measureType={measureType}
+            activityType={activityType}
             onChange={handleMeasureSelectChange}
           />
-          {measureType === 1 && (
+          {activityType === 1 && (
             <Measure1
-              formData={formData}
+              activityFormData={activityFormData}
               handleChange={handleChange}
               onFilesChange={handleFilesChange}
             />
           )}
-          {measureType === 2 && (
-            <Measure2 formData={formData} handleChange={handleChange} />
+          {activityType === 2 && (
+            <Measure2 activityFormData={activityFormData} handleChange={handleChange} />
           )}
-          {measureType === 3 && (
-            <Measure3 formData={formData} handleChange={handleChange} />
+          {activityType === 3 && (
+            <Measure3 activityFormData={activityFormData} handleChange={handleChange} />
           )}
-          {measureType === 4 && (
-            <Measure4 formData={formData} handleChange={handleChange} />
+          {activityType === 4 && (
+            <Measure4 activityFormData={activityFormData} handleChange={handleChange} />
           )}
           <button
             type="submit"

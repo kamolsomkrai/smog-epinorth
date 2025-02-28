@@ -4,18 +4,23 @@ import { z } from "zod";
 
 // Zod Schema สำหรับ Measure2
 const Measure2Schema = z.object({
-  activity_id: z.number().int().min(1),
-  risk_health_monitoring_1_1: z.number().int().min(0),
-  risk_health_monitoring_1_2: z.number().int().min(0),
-  child: z.number().int().min(0),
-  elderly: z.number().int().min(0),
-  pregnant: z.number().int().min(0),
-  bedridden: z.number().int().min(0),
-  asthma: z.number().int().min(0),
-  copd: z.number().int().min(0),
-  asthma_copd: z.number().int().min(0),
-  health_check_staff: z.number().int().min(0),
-  health_check_volunteer: z.number().int().min(0),
+  activityId: z.number().int().min(1),
+  riskHealthInfo: z.number().int().min(0),
+  riskHealthSocial: z.number().int().min(0),
+  riskChildTotal: z.number().int().min(0),
+  riskChildTakeCare: z.number().int().min(0),
+  riskOlderTotal: z.number().int().min(0),
+  riskOlderTakeCare: z.number().int().min(0),
+  riskPregnantTotal: z.number().int().min(0),
+  riskPregnantTakeCare: z.number().int().min(0),
+  riskBedriddenTotal: z.number().int().min(0),
+  riskBedriddenTakeCare: z.number().int().min(0),
+  riskHeartTotal: z.number().int().min(0),
+  riskHeartTakeCare: z.number().int().min(0),
+  riskCopdTotal: z.number().int().min(0),
+  riskCopdTakeCare: z.number().int().min(0),
+  healthcareOfficer: z.number().int().min(0),
+  year: z.number().int().min(1),
 });
 
 // Centralized API Error Handling
@@ -47,7 +52,7 @@ const validateToken = (token?: string) => {
   return token;
 };
 
-export async function POST(request: NextRequest) {
+export async function PUT(request: NextRequest) {
   try {
     const token = validateToken(request.cookies.get("token")?.value);
     const cookieHeader = `token=${token}`;
@@ -58,7 +63,7 @@ export async function POST(request: NextRequest) {
     const res = await fetch(
       "https://epinorth-api.ddc.moph.go.th/api/measure2",
       {
-        method: "POST",
+        method: "PUT",
         credentials: "include",
         headers: {
           Cookie: cookieHeader,

@@ -5,14 +5,29 @@ import { z } from "zod";
 // Zod Schema สำหรับ Measure4
 // Zod Schema สำหรับ Measure4
 const Measure4Schema = z.object({
-  activity_id: z.number().int().min(1),
-  eoc_open_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง"),
-  eoc_close_date: z
+  activityId: z.number().int().min(1),
+  openPheocDate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง")
     .or(z.literal(""))
     .optional(),
-  law_enforcement_fine: z.number().int().min(0),
+  closePheocDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง")
+    .or(z.literal(""))
+    .optional(),
+  openDontBurnDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง")
+    .or(z.literal(""))
+    .optional(),
+  closeDontBurnDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง")
+    .or(z.literal(""))
+    .optional(),
+  lawEnforcement: z.number().int().min(0),
+  year: z.number().int().min(1),
 });
 
 // Centralized API Error Handling
@@ -42,7 +57,7 @@ const validateToken = (token?: string) => {
   }
   return token;
 };
-export async function POST(request: NextRequest) {
+export async function PUT(request: NextRequest) {
   try {
     const token = validateToken(request.cookies.get("token")?.value);
     const cookieHeader = `token=${token}`;
@@ -53,7 +68,7 @@ export async function POST(request: NextRequest) {
     const res = await fetch(
       "https://epinorth-api.ddc.moph.go.th/api/measure4",
       {
-        method: "POST",
+        method: "PUT",
         credentials: "include",
         headers: {
           Cookie: cookieHeader,

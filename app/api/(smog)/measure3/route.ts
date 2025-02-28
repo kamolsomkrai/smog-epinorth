@@ -4,36 +4,54 @@ import { z } from "zod";
 
 // Zod Schema สำหรับ Measure3
 const Measure3Schema = z.object({
-  activity_id: z.number().int().min(1),
-  pollution_clinic_open: z.number().int().min(0),
-  pollution_clinic_service: z.number().int().min(0),
-  online_clinic_open: z.number().int().min(0),
-  online_clinic_service: z.number().int().min(0),
-  nursery_dust_free_open: z.number().int().min(0),
-  nursery_dust_free_service: z.number().int().min(0),
-  gov_dust_free_open: z.number().int().min(0),
-  gov_dust_free_service: z.number().int().min(0),
-  active_teams_3_doctors_total: z.number().int().min(0),
-  active_teams_3_doctors_add: z.number().int().min(0),
-  active_teams_mobile_total: z.number().int().min(0),
-  active_teams_mobile_add: z.number().int().min(0),
-  active_teams_citizens_total: z.number().int().min(0),
-  active_teams_citizens_add: z.number().int().min(0),
-  // personal_protective_gear: z.number().int().min(0),
-  pop_N95_mask: z.number().int().min(0),
-  pop_surgical_mask: z.number().int().min(0),
-  elderly_N95_mask: z.number().int().min(0),
-  elderly_surgical_mask: z.number().int().min(0),
-  children_N95_mask: z.number().int().min(0),
-  children_surgical_mask: z.number().int().min(0),
-  pregnant_N95_mask: z.number().int().min(0),
-  pregnant_surgical_mask: z.number().int().min(0),
-  bedridden_N95_mask: z.number().int().min(0),
-  bedridden_surgical_mask: z.number().int().min(0),
-  disease_N95_mask: z.number().int().min(0),
-  disease_surgical_mask: z.number().int().min(0),
-  sky_doctor: z.number().int().min(0),
+  activityId: z.number().int().min(1),
+  pollutionClinicTotal: z.number().int().min(0),
+  pollutionCliniService: z.number().int().min(0),
+  onlinePollutionClinicTotal: z.number().int().min(0),
+  onlinePollutionCliniService: z.number().int().min(0),
+  mosquitoNetTotal: z.number().int().min(0),
+  mosquitoNetService: z.number().int().min(0),
+  nurseryDustFreeTotal: z.number().int().min(0),
+  nurseryDustFreeService: z.number().int().min(0),
+  publicHealthDustFreeTotal: z.number().int().min(0),
+  publicHealthDustFreeService: z.number().int().min(0),
+  officeDustFreeTotal: z.number().int().min(0),
+  officeDustFreeService: z.number().int().min(0),
+  buildingDustFreeTotal: z.number().int().min(0),
+  buildingDustFreeService: z.number().int().min(0),
+  otherDustFreeTotal: z.number().int().min(0),
+  otherDustFreeService: z.number().int().min(0),
+  team3DoctorTotal: z.number().int().min(0),
+  team3DoctorService: z.number().int().min(0),
+  mobileDoctorTotal: z.number().int().min(0),
+  mobileDoctorService: z.number().int().min(0),
+  civilTakeCareTotal: z.number().int().min(0),
+  civilTakeCareService: z.number().int().min(0),
+  shertTeamProvTotal: z.number().int().min(0),
+  shertTeamProvService: z.number().int().min(0),
+  shertTeamDistTotal: z.number().int().min(0),
+  shertTeamDistService: z.number().int().min(0),
+  envoCccuTotal: z.number().int().min(0),
+  envoCccuService: z.number().int().min(0),
+  n95MaskGiveCivil: z.number().int().min(0),
+  surgicalMaskGiveCivil: z.number().int().min(0),
+  n95MaskGiveChild: z.number().int().min(0),
+  surgicalMaskGiveChild: z.number().int().min(0),
+  n95MaskGiveOlder: z.number().int().min(0),
+  surgicalMaskGiveOlder: z.number().int().min(0),
+  n95MaskGivePregnant: z.number().int().min(0),
+  surgicalMaskGivePregnant: z.number().int().min(0),
+  n95MaskGiveBedridden: z.number().int().min(0),
+  surgicalMaskGiveBedridden: z.number().int().min(0),
+  n95MaskGiveSick: z.number().int().min(0),
+  surgicalMaskGiveSick: z.number().int().min(0),
+  n95MaskGiveHeart: z.number().int().min(0),
+  surgicalMaskGiveHeart: z.number().int().min(0),
+  n95MaskGiveCopd: z.number().int().min(0),
+  surgicalMaskGiveCopd: z.number().int().min(0),
+  skyDoctor: z.number().int().min(0),
   ambulance: z.number().int().min(0),
+  year: z.number().int().min(1),
 });
 
 const handleApiError = (error: unknown) => {
@@ -64,7 +82,7 @@ const validateToken = (token?: string) => {
   return token;
 };
 
-export async function POST(request: NextRequest) {
+export async function PUT(request: NextRequest) {
   try {
     const token = validateToken(request.cookies.get("token")?.value);
     const cookieHeader = `token=${token}`;
@@ -75,7 +93,7 @@ export async function POST(request: NextRequest) {
     const res = await fetch(
       "https://epinorth-api.ddc.moph.go.th/api/measure3",
       {
-        method: "POST",
+        method: "PUT",
         credentials: "include",
         headers: {
           Cookie: cookieHeader,

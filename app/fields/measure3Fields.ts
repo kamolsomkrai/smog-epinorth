@@ -46,6 +46,23 @@ export const getSection32Fields = (formData: FormData): Field[] => [
   },
 ];
 
+export const getSection321Fields = (formData: FormData): Field[] => [
+  {
+    id: "mosquitoNetTotal",
+    name: "mosquitoNetTotal",
+    label: "คงคลัง (หลัง):",
+    type: "number",
+    value: formData.mosquitoNetTotal || 0,
+  },
+  {
+    id: "mosquitoNetService",
+    name: "mosquitoNetService",
+    label: "สนับสนุน/แจก กลุ่มเสี่ยง (หลัง):",
+    type: "number",
+    value: formData.mosquitoNetService || 0,
+  },
+];
+
 // 3.3 จัดเตรียมห้องปลอดฝุ่น
 // 3.3.1 ห้องปลอดฝุ่นในศูนย์เด็กเล็ก
 export const getSection331Fields = (formData: FormData): Field[] => [
