@@ -14,11 +14,8 @@ services:
       - /app/.next # เก็บไฟล์ Build เพื่อลดเวลาบิลด์
     command: npm run start
     networks:
-      - app-network
-      - smog_nginx_network
+      - nginx_network
 
 networks:
-  app-network:
-    driver: bridge
-  smog_nginx_network:
+  nginx_network:
     external: true
