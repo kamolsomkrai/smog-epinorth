@@ -4,10 +4,10 @@ FROM node:18-alpine AS builder
 # ตั้งค่าโฟลเดอร์ทำงานใน Container
 WORKDIR /app
 
-# คัดลอกไฟล์ package.json และ package-lock.json
-COPY package*.json ./
+# คัดลอกเฉพาะไฟล์ที่จำเป็นสำหรับการติดตั้ง dependencies
+COPY package.json package-lock.json* ./
 
-# ติดตั้ง Dependencies ทั้งหมด
+# ติดตั้ง Dependencies ทั้งหมด (ใช้ cache จาก Docker layer หาก package.json ไม่เปลี่ยนแปลง)
 RUN npm ci
 
 # คัดลอกโค้ดแอปพลิเคชันทั้งหมด
@@ -23,7 +23,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # คัดลอก package.json และติดตั้ง Dependencies เฉพาะ Production
-COPY package*.json ./
+COPY package.json package-lock.json* ./
 RUN npm ci --only=production
 
 # คัดลอกไฟล์ที่ Build แล้วจาก Builder

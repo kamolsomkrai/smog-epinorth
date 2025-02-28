@@ -17,6 +17,7 @@ const excludedPaths = [
   "/uploads/*",
   "/_next/*",
   "/favicon.ico",
+  "/public/symbol.png",
   "/robots.txt",
   // เพิ่มเส้นทางอื่น ๆ ที่คุณต้องการยกเว้น
 ];
