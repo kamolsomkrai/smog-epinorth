@@ -7,28 +7,32 @@ import path from "path";
 
 export async function POST(request: Request) {
   try {
-    // ใช้ request.formData() สำหรับดึงข้อมูล multipart form data
     const formData = await request.formData();
-    const files = formData.getAll("files");
+    // ดึงเฉพาะ file objects จาก key "files"
+    const files = formData
+      .getAll("files")
+      .filter((item) => item instanceof File) as File[];
+    // หากต้องการให้รับ custom name จาก key "fileNames"
+    // const customNames = formData.getAll("fileNames");
     const uploadDir = path.join(process.cwd(), "public/uploads");
     await fs.mkdir(uploadDir, { recursive: true });
 
     const uploadedFiles: any[] = [];
 
     for (const file of files) {
-      if (file instanceof File) {
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const fileName = file.name;
-        const filePath = path.join(uploadDir, fileName);
-        await fs.writeFile(filePath, buffer);
-        uploadedFiles.push({
-          filePath,
-          fileName,
-          fileType: file.type,
-          extension: fileName.split(".").pop() || "",
-          fileSize: file.size.toString(),
-        });
-      }
+      const buffer = Buffer.from(await file.arrayBuffer());
+      // สมมุติว่าในฐานข้อมูลคุณต้องการใช้ชื่อที่ส่งจาก client (customName)
+      // ถ้าไม่ส่งมา ใช้ file.name แทน
+      const fileName = file.name;
+      const filePath = path.join(uploadDir, fileName);
+      await fs.writeFile(filePath, buffer);
+      uploadedFiles.push({
+        filePath,
+        fileName,
+        fileType: file.type,
+        extension: fileName.split(".").pop() || "",
+        fileSize: file.size.toString(),
+      });
     }
 
     return NextResponse.json({ files: uploadedFiles }, { status: 200 });

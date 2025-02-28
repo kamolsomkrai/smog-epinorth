@@ -7,7 +7,7 @@ const Measure1Schema = z.object({
   activityId: z.number().int().min(1),
   activityDetail: z.string().optional(),
   activityDate: z.string().optional(),
-  year: z.string().optional(),
+  year: z.number().int().min(1),
   files: z
     .array(
       z.object({

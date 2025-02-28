@@ -1,13 +1,14 @@
-// ตัวอย่างการแก้ไขใน Previews.tsx
-import React, { useEffect, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import Image from 'next/image';
-import { v4 as uuidv4 } from 'uuid';
-import { Measure1UploadData } from '../../interfaces/newmeasure';
+"use client";
+import React, { useEffect, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import Image from "next/image";
+import { v4 as uuidv4 } from "uuid";
+import { Measure1UploadData } from "../../interfaces/newmeasure";
 
 interface FileWithPreview extends File {
   preview: string;
-  rawFile: File; // เพิ่ม property สำหรับเก็บ File object จริง
+  rawFile: File; // เก็บ File object จริง
+  customName: string; // ชื่อใหม่ที่เป็น UUID
 }
 
 interface PreviewsProps {
@@ -18,32 +19,32 @@ const Previews: React.FC<PreviewsProps> = ({ onFilesChange }) => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { 'image/*': [], 'application/pdf': [] },
+    accept: { "image/*": [], "application/pdf": [] },
     maxFiles: 5,
     onDrop: (acceptedFiles: File[]) => {
-      const mappedFiles: FileWithPreview[] = acceptedFiles.map((file) =>
-        Object.assign(file, {
+      const mappedFiles: FileWithPreview[] = acceptedFiles.map((file) => {
+        const parts = file.name.split(".");
+        const extension = parts.length > 1 ? parts.pop() || "" : "";
+        const newFileName = extension ? `${uuidv4()}.${extension}` : uuidv4();
+        return Object.assign(file, {
           preview: URL.createObjectURL(file),
-          rawFile: file, // แนบ File object จริงเข้าไปใน property rawFile
-        })
-      );
+          rawFile: file,
+          customName: newFileName,
+        });
+      });
       setFiles(mappedFiles);
 
-      // แปลงข้อมูลไฟล์ให้ตรงกับ Measure1UploadData โดยเปลี่ยนชื่อไฟล์ใหม่ด้วย uuid
-      const uploadDataFiles: Measure1UploadData[] = mappedFiles.map((file) => {
-        const parts = file.name.split('.');
-        const extension = parts.length > 1 ? parts.pop() || '' : '';
-        const newFileName = extension ? `${uuidv4()}.${extension}` : uuidv4();
-        return {
-          activityId: 0,
-          filePath: file.preview,
-          fileName: newFileName,
-          fileType: file.type,
-          extension: extension,
-          fileSize: file.size.toString(),
-          rawFile: file, // แนบ File object จริงเข้าไปใน object ที่ส่งให้ ActivityForm
-        };
-      });
+      // ส่งข้อมูลไฟล์พร้อมชื่อใหม่ (UUID) โดยใช้ key "files" สำหรับ File object
+      // และ key "fileNames" สำหรับชื่อใหม่
+      const uploadDataFiles: Measure1UploadData[] = mappedFiles.map((file) => ({
+        activityId: 0,
+        filePath: file.preview, // สำหรับ preview
+        fileName: file.customName, // ชื่อไฟล์ใหม่ (UUID)
+        fileType: file.type,
+        extension: file.customName.split(".").pop() || "",
+        fileSize: file.size.toString(),
+        rawFile: file, // ส่ง File object จริง
+      }));
       onFilesChange(uploadDataFiles);
     },
   });
@@ -54,7 +55,7 @@ const Previews: React.FC<PreviewsProps> = ({ onFilesChange }) => {
       className="relative inline-flex rounded overflow-hidden border border-gray-200 mb-2 mr-2 w-[100px] h-[100px] p-1 shadow-md"
     >
       <div className="relative w-full h-full">
-        <Image src={file.preview} alt={file.name} fill style={{ objectFit: 'cover' }} unoptimized />
+        <Image src={file.preview} alt={file.name} fill style={{ objectFit: "cover" }} unoptimized />
       </div>
     </div>
   ));
@@ -67,13 +68,13 @@ const Previews: React.FC<PreviewsProps> = ({ onFilesChange }) => {
     <section className="max-w-xl mx-auto p-4">
       <div
         {...getRootProps({
-          className: `border-2 border-dashed p-6 rounded cursor-pointer text-center transition-colors duration-300 ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white hover:bg-gray-50'
+          className: `border-2 border-dashed p-6 rounded cursor-pointer text-center transition-colors duration-300 ${isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white hover:bg-gray-50"
             }`,
         })}
       >
         <input {...getInputProps()} />
         <p className="text-lg font-medium text-gray-700">
-          {isDragActive ? 'ปล่อยไฟล์ที่นี่...' : 'ลากและวางไฟล์ที่นี่ หรือคลิกเพื่อเลือกไฟล์ (สูงสุด 5 ไฟล์)'}
+          {isDragActive ? "ปล่อยไฟล์ที่นี่..." : "ลากและวางไฟล์ที่นี่ หรือคลิกเพื่อเลือกไฟล์ (สูงสุด 5 ไฟล์)"}
         </p>
         <p className="text-sm text-gray-500 mt-2">รองรับไฟล์รูปภาพ (JPEG, PNG) และ PDF</p>
       </div>
