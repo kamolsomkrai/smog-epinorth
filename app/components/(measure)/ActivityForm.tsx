@@ -141,11 +141,15 @@ const ActivityForm: React.FC = () => {
   // ฟังก์ชันสำหรับอัปโหลดไฟล์จริง โดยใช้ property rawFile ที่เก็บ File object ใน Measure1UploadData
   const handleFileUpload = async (): Promise<any[]> => {
     if (files.length === 0) return [];
-    // ใช้ FormData ของ browser แทนการใช้ ActivityFormData (ซึ่งเป็น type เท่านั้น)
     const formDataUpload = new FormData();
+
     files.forEach((fileData) => {
       if (fileData.rawFile) {
-        formDataUpload.append("files", fileData.rawFile);
+        // สร้าง File object ใหม่ด้วยชื่อ custom (UUID)
+        const renamedFile = new File([fileData.rawFile], fileData.fileName, {
+          type: fileData.rawFile.type,
+        });
+        formDataUpload.append("files", renamedFile);
       }
     });
 
@@ -163,6 +167,7 @@ const ActivityForm: React.FC = () => {
       return data.files || [];
     }
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -278,6 +283,8 @@ const ActivityForm: React.FC = () => {
         "closePheocDate",
         "openDontBurnDate",
         "closeDontBurnDate",
+        "activityDate",
+        "activityDetail",
       ];
 
       for (const key in measurePayload) {
