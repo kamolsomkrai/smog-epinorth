@@ -15,7 +15,7 @@ const Measure1Schema = z.object({
         fileName: z.string(),
         fileType: z.string(),
         extension: z.string(),
-        fileSize: z.string(),
+        fileSize: z.number(),
       })
     )
     .optional(),
