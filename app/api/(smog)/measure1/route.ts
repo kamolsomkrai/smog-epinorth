@@ -5,6 +5,7 @@ import { z } from "zod";
 // Zod Schema สำหรับ Measure1 พร้อมไฟล์อัปโหลด
 const Measure1Schema = z.object({
   activityId: z.number().int().min(1),
+  activityCatalog: z.number().int().min(1),
   activityDetail: z.string().optional(),
   activityDate: z.string().optional(),
   year: z.number().int().min(1),

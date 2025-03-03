@@ -1,5 +1,5 @@
 export interface Measure1Data {
-  activityName: string;
+  activityCatalog: number;
   activityDetail: string;
   activityDate: string;
 }

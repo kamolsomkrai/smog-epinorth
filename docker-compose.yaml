@@ -12,6 +12,7 @@ services:
       - .:/app:cached # Mount โค้ดจาก Host ไปยัง Container
       - /app/node_modules # ป้องกันการเขียนทับ node_modules
       - /app/.next # เก็บไฟล์ Build เพื่อลดเวลาบิลด์
+      - ./public:/app/public
     command: npm run start
     networks:
       - nginx_networks

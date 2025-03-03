@@ -32,8 +32,28 @@ const Measure1: React.FC<Measure1Props> = ({ activityFormData, handleChange, onF
           />
         </div>
         <div className="mb-4">
+          <label htmlFor="activityCatalog" className="block text-gray-700 font-medium mb-2">
+            ประเภทกิจกรรม:
+          </label>
+          <select
+            id="activityCatalog"
+            name="activityCatalog"
+            value={activityFormData.activityCatalog || 0}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="0">เลือกประเภทกิจกรรม</option>
+            <option value="1">การเฝ้าระวังและติดตามสถานการณ์หรือการรายงานข้อมูล</option>
+            <option value="2">การสื่อสารความเสี่ยง/การรณรงค์</option>
+            <option value="3">การปรับปรุงสภาพแวดล้อม</option>
+            <option value="4">การส่งเสริมการใช้หน้ากากอนามัย</option>
+            <option value="5">การเตรียมการรองรับผู้ป่วยและกลุ่มเสี่ยง</option>
+            <option value="6">กิจกรรมอื่นๆ</option>
+          </select>
+        </div>
+        <div className="mb-4">
           <label htmlFor="activityDetail" className="block text-gray-700 font-medium mb-2">
-            รายละเอียด:
+            รายละเอียดกิจกรรม:
           </label>
           <textarea
             id="activityDetail"
