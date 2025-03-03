@@ -1,6 +1,6 @@
 // components/ActivityForm.tsx
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import MeasureSelect from "../(global)/MeasureSelect";
 import Measure1 from "./Measure1";
@@ -17,6 +17,13 @@ const measureApiMap: Record<number, string> = {
   4: "/api/measure4",
 };
 
+// Map API endpoint สำหรับการดึงข้อมูล (show) เมื่อเลือกมาตรการที่ 2,3,4
+const measureShowApiMap: Record<number, string> = {
+  2: "/api/measure2",
+  3: "/api/measure3",
+  4: "/api/measure4",
+};
+
 const ActivityForm: React.FC = () => {
   // เปลี่ยน state files ให้เป็น Measure1UploadData[] ซึ่งในแต่ละตัวเราจะเก็บ property rawFile (File object จริง) สำหรับอัปโหลด
   const [files, setFiles] = useState<Measure1UploadData[]>([]);
@@ -27,6 +34,7 @@ const ActivityForm: React.FC = () => {
     hospCode: "",
     provCode: "",
     distCode: "",
+    activityCatalog: 0,
     activityDetail: "",
     activityDate: "",
     // ค่า default สำหรับมาตรการที่ 2, 3, 4
@@ -98,6 +106,8 @@ const ActivityForm: React.FC = () => {
     lawEnforcement: 0,
   });
 
+
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -120,6 +130,35 @@ const ActivityForm: React.FC = () => {
     setActivityType(selectedValue);
     setActivityFormData((prev) => ({ ...prev, activityType: selectedValue }));
   };
+  // เมื่อ activityType เปลี่ยนไปในกรณีที่เป็นมาตรการ 2,3,4 ให้ดึงข้อมูลจาก API /show
+  useEffect(() => {
+    if (activityType >= 2 && activityType <= 4) {
+      const endpoint = measureShowApiMap[activityType];
+      fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`Error fetching measure${activityType} data`);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          // หาก API ส่งกลับมาเป็น array ให้ใช้ element แรก
+          const activityId = 0
+          setActivityFormData((prev) => ({ ...prev, activityId }));
+          const fetchedData = Array.isArray(data) && data.length > 0 ? data[0] : data;
+          setActivityFormData((prev) => ({ ...prev, ...fetchedData }));
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error("เกิดข้อผิดพลาดในการดึงข้อมูลมาตรการ");
+        });
+    }
+  }, [activityType]);
+
 
   const validateForm = (): boolean => {
     const errors: string[] = [];
@@ -177,28 +216,35 @@ const ActivityForm: React.FC = () => {
     if (!validateForm()) return;
     try {
       toast.info("กำลังบันทึกข้อมูล...", { autoClose: 2000 });
+
+      let activityId = activityFormData.activityId;
+
       // ส่งข้อมูลกิจกรรมก่อน
-      const activityResponse = await fetch("/api/activity", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          activityType: activityFormData.activityType,
-          year: year,
-        }),
-      });
+      if (activityFormData.activityId == 0) {
+        const activityResponse = await fetch("/api/activity", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            activityType: activityFormData.activityType,
+            year: year,
+          }),
+        });
 
-      if (!activityResponse.ok) {
-        const errorData = await activityResponse.json();
-        console.error("Failed to submit activity:", errorData);
-        toast.error("การบันทึกกิจกรรมล้มเหลว");
-        return;
+        if (!activityResponse.ok) {
+          const errorData = await activityResponse.json();
+          console.error("Failed to submit activity:", errorData);
+          toast.error("การบันทึกกิจกรรมล้มเหลว");
+          return;
+        }
+
+        const activityData = await activityResponse.json();
+        activityId = activityData.id;
+        setActivityFormData((prev) => ({ ...prev, activityId }));
+        toast.success("กิจกรรมถูกบันทึกสำเร็จ!");
       }
-
-      const activityData = await activityResponse.json();
-      const activityId = activityData.id;
-      setActivityFormData((prev) => ({ ...prev, activityId }));
-      toast.success("กิจกรรมถูกบันทึกสำเร็จ!");
-
+      else {
+        activityId = activityFormData.activityId;
+      }
       // เตรียม payload สำหรับมาตรการแต่ละประเภท
       const measurePayload: Record<string, any> = { activityId, year };
 
@@ -206,6 +252,7 @@ const ActivityForm: React.FC = () => {
         // อัปโหลดไฟล์แล้วรวมข้อมูลไฟล์ที่อัปโหลดลงใน payload
         const uploadedFiles = await handleFileUpload();
         measurePayload.files = uploadedFiles;
+        measurePayload.activityCatalog = activityFormData.activityCatalog;
         measurePayload.activityDetail = activityFormData.activityDetail;
         measurePayload.activityDate = activityFormData.activityDate;
       } else if (activityType === 2) {
@@ -319,6 +366,7 @@ const ActivityForm: React.FC = () => {
         hospCode: "",
         provCode: "",
         distCode: "",
+        activityCatalog: 0,
         activityDetail: "",
         activityDate: "",
         riskHealthInfo: 0,

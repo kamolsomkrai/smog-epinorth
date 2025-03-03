@@ -52,6 +52,39 @@ const validateToken = (token?: string) => {
   return token;
 };
 
+export async function POST(request: NextRequest) {
+  try {
+    const token = validateToken(request.cookies.get("token")?.value);
+    const cookieHeader = `token=${token}`;
+    // const body = await request.json();
+    // const validatedData = Measure2Schema.parse(body);
+
+    // ส่งข้อมูลไปยัง Express API
+    const res = await fetch(
+      "https://epinorth-api.ddc.moph.go.th/api/measure2/show",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Cookie: cookieHeader,
+          "Content-Type": "application/json",
+        },
+        // body: JSON.stringify(validatedData),
+      }
+    );
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Express API Error: ${res.status} ${errorText}`);
+    }
+
+    const responseData = await res.json();
+    return NextResponse.json(responseData, { status: 201 });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
 export async function PUT(request: NextRequest) {
   try {
     const token = validateToken(request.cookies.get("token")?.value);

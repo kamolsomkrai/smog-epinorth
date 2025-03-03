@@ -16,8 +16,8 @@ import {
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
 interface Supply {
-  id: number;
-  supplyname: string;
+  supplie_id: number;
+  suppliename: string;
 }
 
 interface AddSupplyModalProps {
@@ -165,17 +165,40 @@ const AddSupplyModal: React.FC<AddSupplyModalProps> = ({ onClose }) => {
         <form onSubmit={handleSubmit} noValidate>
           <div className="mb-4">
             <FormControl fullWidth error={Boolean(errors.supply)}>
-              <InputLabel>ชื่อวัสดุ</InputLabel>
+              <InputLabel>เลือกเวชภัณฑ์</InputLabel>
               <Select
                 value={selectedSupplyId}
                 onChange={handleSupplyChange}
-                label="ชื่อวัสดุ"
+                label="เลือกเวชภัณฑ์"
                 required
               >
                 {supplyList && supplyList.length > 0 ? (
                   supplyList.map((supply) => (
-                    <MenuItem key={supply.id} value={supply.id}>
-                      {supply.supplyname}
+                    <MenuItem key={supply.supplie_id} value={supply.supplie_id}>
+                      {supply.suppliename}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled>ไม่พบข้อมูล</MenuItem>
+                )}
+              </Select>
+              {errors.supply && <FormHelperText>{errors.supply}</FormHelperText>}
+            </FormControl>
+          </div>
+
+          <div className="mb-4">
+            <FormControl fullWidth error={Boolean(errors.supply)}>
+              <InputLabel>โรงพยาบาล</InputLabel>
+              <Select
+                value={selectedSupplyId}
+                onChange={handleSupplyChange}
+                label="โรงพยาบาล"
+                required
+              >
+                {supplyList && supplyList.length > 0 ? (
+                  supplyList.map((supply) => (
+                    <MenuItem key={supply.supplie_id} value={supply.supplie_id}>
+                      {supply.suppliename}
                     </MenuItem>
                   ))
                 ) : (
