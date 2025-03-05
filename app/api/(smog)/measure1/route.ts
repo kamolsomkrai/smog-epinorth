@@ -2,7 +2,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 
-// Zod Schema สำหรับ Measure1 พร้อมไฟล์อัปโหลด
 const Measure1Schema = z.object({
   activityId: z.number().int().min(1),
   activityCatalog: z.number().int().min(1),
@@ -40,11 +39,19 @@ const handleApiError = (error: unknown) => {
 };
 
 const validateToken = (token?: string) => {
-  if (!token) {
-    throw new Error("No token found. Please login.");
-  }
+  if (!token) throw new Error("No token found. Please login.");
   return token;
 };
+
+// เพิ่ม OPTIONS handler เพื่อรองรับ preflight request
+export async function OPTIONS(request: NextRequest) {
+  return NextResponse.json(null, {
+    headers: {
+      "Access-Control-Allow-Methods": "GET, PUT, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+  });
+}
 
 export async function PUT(request: NextRequest) {
   try {
@@ -53,9 +60,8 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const validatedData = Measure1Schema.parse(body);
 
-    // ส่งข้อมูลไปยัง Express API โดยใช้ method PUT สำหรับ update
     const res = await fetch(
-      "https://epinorth-api.ddc.moph.go.th/api/measure1/",
+      "https://epinorth-api.ddc.moph.go.th/api/measure1",
       {
         method: "PUT",
         credentials: "include",
@@ -78,10 +84,10 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const res = await fetch(
-      "https://epinorth-api.ddc.moph.go.th/api/measure1/",
+      "https://epinorth-api.ddc.moph.go.th/api/measure1",
       {
         method: "GET",
         credentials: "include",
