@@ -3,29 +3,32 @@ import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 
 // Zod Schema สำหรับ Measure4
-// Zod Schema สำหรับ Measure4
 const Measure4Schema = z.object({
   activityId: z.number().int().min(1),
   openPheocDate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง")
     .or(z.literal(""))
-    .optional(),
+    .optional()
+    .nullable(),
   closePheocDate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง")
     .or(z.literal(""))
-    .optional(),
+    .optional()
+    .nullable(),
   openDontBurnDate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง")
     .or(z.literal(""))
-    .optional(),
+    .optional()
+    .nullable(),
   closeDontBurnDate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "วันที่ไม่ถูกต้อง")
     .or(z.literal(""))
-    .optional(),
+    .optional()
+    .nullable(),
   lawEnforcement: z.number().int().min(0),
   year: z.number().int().min(1),
 });
