@@ -5,6 +5,7 @@ export interface Measure1Data {
 }
 
 export interface Measure2Data {
+  province: string;
   riskHealthInfo: number;
   riskHealthSocial: number;
   riskChildTotal: number;
@@ -23,6 +24,7 @@ export interface Measure2Data {
 }
 
 export interface Measure3Data {
+  province: string;
   pollutionClinicTotal: number;
   pollutionCliniService: number;
   onlinePollutionClinicTotal: number;
@@ -72,6 +74,7 @@ export interface Measure3Data {
 }
 
 export interface Measure4Data {
+  province: string;
   openPheocDate: string;
   closePheocDate: string;
   openDontBurnDate: string;
