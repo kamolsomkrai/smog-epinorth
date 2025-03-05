@@ -17,6 +17,15 @@ interface ActivityData {
   activityCount: number;
 }
 
+const activityTypeLabels = [
+  "เฝ้าระวังและติดตามฯ",
+  "สื่อสารความเสี่ยงฯ",
+  "ปรับปรุงสภาพแวดล้อมฯ",
+  "ส่งเสริมการใช้หน้ากากฯ",
+  "เตรียมการรองรับผู้ป่วยฯ",
+  "กิจกรรมอื่นๆ"
+];
+
 const ReportMeasure1: React.FC = () => {
   const [data, setData] = useState<ActivityData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -124,20 +133,23 @@ const ReportMeasure1: React.FC = () => {
               </div>
               {/* ปุ่มกรองประเภทกิจกรรม 6 ปุ่ม */}
               <div className="mb-6 flex flex-wrap gap-4">
-                {[1, 2, 3, 4, 5, 6].map(type => (
-                  <button
-                    key={type}
-                    onClick={() =>
-                      setSelectedActivityType(prev => (prev === type ? null : type))
-                    }
-                    className={`px-4 py-2 rounded border transition-colors duration-200 ${selectedActivityType === type
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-white text-gray-700 hover:bg-blue-100'
-                      }`}
-                  >
-                    {`ประเภท ${type}`}
-                  </button>
-                ))}
+                {activityTypeLabels.map((label, index) => {
+                  const typeValue = index + 1;
+                  return (
+                    <button
+                      key={typeValue}
+                      onClick={() =>
+                        setSelectedActivityType(prev => (prev === typeValue ? null : typeValue))
+                      }
+                      className={`px-4 py-2 rounded border transition-colors duration-200 ${selectedActivityType === typeValue
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-white text-gray-700 hover:bg-blue-100'
+                        }`}
+                    >
+                      {`${label}`}
+                    </button>
+                  );
+                })}
               </div>
               <div className="mt-8">
                 <DataTable
