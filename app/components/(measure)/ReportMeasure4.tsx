@@ -2,13 +2,13 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { Measure4Data } from '../../interfaces/measure';
-import PieChartSection from '../(object)/PieChartSection';
-import BarChartSection from '../(object)/BarChartSection';
+import { Measure4Data } from '../../interfaces/newmeasure';
+// import PieChartSection from '../(object)/PieChartSection';
+// import BarChartSection from '../(object)/BarChartSection';
 import DataTable from '../(object)/DataTable';
 import Loading from '../(object)/Loading';
 
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#8dd1e1', '#a4de6c', '#d0ed57', '#ffc0cb'];
+// const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#8dd1e1', '#a4de6c', '#d0ed57', '#ffc0cb'];
 
 const ReportMeasure4: React.FC = () => {
   const [data, setData] = useState<Measure4Data[]>([]);
@@ -23,29 +23,34 @@ const ReportMeasure4: React.FC = () => {
     return null;
   };
   // ใช้ useMemo สำหรับการคำนวณ
-  const calculateDaysOpen = useMemo(() => (openDate: string, closeDate?: string): number => {
-    const start = new Date(openDate);
-    const end = closeDate ? new Date(closeDate) : new Date();
+  // ฟังก์ชันคำนวณจำนวนวันเปิด โดยตรวจสอบค่า null และรูปแบบวันที่
+  const calculateDaysOpen = useMemo(() => {
+    return (openDate?: string | null, closeDate?: string | null): number => {
+      if (!openDate) {
+        console.error("openDate จำเป็นต้องมีค่า");
+        return 0;
+      }
+      const start = new Date(openDate);
+      const end = closeDate ? new Date(closeDate) : new Date();
 
-    // ตรวจสอบว่าวันที่ถูกต้องหรือไม่
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      console.error("Invalid date format provided."); // เพิ่มข้อความ error 
-      return 0;
-    }
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        console.error("รูปแบบวันที่ไม่ถูกต้อง");
+        return 0;
+      }
 
-    // คำนวณความแตกต่างของวันโดยไม่ใช้ Math.ceil 
-    const diffTime = end.getTime() - start.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    return diffDays; // ไม่จำเป็นต้องตรวจสอบ diffDays > 0 อีกต่อไป
+      return Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    };
   }, []);
 
-  // ใช้ useMemo สำหรับการกรองข้อมูลตาม searchTerm
+  // กรองข้อมูลโดยตรวจสอบค่า null ของ data และ searchTerm เพื่อป้องกัน error
   const filteredData = useMemo(() => {
+    if (!Array.isArray(data)) return [];
+    const lowerCaseSearchTerm = searchTerm?.toLowerCase() || "";
     return data.filter(item =>
-      item.province.toLowerCase().includes(searchTerm.toLowerCase())
+      item.province?.toLowerCase().includes(lowerCaseSearchTerm)
     );
   }, [data, searchTerm]);
+
 
   useEffect(() => {
     const fetchMeasure1 = async () => {
@@ -78,29 +83,37 @@ const ReportMeasure4: React.FC = () => {
     fetchMeasure1();
   }, []);
 
-  // เตรียมข้อมูลสำหรับ Bar Chart (จำนวนวันที่เปิด EOC ต่อจังหวัด)
-  const barChartData = useMemo(() => {
-    return filteredData.map(item => ({
-      province: item.province,
-      daysOpen: calculateDaysOpen(item.eoc_open_date, item.eoc_close_date),
-    }));
-  }, [filteredData, calculateDaysOpen]);
+  // // เตรียมข้อมูลสำหรับ Bar Chart (จำนวนวันที่เปิด EOC ต่อจังหวัด)
+  // const barChartData = useMemo(() => {
+  //   return filteredData.map(item => ({
+  //     province: item.province,
+  //     daysOpen: calculateDaysOpen(item.openPheocDate, item.closePheocDate),
+  //   }));
+  // }, [filteredData, calculateDaysOpen]);
 
-  // เตรียมข้อมูลสำหรับ Pie Chart (สัดส่วนการจับปรับ)
-  const pieChartData = useMemo(() => {
-    return filteredData.map(item => ({
-      name: item.province,
-      value: item.law_enforcement_fine,
-    }));
-  }, [filteredData]);
+  // // เตรียมข้อมูลสำหรับ Pie Chart (สัดส่วนการจับปรับ)
+  // const pieChartData = useMemo(() => {
+  //   return filteredData.map(item => ({
+  //     name: item.province,
+  //     value: item.lawEnforcement,
+  //   }));
+  // }, [filteredData]);
+
+  // const burnData = useMemo(() => {
+  //   return filteredData.map(item => ({
+  //     name: item.province,
+  //     daysOpen: calculateDaysOpen(item.openDontBurnDate, item.closeDontBurnDate),
+  //   }));
+  // }, [filteredData, calculateDaysOpen]);
 
   // คำนวณรวมสำหรับ Bar Chart และ Pie Chart
   const aggregateData = useMemo(() => {
     return {
-      totalDaysOpen: barChartData.reduce((acc, item) => acc + item.daysOpen, 0),
-      totalFine: filteredData.reduce((acc, item) => acc + item.law_enforcement_fine, 0),
+      totalPheocDaysOpen: filteredData.reduce((acc, item) => acc + calculateDaysOpen(item.openPheocDate, item.closePheocDate), 0),
+      totalBurnDaysOpen: filteredData.reduce((acc, item) => acc + calculateDaysOpen(item.openDontBurnDate, item.closeDontBurnDate), 0),
+      totalFine: filteredData.reduce((acc, item) => acc + item.lawEnforcement, 0),
     };
-  }, [barChartData, filteredData]);
+  }, [filteredData, calculateDaysOpen]);
 
   if (error) {
     return <div className="p-6 text-red-500">{error}</div>;
@@ -128,7 +141,8 @@ const ReportMeasure4: React.FC = () => {
           <>
             {/* ตารางข้อมูล */}
             <DataTable
-              title="จำนวนวันที่เปิดEOCต่อจังหวัด"
+              titlespan="มาตรการภาวะฉุกเฉินทางสาธารณสุข"
+              title="มาตรการภาวะฉุกเฉินทางสาธารณสุข"
               headers={[
                 'จังหวัด',
                 'วันเปิด EOC',
@@ -138,33 +152,57 @@ const ReportMeasure4: React.FC = () => {
               ]}
               data={filteredData.map(item => ({
                 'จังหวัด': item.province,
-                'วันเปิด EOC': formatDate(item.eoc_open_date),
-                'วันปิด EOC': item.eoc_close_date ? formatDate(item.eoc_close_date) : 'ยังไม่ปิด',
-                'จำนวนวันที่เปิด EOC': calculateDaysOpen(item.eoc_open_date, item.eoc_close_date),
-                'การจับปรับ (ครั้ง)': new Intl.NumberFormat().format(item.law_enforcement_fine),
+                'วันเปิด EOC': item.openPheocDate ? formatDate(item.openPheocDate) : 'ยังไม่เปิด',
+                'วันปิด EOC': item.closePheocDate ? formatDate(item.closePheocDate) : 'ยังไม่ปิด',
+                'จำนวนวันที่เปิด EOC': calculateDaysOpen(item.openPheocDate, item.closePheocDate),
+                'การจับปรับ (ครั้ง)': new Intl.NumberFormat().format(item.lawEnforcement),
               }))}
               footer={{
                 'จังหวัด': 'เขตสุขภาพที่ 1',
                 'วันเปิด EOC': '',
                 'วันปิด EOC': '',
-                'จำนวนวันที่เปิด EOC': aggregateData.totalDaysOpen,
+                'จำนวนวันที่เปิด EOC': aggregateData.totalPheocDaysOpen,
                 'การจับปรับ (ครั้ง)': new Intl.NumberFormat().format(aggregateData.totalFine),
               }}
             />
+
+            <DataTable
+              titlespan='มาตรการห้ามเผา'
+              title="มาตรการห้ามเผา"
+              headers={[
+                'จังหวัด',
+                'วันเปิดมาตรการห้ามเผา',
+                'วันปิดมาตรการห้ามเผา',
+                'จำนวนวันที่เปิดมาตรการห้ามเผา',
+              ]}
+              data={filteredData.map(item => ({
+                'จังหวัด': item.province,
+                'วันเปิดมาตรการห้ามเผา': item.openDontBurnDate ? formatDate(item.openDontBurnDate) : 'ยังไม่เปิด',
+                'วันปิดมาตรการห้ามเผา': item.closeDontBurnDate ? formatDate(item.closeDontBurnDate) : 'ยังไม่ปิด',
+                'จำนวนวันที่เปิดมาตรการห้ามเผา': calculateDaysOpen(item.openDontBurnDate, item.closeDontBurnDate),
+              }))}
+              footer={{
+                'จังหวัด': 'เขตสุขภาพที่ 1',
+                'วันเปิดมาตรการห้ามเผา': '',
+                'วันปิดมาตรการห้ามเผา': '',
+                'จำนวนวันที่เปิดมาตรการห้ามเผา': aggregateData.totalBurnDaysOpen,
+              }}
+            />
+
             {/* Bar Chart: จำนวนวันที่เปิด EOC ต่อจังหวัด */}
-            <BarChartSection
+            {/* <BarChartSection
               title="จำนวนวันที่เปิด EOC ต่อจังหวัด"
               data={barChartData}
               keys={['daysOpen']}
               colors={['#8884d8']}
-            />
+            /> */}
 
             {/* Pie Chart: สัดส่วนการจับปรับ */}
-            <PieChartSection
+            {/* <PieChartSection
               title="สัดส่วนการจับปรับ"
               data={pieChartData}
               colors={COLORS}
-            />
+            /> */}
 
 
           </>

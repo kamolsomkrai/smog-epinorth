@@ -1,198 +1,276 @@
-// components/ReportMeasure3.tsx
 "use client";
-
-import React, { useEffect, useState, useMemo } from 'react';
-import { Measure3Data } from '../../interfaces/measure';
-import PieChartSection from '../(object)/PieChartSection';
-import BarChartSection from '../(object)/BarChartSection';
-import DataTable from '../(object)/DataTable';
-import Loading from '../(object)/Loading';
+import React, { useEffect, useState, useMemo } from "react";
+import { Measure3Data } from "../../interfaces/newmeasure";
+// import PieChartSection from "../(object)/PieChartSection";
+// import BarChartSection from "../(object)/BarChartSection";
+import DataTable from "../(object)/DataTable";
+import Loading from "../(object)/Loading";
 
 // สีสำหรับกราฟ
-const COLORS = [
-  '#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#8dd1e1', '#a4de6c',
-  '#d0ed57', '#ffc0cb', '#d88884', '#84d8f8', '#ca82d8', '#c6ca82'
-];
+// const COLORS = [
+//   "#8884d8",
+//   "#82ca9d",
+//   "#ffc658",
+//   "#ff7f50",
+//   "#8dd1e1",
+//   "#a4de6c",
+//   "#d0ed57",
+//   "#ffc0cb",
+//   "#d88884",
+//   "#84d8f8",
+//   "#ca82d8",
+//   "#c6ca82",
+// ];
 
 const ReportMeasure3: React.FC = () => {
   const [data, setData] = useState<Measure3Data[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // ฟังก์ชั่นคำนวณจำนวนวันที่เปิด EOC
-  const calculateTotal = useMemo(() => (field: keyof Measure3Data): number => {
-    return data?.reduce((acc, curr) => acc + (typeof curr[field] === 'number' ? curr[field] : 0), 0) || 0;
-  }, [data]);
-
-  // ฟังก์ชันเพื่อรวมข้อมูลจากหลายจังหวัด
-  const aggregateData = (data: Measure3Data[]) => {
-    return data.reduce((acc, curr) => {
-      acc.pollution_clinic_open += curr.pollution_clinic_open;
-      acc.pollution_clinic_service += curr.pollution_clinic_service;
-      acc.online_clinic_open += curr.online_clinic_open;
-      acc.online_clinic_service += curr.online_clinic_service;
-      acc.nursery_dust_free_open += curr.nursery_dust_free_open;
-      acc.nursery_dust_free_service += curr.nursery_dust_free_service;
-      acc.gov_dust_free_open += curr.gov_dust_free_open;
-      acc.gov_dust_free_service += curr.gov_dust_free_service;
-      acc.active_teams_3_doctors_total += curr.active_teams_3_doctors_total;
-      acc.active_teams_3_doctors_add += curr.active_teams_3_doctors_add;
-      acc.active_teams_mobile_total += curr.active_teams_mobile_total;
-      acc.active_teams_mobile_add += curr.active_teams_mobile_add;
-      acc.active_teams_citizens_total += curr.active_teams_citizens_total;
-      acc.active_teams_citizens_add += curr.active_teams_citizens_add;
-      acc.elderly_N95_mask += curr.elderly_N95_mask;
-      acc.elderly_surgical_mask += curr.elderly_surgical_mask;
-      acc.children_N95_mask += curr.children_N95_mask;
-      acc.children_surgical_mask += curr.children_surgical_mask;
-      acc.pregnant_N95_mask += curr.pregnant_N95_mask;
-      acc.pregnant_surgical_mask += curr.pregnant_surgical_mask;
-      acc.bedridden_N95_mask += curr.bedridden_N95_mask;
-      acc.bedridden_surgical_mask += curr.bedridden_surgical_mask;
-      acc.disease_N95_mask += curr.disease_N95_mask;
-      acc.disease_surgical_mask += curr.disease_surgical_mask;
-      acc.sky_doctor += curr.sky_doctor;
-      acc.ambulance += curr.ambulance;
-      return acc;
-    }, {
-      pollution_clinic_open: 0,
-      pollution_clinic_service: 0,
-      online_clinic_open: 0,
-      online_clinic_service: 0,
-      nursery_dust_free_open: 0,
-      nursery_dust_free_service: 0,
-      gov_dust_free_open: 0,
-      gov_dust_free_service: 0,
-      active_teams_3_doctors_total: 0,
-      active_teams_3_doctors_add: 0,
-      active_teams_mobile_total: 0,
-      active_teams_mobile_add: 0,
-      active_teams_citizens_total: 0,
-      active_teams_citizens_add: 0,
-      elderly_N95_mask: 0,
-      elderly_surgical_mask: 0,
-      children_N95_mask: 0,
-      children_surgical_mask: 0,
-      pregnant_N95_mask: 0,
-      pregnant_surgical_mask: 0,
-      bedridden_N95_mask: 0,
-      bedridden_surgical_mask: 0,
-      disease_N95_mask: 0,
-      disease_surgical_mask: 0,
-      sky_doctor: 0,
-      ambulance: 0,
-    } as Measure3Data);
+  // ฟังก์ชันรวมข้อมูลจากทุกจังหวัด (aggregation) โดยใช้ keys จาก Measure3Data interface
+  const aggregateData = (data: Measure3Data[]): Measure3Data => {
+    return data.reduce(
+      (acc, curr) => ({
+        province: acc.province,
+        pollutionClinicTotal: acc.pollutionClinicTotal + curr.pollutionClinicTotal,
+        pollutionCliniService: acc.pollutionCliniService + curr.pollutionCliniService,
+        onlinePollutionClinicTotal: acc.onlinePollutionClinicTotal + curr.onlinePollutionClinicTotal,
+        onlinePollutionCliniService: acc.onlinePollutionCliniService + curr.onlinePollutionCliniService,
+        mosquitoNetTotal: acc.mosquitoNetTotal + curr.mosquitoNetTotal,
+        mosquitoNetService: acc.mosquitoNetService + curr.mosquitoNetService,
+        nurseryDustFreeTotal: acc.nurseryDustFreeTotal + curr.nurseryDustFreeTotal,
+        nurseryDustFreeService: acc.nurseryDustFreeService + curr.nurseryDustFreeService,
+        publicHealthDustFreeTotal: acc.publicHealthDustFreeTotal + curr.publicHealthDustFreeTotal,
+        publicHealthDustFreeService: acc.publicHealthDustFreeService + curr.publicHealthDustFreeService,
+        officeDustFreeTotal: acc.officeDustFreeTotal + curr.officeDustFreeTotal,
+        officeDustFreeService: acc.officeDustFreeService + curr.officeDustFreeService,
+        buildingDustFreeTotal: acc.buildingDustFreeTotal + curr.buildingDustFreeTotal,
+        buildingDustFreeService: acc.buildingDustFreeService + curr.buildingDustFreeService,
+        otherDustFreeTotal: acc.otherDustFreeTotal + curr.otherDustFreeTotal,
+        otherDustFreeService: acc.otherDustFreeService + curr.otherDustFreeService,
+        team3DoctorTotal: acc.team3DoctorTotal + curr.team3DoctorTotal,
+        team3DoctorService: acc.team3DoctorService + curr.team3DoctorService,
+        mobileDoctorTotal: acc.mobileDoctorTotal + curr.mobileDoctorTotal,
+        mobileDoctorService: acc.mobileDoctorService + curr.mobileDoctorService,
+        civilTakeCareTotal: acc.civilTakeCareTotal + curr.civilTakeCareTotal,
+        civilTakeCareService: acc.civilTakeCareService + curr.civilTakeCareService,
+        shertTeamProvTotal: acc.shertTeamProvTotal + curr.shertTeamProvTotal,
+        shertTeamProvService: acc.shertTeamProvService + curr.shertTeamProvService,
+        shertTeamDistTotal: acc.shertTeamDistTotal + curr.shertTeamDistTotal,
+        shertTeamDistService: acc.shertTeamDistService + curr.shertTeamDistService,
+        envoCccuTotal: acc.envoCccuTotal + curr.envoCccuTotal,
+        envoCccuService: acc.envoCccuService + curr.envoCccuService,
+        n95MaskGiveCivil: acc.n95MaskGiveCivil + curr.n95MaskGiveCivil,
+        surgicalMaskGiveCivil: acc.surgicalMaskGiveCivil + curr.surgicalMaskGiveCivil,
+        n95MaskGiveChild: acc.n95MaskGiveChild + curr.n95MaskGiveChild,
+        surgicalMaskGiveChild: acc.surgicalMaskGiveChild + curr.surgicalMaskGiveChild,
+        n95MaskGiveOlder: acc.n95MaskGiveOlder + curr.n95MaskGiveOlder,
+        surgicalMaskGiveOlder: acc.surgicalMaskGiveOlder + curr.surgicalMaskGiveOlder,
+        n95MaskGivePregnant: acc.n95MaskGivePregnant + curr.n95MaskGivePregnant,
+        surgicalMaskGivePregnant: acc.surgicalMaskGivePregnant + curr.surgicalMaskGivePregnant,
+        n95MaskGiveBedridden: acc.n95MaskGiveBedridden + curr.n95MaskGiveBedridden,
+        surgicalMaskGiveBedridden: acc.surgicalMaskGiveBedridden + curr.surgicalMaskGiveBedridden,
+        n95MaskGiveSick: acc.n95MaskGiveSick + curr.n95MaskGiveSick,
+        surgicalMaskGiveSick: acc.surgicalMaskGiveSick + curr.surgicalMaskGiveSick,
+        n95MaskGiveHeart: acc.n95MaskGiveHeart + curr.n95MaskGiveHeart,
+        surgicalMaskGiveHeart: acc.surgicalMaskGiveHeart + curr.surgicalMaskGiveHeart,
+        n95MaskGiveCopd: acc.n95MaskGiveCopd + curr.n95MaskGiveCopd,
+        surgicalMaskGiveCopd: acc.surgicalMaskGiveCopd + curr.surgicalMaskGiveCopd,
+        skyDoctor: acc.skyDoctor + curr.skyDoctor,
+        ambulance: acc.ambulance + curr.ambulance,
+      }),
+      {
+        pollutionClinicTotal: 0,
+        pollutionCliniService: 0,
+        onlinePollutionClinicTotal: 0,
+        onlinePollutionCliniService: 0,
+        mosquitoNetTotal: 0,
+        mosquitoNetService: 0,
+        nurseryDustFreeTotal: 0,
+        nurseryDustFreeService: 0,
+        publicHealthDustFreeTotal: 0,
+        publicHealthDustFreeService: 0,
+        officeDustFreeTotal: 0,
+        officeDustFreeService: 0,
+        buildingDustFreeTotal: 0,
+        buildingDustFreeService: 0,
+        otherDustFreeTotal: 0,
+        otherDustFreeService: 0,
+        team3DoctorTotal: 0,
+        team3DoctorService: 0,
+        mobileDoctorTotal: 0,
+        mobileDoctorService: 0,
+        civilTakeCareTotal: 0,
+        civilTakeCareService: 0,
+        shertTeamProvTotal: 0,
+        shertTeamProvService: 0,
+        shertTeamDistTotal: 0,
+        shertTeamDistService: 0,
+        envoCccuTotal: 0,
+        envoCccuService: 0,
+        n95MaskGiveCivil: 0,
+        surgicalMaskGiveCivil: 0,
+        n95MaskGiveChild: 0,
+        surgicalMaskGiveChild: 0,
+        n95MaskGiveOlder: 0,
+        surgicalMaskGiveOlder: 0,
+        n95MaskGivePregnant: 0,
+        surgicalMaskGivePregnant: 0,
+        n95MaskGiveBedridden: 0,
+        surgicalMaskGiveBedridden: 0,
+        n95MaskGiveSick: 0,
+        surgicalMaskGiveSick: 0,
+        n95MaskGiveHeart: 0,
+        surgicalMaskGiveHeart: 0,
+        n95MaskGiveCopd: 0,
+        surgicalMaskGiveCopd: 0,
+        skyDoctor: 0,
+        ambulance: 0,
+      } as Measure3Data
+    );
   };
 
-  // ใช้ useMemo สำหรับการคำนวณ
   const aggregateMemo = useMemo(() => {
-    if (data) {
-      return aggregateData(data);
-    }
-    return null;
+    return data ? aggregateData(data) : null;
   }, [data]);
 
-  // ใช้ useMemo สำหรับการกรองข้อมูลตาม searchTerm
   const filteredData = useMemo(() => {
-    return data?.filter(item =>
+    return data?.filter((item) =>
       item.province.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
   }, [data, searchTerm]);
 
   useEffect(() => {
-    const fetchMeasure1 = async () => {
-      setLoading(true); // ตั้งค่า loading ก่อนเรียก API
-
+    const fetchMeasure3 = async () => {
+      setLoading(true);
       try {
-        const response = await fetch('/api/measure3');
+        const response = await fetch("/api/measure3");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const fetchedData: Measure3Data[] = await response.json();
-
-        // ตรวจสอบข้อมูลก่อนบันทึกลงใน localStorage
         if (Array.isArray(fetchedData) && fetchedData.length > 0) {
           setData(fetchedData);
-          localStorage.setItem('Measure3Data', JSON.stringify(fetchedData));
+          localStorage.setItem("Measure3Data", JSON.stringify(fetchedData));
         } else {
           console.warn("API Response ไม่ถูกต้อง:", fetchedData);
           setError("ข้อมูลไม่ถูกต้องจาก API");
         }
       } catch (err) {
-        console.error('Error fetching Measure3 data:', err);
-        setError('ไม่สามารถดึงข้อมูล มาตรการที่ 3 ได้');
+        console.error("Error fetching Measure3 data:", err);
+        setError("ไม่สามารถดึงข้อมูลมาตรการที่ 3 ได้");
       } finally {
-        setLoading(false); // ยกเลิก loading เมื่อโหลดข้อมูลเสร็จ
+        setLoading(false);
       }
     };
 
-    fetchMeasure1();
+    fetchMeasure3();
   }, []);
 
-  // เตรียมข้อมูลสำหรับ Pie Charts
-  const pieDataClinicsOpen = useMemo(() => [
-    { name: 'คลินิกมลพิษ', value: aggregateMemo?.pollution_clinic_open || 0 },
-    { name: 'คลินิกมลพิษออนไลน์', value: aggregateMemo?.online_clinic_open || 0 },
-    { name: 'ห้องปลอดฝุ่นศูนย์เด็กเล็ก', value: aggregateMemo?.nursery_dust_free_open || 0 },
-    { name: 'ห้องปลอดฝุ่นหน่วยงาน', value: aggregateMemo?.gov_dust_free_open || 0 },
-  ], [aggregateMemo]);
+  const calculateTotal = useMemo(() => (field: keyof Measure3Data): number => {
+    return (data || []).reduce((acc, curr) => acc + Number(curr[field] ?? 0), 0);
+  }, [data]);
 
-  const pieDataClinicsService = useMemo(() => [
-    { name: 'บริการคลินิกมลพิษ', value: aggregateMemo?.pollution_clinic_service || 0 },
-    { name: 'บริการคลินิกมลพิษออนไลน์', value: aggregateMemo?.online_clinic_service || 0 },
-    { name: 'บริการห้องปลอดฝุ่นศูนย์เด็กเล็ก', value: aggregateMemo?.nursery_dust_free_service || 0 },
-    { name: 'บริการห้องปลอดฝุ่นหน่วยงาน', value: aggregateMemo?.gov_dust_free_service || 0 },
-  ], [aggregateMemo]);
 
-  const pieDataMasksN95 = useMemo(() => [
-    { name: 'N95 สำหรับผู้สูงอายุ', value: aggregateMemo?.elderly_N95_mask || 0 },
-    { name: 'N95 สำหรับเด็กเล็ก', value: aggregateMemo?.children_N95_mask || 0 },
-    { name: 'N95 สำหรับหญิงตั้งครรภ์', value: aggregateMemo?.pregnant_N95_mask || 0 },
-    { name: 'N95 สำหรับติดเตียง', value: aggregateMemo?.bedridden_N95_mask || 0 },
-    { name: 'N95 สำหรับผู้มีโรคประจำตัว', value: aggregateMemo?.disease_N95_mask || 0 },
-  ], [aggregateMemo]);
+  // // Pie chart data สำหรับคลินิก (จำนวนเปิดและบริการ)
+  // const pieDataClinicsOpen = useMemo(
+  //   () => [
+  //     { name: "คลินิกมลพิษ", value: aggregateMemo?.pollutionClinicTotal || 0 },
+  //     { name: "คลินิกมลพิษออนไลน์", value: aggregateMemo?.onlinePollutionClinicTotal || 0 },
+  //   ],
+  //   [aggregateMemo]
+  // );
 
-  const pieDataMasksSurgical = useMemo(() => [
-    { name: 'หน้ากากอนามัยสำหรับผู้สูงอายุ', value: aggregateMemo?.elderly_surgical_mask || 0 },
-    { name: 'หน้ากากอนามัยสำหรับเด็กเล็ก', value: aggregateMemo?.children_surgical_mask || 0 },
-    { name: 'หน้ากากอนามัยสำหรับหญิงตั้งครรภ์', value: aggregateMemo?.pregnant_surgical_mask || 0 },
-    { name: 'หน้ากากอนามัยสำหรับติดเตียง', value: aggregateMemo?.bedridden_surgical_mask || 0 },
-    { name: 'หน้ากากอนามัยสำหรับผู้มีโรคประจำตัว', value: aggregateMemo?.disease_surgical_mask || 0 },
-  ], [aggregateMemo]);
+  // const pieDataClinicsService = useMemo(
+  //   () => [
+  //     { name: "บริการคลินิกมลพิษ", value: aggregateMemo?.pollutionCliniService || 0 },
+  //     { name: "บริการคลินิกมลพิษออนไลน์", value: aggregateMemo?.onlinePollutionCliniService || 0 },
+  //   ],
+  //   [aggregateMemo]
+  // );
 
-  // เตรียมข้อมูลสำหรับ Bar Chart
-  const barChartData = useMemo(() => [
-    {
-      name: 'ทีม 3 หมอ',
-      Total: aggregateMemo?.active_teams_3_doctors_total || 0,
-      Add: aggregateMemo?.active_teams_3_doctors_add || 0,
-    },
-    {
-      name: 'ทีมแพทย์เคลื่อนที่',
-      Total: aggregateMemo?.active_teams_mobile_total || 0,
-      Add: aggregateMemo?.active_teams_mobile_add || 0,
-    },
-    {
-      name: 'ทีมดูแลประชาชน',
-      Total: aggregateMemo?.active_teams_citizens_total || 0,
-      Add: aggregateMemo?.active_teams_citizens_add || 0,
-    },
-  ], [aggregateMemo]);
+  // // Pie chart data สำหรับห้องปลอดฝุ่น (แบ่งเป็นศูนย์เด็กเล็ก, หน่วยงาน, สำนักงาน, อาคาร, อื่น ๆ)
+  // const pieDataDustFree = useMemo(
+  //   () => [
+  //     { name: "ศูนย์เด็กเล็ก", value: aggregateMemo?.nurseryDustFreeTotal || 0 },
+  //     { name: "หน่วยงานสาธารณสุข", value: aggregateMemo?.publicHealthDustFreeTotal || 0 },
+  //     { name: "สำนักงาน", value: aggregateMemo?.officeDustFreeTotal || 0 },
+  //     { name: "อาคาร", value: aggregateMemo?.buildingDustFreeTotal || 0 },
+  //     { name: "อื่น ๆ", value: aggregateMemo?.otherDustFreeTotal || 0 },
+  //   ],
+  //   [aggregateMemo]
+  // );
 
-  // เตรียมข้อมูลสำหรับ Pie Chart ในส่วน 4.5 อื่น ๆ
-  const pieDataOthers = useMemo(() => [
-    { name: 'SKY doctor', value: aggregateMemo?.sky_doctor || 0 },
-    { name: 'รถกู้ชีพ ALS', value: aggregateMemo?.ambulance || 0 },
-  ], [aggregateMemo]);
+  // const pieDataDustFreeService = useMemo(
+  //   () => [
+  //     { name: "ศูนย์เด็กเล็ก", value: aggregateMemo?.nurseryDustFreeService || 0 },
+  //     { name: "หน่วยงานสาธารณสุข", value: aggregateMemo?.publicHealthDustFreeService || 0 },
+  //     { name: "สำนักงาน", value: aggregateMemo?.officeDustFreeService || 0 },
+  //     { name: "อาคาร", value: aggregateMemo?.buildingDustFreeService || 0 },
+  //     { name: "อื่น ๆ", value: aggregateMemo?.otherDustFreeService || 0 },
+  //   ],
+  //   [aggregateMemo]
+  // );
+
+  // // Bar chart data สำหรับทีมแพทย์
+  // const barChartData = useMemo(
+  //   () => [
+  //     {
+  //       name: "ทีม 3 หมอ",
+  //       Total: aggregateMemo?.team3DoctorTotal || 0,
+  //       Add: aggregateMemo?.team3DoctorService || 0,
+  //     },
+  //     {
+  //       name: "ทีมแพทย์เคลื่อนที่",
+  //       Total: aggregateMemo?.mobileDoctorTotal || 0,
+  //       Add: aggregateMemo?.mobileDoctorService || 0,
+  //     },
+  //     {
+  //       name: "ทีมดูแลประชาชน",
+  //       Total: aggregateMemo?.civilTakeCareTotal || 0,
+  //       Add: aggregateMemo?.civilTakeCareService || 0,
+  //     },
+  //   ],
+  //   [aggregateMemo]
+  // );
+
+  // // Pie chart data สำหรับหน้ากาก (N95 และ Surgical)
+  // const pieDataMasksN95 = useMemo(
+  //   () => [
+  //     { name: "N95 ผู้สูงอายุ", value: aggregateMemo?.n95MaskGiveOlder || 0 },
+  //     { name: "N95 เด็กเล็ก", value: aggregateMemo?.n95MaskGiveChild || 0 },
+  //     { name: "N95 หญิงตั้งครรภ์", value: aggregateMemo?.n95MaskGivePregnant || 0 },
+  //     { name: "N95 ติดเตียง", value: aggregateMemo?.n95MaskGiveBedridden || 0 },
+  //     { name: "N95 ผู้มีโรคประจำตัว", value: aggregateMemo?.n95MaskGiveSick || 0 },
+  //   ],
+  //   [aggregateMemo]
+  // );
+
+  // const pieDataMasksSurgical = useMemo(
+  //   () => [
+  //     { name: "Surgical ผู้สูงอายุ", value: aggregateMemo?.surgicalMaskGiveOlder || 0 },
+  //     { name: "Surgical เด็กเล็ก", value: aggregateMemo?.surgicalMaskGiveChild || 0 },
+  //     { name: "Surgical หญิงตั้งครรภ์", value: aggregateMemo?.surgicalMaskGivePregnant || 0 },
+  //     { name: "Surgical ติดเตียง", value: aggregateMemo?.surgicalMaskGiveBedridden || 0 },
+  //     { name: "Surgical ผู้มีโรคประจำตัว", value: aggregateMemo?.surgicalMaskGiveSick || 0 },
+  //   ],
+  //   [aggregateMemo]
+  // );
+
+  // // Pie chart data สำหรับระบบรักษาส่งต่อผู้ป่วย
+  // const pieDataOthers = useMemo(
+  //   () => [
+  //     { name: "SKY doctor", value: aggregateMemo?.skyDoctor || 0 },
+  //     { name: "รถกู้ชีพ ALS", value: aggregateMemo?.ambulance || 0 },
+  //   ],
+  //   [aggregateMemo]
+  // );
 
   return (
     <div className="space-y-8 p-6 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* <h1 className="text-4xl font-bold text-gray-800 mb-8">รายงาน Measure 3</h1> */}
-
-        {/* เพิ่ม Search Input */}
+        {/* Search Input */}
         <div className="mb-4">
           <input
             type="text"
@@ -204,286 +282,322 @@ const ReportMeasure3: React.FC = () => {
         </div>
 
         {loading ? (
-          <><Loading /></>
+          <Loading />
         ) : (
           <>
-            {/* แสดงข้อความแสดงข้อผิดพลาดถ้ามี */}
-            {error && (
-              <div className="text-red-500 text-center">
-                {error}
-              </div>
-            )}
+            {error && <div className="text-red-500 text-center">{error}</div>}
 
-            {/* 4.2 การเปิดบริการคลินิก */}
+            {/* Section: คลินิก */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">การเปิดบริการคลินิก</h2>
-
-              {/* Pie Charts สำหรับ 4.2.1 และ 4.2.2 */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* 4.2.1 เปิดคลินิกต่าง ๆ */}
+              <h2 className="text-2xl font-semibold mb-6 text-gray-800">จำนวนคลินิกมลพิษและการให้บริการ</h2>
+              {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <PieChartSection
-                  title="จำนวนคลินิกต่าง ๆ"
+                  title="จำนวนคลินิก (เปิด)"
                   data={pieDataClinicsOpen}
                   colors={COLORS}
                 />
-
-                {/* 4.2.2 บริการคลินิกต่าง ๆ */}
                 <PieChartSection
-                  title="บริการคลินิกต่าง ๆ"
+                  title="จำนวนบริการคลินิก"
                   data={pieDataClinicsService}
                   colors={COLORS}
                 />
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="mt-6">
+              </div> */}
 
-                  <DataTable
-                    titlespan="จำนวนคลินิก"
-                    title="จำนวนคลินิก"
-                    headers={[
-                      'จังหวัด',
-                      'คลินิคมลพิษ',
-                      'คลินิคมลพิษออนไลน์'
-                    ]}
-                    data={filteredData.map(item => ({
-                      'จังหวัด': item.province,
-                      'คลินิคมลพิษ': item.pollution_clinic_open ?? 0,
-                      'คลินิคมลพิษออนไลน์': item.online_clinic_open ?? 0,
-                    }))}
-                    footer={{
-                      'จังหวัด': 'เขตสุขภาพที่ 1',
-                      'คลินิคมลพิษ': calculateTotal('pollution_clinic_open'),
-                      'คลินิคมลพิษออนไลน์': calculateTotal('online_clinic_open'),
-                    }}
-                  />
-                </div>
-                <div className="mt-6">
-                  <DataTable
-                    titlespan="จำนวนการบริการคลินิก"
-                    title="จำนวนการบริการคลินิก"
-                    headers={[
-                      'จังหวัด',
-                      'คลินิคมลพิษ',
-                      'คลินิคมลพิษออนไลน์'
-                    ]}
-                    data={filteredData.map(item => ({
-                      'จังหวัด': item.province,
-                      'คลินิคมลพิษ': item.pollution_clinic_service ?? 0,
-                      'คลินิคมลพิษออนไลน์': item.online_clinic_service ?? 0,
-                    }))}
-                    footer={{
-                      'จังหวัด': 'เขตสุขภาพที่ 1',
-                      'คลินิคมลพิษ': calculateTotal('pollution_clinic_service'),
-                      'คลินิคมลพิษออนไลน์': calculateTotal('online_clinic_service'),
-                    }}
-                  />
-                </div>
-              </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="mt-6">
-                  <DataTable
-                    titlespan="จำนวนห้องปลอดฝุ่น"
-                    title="จำนวนห้องปลอดฝุ่น"
-                    headers={[
-                      'จังหวัด',
-                      'หน่วยงาน',
-                      'ศูนย์เด็กเล็ก'
-                    ]}
-                    data={filteredData.map(item => ({
-                      'จังหวัด': item.province,
-                      'หน่วยงาน': item.gov_dust_free_open ?? 0,
-                      'ศูนย์เด็กเล็ก': item.nursery_dust_free_open ?? 0,
-                    }))}
-                    footer={{
-                      'จังหวัด': 'เขตสุขภาพที่ 1',
-                      'หน่วยงาน': calculateTotal('gov_dust_free_open'),
-                      'ศูนย์เด็กเล็ก': calculateTotal('nursery_dust_free_open'),
-                    }}
-                  />
-                </div>
+                <DataTable
+                  titlespan="จำนวนคลินิกมลพิษฯ"
+                  title="จำนวนคลินิกมลพิษและคลินิกมลพิษออนไลน์"
+                  headers={["จังหวัด", "คลินิกมลพิษ (แห่ง)", "คลินิกมลพิษออนไลน์ (แห่ง)"]}
+                  data={filteredData.map((item) => ({
+                    "จังหวัด": item.province,
+                    "คลินิกมลพิษ (แห่ง)": item.pollutionClinicTotal ?? 0,
+                    "คลินิกมลพิษออนไลน์ (แห่ง)": item.onlinePollutionClinicTotal ?? 0,
+                  }))}
+                  footer={{
+                    "จังหวัด": "เขตสุขภาพที่ 1",
+                    "คลินิกมลพิษ (แห่ง)": calculateTotal("pollutionClinicTotal"),
+                    "คลินิกมลพิษออนไลน์ (แห่ง)": calculateTotal("onlinePollutionClinicTotal"),
+                  }}
+                />
 
-                <div className="mt-6">
-                  <DataTable
-                    titlespan="จำนวนการบริการห้องปลอดฝุ่น"
-                    title="จำนวนการบริการห้องปลอดฝุ่น"
-                    headers={[
-                      'จังหวัด',
-                      'หน่วยงาน',
-                      'ศูนย์เด็กเล็ก'
-                    ]}
-                    data={filteredData.map(item => ({
-                      'จังหวัด': item.province,
-                      'หน่วยงาน': item.gov_dust_free_service ?? 0,
-                      'ศูนย์เด็กเล็ก': item.nursery_dust_free_service ?? 0,
-                    }))}
-                    footer={{
-                      'จังหวัด': 'เขตสุขภาพที่ 1',
-                      'หน่วยงาน': calculateTotal('gov_dust_free_service'),
-                      'ศูนย์เด็กเล็ก': calculateTotal('nursery_dust_free_service'),
-                    }}
-                  />
-                </div>
+                <DataTable
+                  titlespan="จำนวนผู้รับบริการ คลินิกมลพิษฯ"
+                  title="จำนวนผู้รับบริการ คลินิกมลพิษฯ"
+                  headers={["จังหวัด", "คลินิกมลพิษ (ครั้ง)", "คลินิกมลพิษออนไลน์ (ครั้ง)"]}
+                  data={filteredData.map((item) => ({
+                    "จังหวัด": item.province,
+                    "คลินิกมลพิษ (ครั้ง)": item.pollutionCliniService ?? 0,
+                    "คลินิกมลพิษออนไลน์ (ครั้ง)": item.onlinePollutionCliniService ?? 0,
+                  }))}
+                  footer={{
+                    "จังหวัด": "เขตสุขภาพที่ 1",
+                    "คลินิกมลพิษ (ครั้ง)": calculateTotal("pollutionCliniService"),
+                    "คลินิกมลพิษออนไลน์ (ครั้ง)": calculateTotal("onlinePollutionCliniService"),
+                  }}
+                />
+              </div>
+
+              <div className="mt-6">
+
               </div>
             </div>
 
-            {/* 4.3 ทีมแพทย์ */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">ทีมแพทย์</h2>
-
-              {/* Bar Chart สำหรับทีมแพทย์ */}
-              <BarChartSection
-                title="ทีมแพทย์"
-                data={barChartData}
-                keys={['Total', 'Add']}
-                colors={COLORS}
-              />
-
-              {/* ตารางข้อมูลสำหรับ 4.3 */}
+              <h2 className="text-2xl font-semibold mb-6 text-gray-800">การสนับสนุนมุ้งสู้ฝุ่น (สะสม)</h2>
               <DataTable
-                title="รายละเอียดทีมแพทย์"
-                headers={[
-                  'จังหวัด',
-                  'ทีม 3 หมอ (รวม)',
-                  'ทีม 3 หมอ (เพิ่ม)',
-                  'ทีมแพทย์เคลื่อนที่ (รวม)',
-                  'ทีมแพทย์เคลื่อนที่ (เพิ่ม)',
-                  'ทีมดูแลประชาชน (รวม)',
-                  'ทีมดูแลประชาชน (เพิ่ม)'
-                ]}
-                data={filteredData.map(item => ({
-                  'จังหวัด': item.province,
-                  'ทีม 3 หมอ (รวม)': item.active_teams_3_doctors_total,
-                  'ทีม 3 หมอ (เพิ่ม)': item.active_teams_3_doctors_add,
-                  'ทีมแพทย์เคลื่อนที่ (รวม)': item.active_teams_mobile_total,
-                  'ทีมแพทย์เคลื่อนที่ (เพิ่ม)': item.active_teams_mobile_add,
-                  'ทีมดูแลประชาชน (รวม)': item.active_teams_citizens_total,
-                  'ทีมดูแลประชาชน (เพิ่ม)': item.active_teams_citizens_add,
+                titlespan="จำนวนมุ้งสู้ฝุ่น และการสนับสนุนมุ้งสู้ฝุ่น"
+                title="จำนวนผู้รับบริการ คลินิกมลพิษฯ"
+                headers={["จังหวัด", "จำนวนคลังสะสม (หลัง)", "สนับสนุน/แจกจ่าย (หลัง)"]}
+                data={filteredData.map((item) => ({
+                  "จังหวัด": item.province,
+                  "จำนวนคลังสะสม (หลัง)": item.mosquitoNetTotal ?? 0,
+                  "สนับสนุน/แจกจ่าย (หลัง)": item.mosquitoNetService ?? 0,
                 }))}
                 footer={{
-                  'จังหวัด': 'เขตสุขภาพที่ 1',
-                  'ทีม 3 หมอ (รวม)': aggregateMemo?.active_teams_3_doctors_total || 0,
-                  'ทีม 3 หมอ (เพิ่ม)': aggregateMemo?.active_teams_3_doctors_add || 0,
-                  'ทีมแพทย์เคลื่อนที่ (รวม)': aggregateMemo?.active_teams_mobile_total || 0,
-                  'ทีมแพทย์เคลื่อนที่ (เพิ่ม)': aggregateMemo?.active_teams_mobile_add || 0,
-                  'ทีมดูแลประชาชน (รวม)': aggregateMemo?.active_teams_citizens_total || 0,
-                  'ทีมดูแลประชาชน (เพิ่ม)': aggregateMemo?.active_teams_citizens_add || 0,
+                  "จังหวัด": "เขตสุขภาพที่ 1",
+                  "จำนวนคลังสะสม (หลัง)": calculateTotal("mosquitoNetTotal"),
+                  "สนับสนุน/แจกจ่าย (หลัง)": calculateTotal("mosquitoNetService"),
                 }}
               />
             </div>
 
-            {/* 4.4 อุปกรณ์ป้องกันส่วนบุคคล */}
+            {/* Section: ห้องปลอดฝุ่น */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">สนับสนุนอุปกรณ์ป้องกันส่วนบุคคลแก่กลุ่มเสี่ยง</h2>
+              <h2 className="text-2xl font-semibold mb-6 text-gray-800">จัดเตรียมห้องปลอดฝุ่น</h2>
+              {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8"> */}
+              <DataTable
+                titlespan="จำนวนห้องปลอดฝุ่นสะสม"
+                title="รายละเอียดห้องปลอดฝุ่น (ห้อง)"
+                headers={["จังหวัด", "ศูนย์พัฒนาเด็ก (ห้อง)", "สถานบริการสาธารณสุข (ห้อง)", "อาคารสำนักงาน (ห้อง)", "ร้านอาหาร/กาแฟ/โรงแรม (ห้อง)", "อื่น ๆ (ห้อง)"]}
+                data={filteredData.map((item) => ({
+                  "จังหวัด": item.province,
+                  "ศูนย์พัฒนาเด็ก (ห้อง)": item.nurseryDustFreeTotal ?? 0,
+                  "สถานบริการสาธารณสุข (ห้อง)": item.publicHealthDustFreeTotal ?? 0,
+                  "อาคารสำนักงาน (ห้อง)": item.officeDustFreeTotal ?? 0,
+                  "ร้านอาหาร/กาแฟ/โรงแรม (ห้อง)": item.buildingDustFreeTotal ?? 0,
+                  "อื่น ๆ (ห้อง)": item.otherDustFreeTotal ?? 0,
+                }))}
+                footer={{
+                  "จังหวัด": "เขตสุขภาพที่ 1",
+                  "ศูนย์พัฒนาเด็ก (ห้อง)": calculateTotal("nurseryDustFreeTotal"),
+                  "สถานบริการสาธารณสุข (ห้อง)": calculateTotal("publicHealthDustFreeTotal"),
+                  "อาคารสำนักงาน (ห้อง)": calculateTotal("officeDustFreeTotal"),
+                  "ร้านอาหาร/กาแฟ/โรงแรม (ห้อง)": calculateTotal("buildingDustFreeTotal"),
+                  "อื่น ๆ (ห้อง)": calculateTotal("otherDustFreeTotal"),
+                }}
+              />
+              <DataTable
+                titlespan="ให้บริการห้องปลอดฝุ่น"
+                title="รายละเอียดบริการห้องปลอดฝุ่น"
+                headers={["จังหวัด", "ศูนย์พัฒนาเด็ก (ครั้ง)", "สถานบริการสาธารณสุข (ครั้ง)", "อาคารสำนักงาน (ครั้ง)", "ร้านอาหาร/กาแฟ/โรงแรม (ครั้ง)", "อื่น ๆ (ครั้ง)"]}
+                data={filteredData.map((item) => ({
+                  "จังหวัด": item.province,
+                  "ศูนย์พัฒนาเด็ก (ครั้ง)": item.nurseryDustFreeService ?? 0,
+                  "สถานบริการสาธารณสุข (ครั้ง)": item.publicHealthDustFreeService ?? 0,
+                  "อาคารสำนักงาน (ครั้ง)": item.officeDustFreeService ?? 0,
+                  "ร้านอาหาร/กาแฟ/โรงแรม (ครั้ง)": item.buildingDustFreeService ?? 0,
+                  "อื่น ๆ (ครั้ง)": item.otherDustFreeService ?? 0,
+                }))}
+                footer={{
+                  "จังหวัด": "เขตสุขภาพที่ 1",
+                  "ศูนย์พัฒนาเด็ก (ครั้ง)": calculateTotal("nurseryDustFreeService"),
+                  "สถานบริการสาธารณสุข (ครั้ง)": calculateTotal("publicHealthDustFreeService"),
+                  "อาคารสำนักงาน (ครั้ง)": calculateTotal("officeDustFreeService"),
+                  "ร้านอาหาร/กาแฟ/โรงแรม (ครั้ง)": calculateTotal("buildingDustFreeService"),
+                  "อื่น ๆ (ครั้ง)": calculateTotal("otherDustFreeService"),
+                }}
+              />
+              {/* </div> */}
+            </div>
 
-              {/* Pie Chart สำหรับหน้ากาก N95 */}
-              <div>
-                <PieChartSection
+            {/* Section: ทีมแพทย์ */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-2xl font-semibold mb-6 text-gray-800">ทีมปฏิบัติการด้านการแพทย์และสาธารณสุข</h2>
+              {/* <BarChartSection
+                title="ทีมแพทย์"
+                data={barChartData}
+                keys={["Total", "Add"]}
+                colors={COLORS}
+              /> */}
+              <DataTable
+                titlespan="จำนวนทีมปฏิบัติการด้านการแพทย์และสาธารณสุข (สะสม)"
+                title="จำนวนทีมปฏิบัติการด้านการแพทย์และสาธารณสุข (สะสม)"
+                headers={[
+                  "จังหวัด",
+                  "ทีม 3 หมอ",
+                  "ทีมหน่วยแพทย์เคลื่อนที่",
+                  "ทีมดูแลประชาชน",
+                  "ทีม SHERT จังหวัด",
+                  "ทีม SHERT อำเภอ",
+                  "ทีม EnvOcc CU",
+                ]}
+                data={filteredData.map((item) => ({
+                  "จังหวัด": item.province,
+                  "ทีม 3 หมอ": item.team3DoctorTotal,
+                  "ทีมหน่วยแพทย์เคลื่อนที่": item.mobileDoctorTotal,
+                  "ทีมดูแลประชาชน": item.civilTakeCareTotal,
+                  "ทีม SHERT จังหวัด": item.shertTeamProvTotal,
+                  "ทีม SHERT อำเภอ": item.shertTeamDistTotal,
+                  "ทีม EnvOcc CU": item.envoCccuTotal,
+                }))}
+                footer={{
+                  "จังหวัด": "เขตสุขภาพที่ 1",
+                  "ทีม 3 หมอ": aggregateMemo?.team3DoctorTotal || 0,
+                  "ทีมหน่วยแพทย์เคลื่อนที่": aggregateMemo?.mobileDoctorTotal || 0,
+                  "ทีมดูแลประชาชน": aggregateMemo?.civilTakeCareTotal || 0,
+                  "ทีม SHERT จังหวัด": aggregateMemo?.shertTeamProvTotal || 0,
+                  "ทีม SHERT อำเภอ": aggregateMemo?.shertTeamDistTotal || 0,
+                  "ทีม EnvOcc CU": aggregateMemo?.envoCccuTotal || 0,
+                }}
+              />
+              <DataTable
+                titlespan="จำนวนทีมปฏิบัติการด้านการแพทย์และสาธารณสุข (ลงพื้นที่)"
+                title="จำนวนทีมปฏิบัติการด้านการแพทย์และสาธารณสุข (ลงพื้นที่)"
+                headers={[
+                  "จังหวัด",
+                  "ทีม 3 หมอ",
+                  "ทีมหน่วยแพทย์เคลื่อนที่",
+                  "ทีมดูแลประชาชน",
+                  "ทีม SHERT จังหวัด",
+                  "ทีม SHERT อำเภอ",
+                  "ทีม EnvOcc CU",
+                ]}
+                data={filteredData.map((item) => ({
+                  "จังหวัด": item.province,
+                  "ทีม 3 หมอ": item.team3DoctorService,
+                  "ทีมหน่วยแพทย์เคลื่อนที่": item.mobileDoctorService,
+                  "ทีมดูแลประชาชน": item.civilTakeCareService,
+                  "ทีม SHERT จังหวัด": item.shertTeamProvService,
+                  "ทีม SHERT อำเภอ": item.shertTeamDistService,
+                  "ทีม EnvOcc CU": item.envoCccuService,
+                }))}
+                footer={{
+                  "จังหวัด": "เขตสุขภาพที่ 1",
+                  "ทีม 3 หมอ": aggregateMemo?.team3DoctorService || 0,
+                  "ทีมหน่วยแพทย์เคลื่อนที่": aggregateMemo?.mobileDoctorService || 0,
+                  "ทีมดูแลประชาชน": aggregateMemo?.civilTakeCareService || 0,
+                  "ทีม SHERT จังหวัด": aggregateMemo?.shertTeamProvService || 0,
+                  "ทีม SHERT อำเภอ": aggregateMemo?.shertTeamDistService || 0,
+                  "ทีม EnvOcc CU": aggregateMemo?.envoCccuService || 0,
+                }}
+              />
+            </div>
+
+            {/* Section: อุปกรณ์ป้องกันส่วนบุคคล */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+                สนับสนุนอุปกรณ์ป้องกันส่วนบุคคลแก่กลุ่มเสี่ยง
+              </h2>
+              <div className="grid grid-cols-1 gap-8">
+                {/* <PieChartSection
                   title="หน้ากาก N95"
                   data={pieDataMasksN95}
                   colors={COLORS}
-                />
-              </div>
-
-              {/* ตารางข้อมูลสำหรับหน้ากาก N95 */}
-              <div className="mt-6">
+                /> */}
                 <DataTable
-                  title="รายละเอียดหน้ากาก N95"
+                  titlespan="สนับสนุน N95 Mask สะสม (ชิ้น)"
+                  title="สนับสนุน N95 Mask สะสม (ชิ้น)"
                   headers={[
-                    'จังหวัด',
-                    'ผู้สูงอายุ',
-                    'เด็กเล็ก',
-                    'หญิงตั้งครรภ์',
-                    'ติดเตียง',
-                    'ผู้มีโรคประจำตัว'
+                    "จังหวัด",
+                    "ประชาชน",
+                    "ผู้สูงอายุ",
+                    "เด็กเล็ก",
+                    "หญิงตั้งครรภ์",
+                    "ติดเตียง",
+                    "ผู้มีโรคประจำตัว",
+                    "ผู้ที่มีโรคหัวใจ",
+                    "ผู้ที่มีโรคระบบทางเดินหายใจ",
                   ]}
-                  data={filteredData.map(item => ({
-                    'จังหวัด': item.province,
-                    'ผู้สูงอายุ': item.elderly_N95_mask ?? 0,
-                    'เด็กเล็ก': item.children_N95_mask ?? 0,
-                    'หญิงตั้งครรภ์': item.pregnant_N95_mask ?? 0,
-                    'ติดเตียง': item.bedridden_N95_mask ?? 0,
-                    'ผู้มีโรคประจำตัว': item.disease_N95_mask ?? 0,
+                  data={filteredData.map((item) => ({
+                    "จังหวัด": item.province,
+                    "ประชาชน": item.n95MaskGiveCivil ?? 0,
+                    "ผู้สูงอายุ": item.n95MaskGiveOlder ?? 0,
+                    "เด็กเล็ก": item.n95MaskGiveChild ?? 0,
+                    "หญิงตั้งครรภ์": item.n95MaskGivePregnant ?? 0,
+                    "ติดเตียง": item.n95MaskGiveBedridden ?? 0,
+                    "ผู้มีโรคประจำตัว": item.n95MaskGiveSick ?? 0,
+                    "ผู้ที่มีโรคหัวใจ": item.n95MaskGiveHeart ?? 0,
+                    "ผู้ที่มีโรคระบบทางเดินหายใจ": item.n95MaskGiveCopd ?? 0,
                   }))}
                   footer={{
-                    'จังหวัด': 'เขตสุขภาพที่ 1',
-                    'ผู้สูงอายุ': calculateTotal('elderly_N95_mask'),
-                    'เด็กเล็ก': calculateTotal('children_N95_mask'),
-                    'หญิงตั้งครรภ์': calculateTotal('pregnant_N95_mask'),
-                    'ติดเตียง': calculateTotal('bedridden_N95_mask'),
-                    'ผู้มีโรคประจำตัว': calculateTotal('disease_N95_mask'),
+                    "จังหวัด": "เขตสุขภาพที่ 1",
+                    "ประชาชน": calculateTotal("n95MaskGiveCivil"),
+                    "ผู้สูงอายุ": calculateTotal("n95MaskGiveOlder"),
+                    "เด็กเล็ก": calculateTotal("n95MaskGiveChild"),
+                    "หญิงตั้งครรภ์": calculateTotal("n95MaskGivePregnant"),
+                    "ติดเตียง": calculateTotal("n95MaskGiveBedridden"),
+                    "ผู้มีโรคประจำตัว": calculateTotal("n95MaskGiveSick"),
+                    "ผู้ที่มีโรคหัวใจ": calculateTotal("n95MaskGiveHeart"),
+                    "ผู้ที่มีโรคระบบทางเดินหายใจ": calculateTotal("n95MaskGiveCopd"),
                   }}
                 />
-              </div>
-
-              {/* 4.4.2 หน้ากากอนามัย */}
-
-              {/* Pie Chart สำหรับหน้ากากอนามัย */}
-              <div className="mt-6">
-                <PieChartSection
+                {/* <PieChartSection
                   title="หน้ากากอนามัย"
                   data={pieDataMasksSurgical}
                   colors={COLORS}
-                />
-              </div>
-
-              {/* ตารางข้อมูลสำหรับหน้ากากอนามัย */}
-              <div className="mt-6">
+                /> */}
                 <DataTable
-                  title="รายละเอียดหน้ากากอนามัย"
+                  titlespan="สนับสนุน Surgical Mask สะสม (ชิ้น)"
+                  title="สนับสนุน Surgical Mask สะสม (ชิ้น)"
                   headers={[
-                    'จังหวัด',
-                    'ผู้สูงอายุ',
-                    'เด็กเล็ก',
-                    'หญิงตั้งครรภ์',
-                    'ติดเตียง',
-                    'ผู้มีโรคประจำตัว'
+                    "จังหวัด",
+                    "ประชาชน",
+                    "ผู้สูงอายุ",
+                    "เด็กเล็ก",
+                    "หญิงตั้งครรภ์",
+                    "ติดเตียง",
+                    "ผู้มีโรคประจำตัว",
+                    "ผู้ที่มีโรคหัวใจ",
+                    "ผู้ที่มีโรคระบบทางเดินหายใจ",
                   ]}
-                  data={filteredData.map(item => ({
-                    'จังหวัด': item.province,
-                    'ผู้สูงอายุ': item.elderly_surgical_mask ?? 0,
-                    'เด็กเล็ก': item.children_surgical_mask ?? 0,
-                    'หญิงตั้งครรภ์': item.pregnant_surgical_mask ?? 0,
-                    'ติดเตียง': item.bedridden_surgical_mask ?? 0,
-                    'ผู้มีโรคประจำตัว': item.disease_surgical_mask ?? 0,
+                  data={filteredData.map((item) => ({
+                    "จังหวัด": item.province,
+                    "ประชาชน": item.surgicalMaskGiveCivil ?? 0,
+                    "ผู้สูงอายุ": item.surgicalMaskGiveOlder ?? 0,
+                    "เด็กเล็ก": item.surgicalMaskGiveChild ?? 0,
+                    "หญิงตั้งครรภ์": item.surgicalMaskGivePregnant ?? 0,
+                    "ติดเตียง": item.surgicalMaskGiveBedridden ?? 0,
+                    "ผู้มีโรคประจำตัว": item.surgicalMaskGiveSick ?? 0,
+                    "ผู้ที่มีโรคหัวใจ": item.surgicalMaskGiveHeart ?? 0,
+                    "ผู้ที่มีโรคระบบทางเดินหายใจ": item.surgicalMaskGiveCopd ?? 0,
                   }))}
                   footer={{
-                    'จังหวัด': 'เขตสุขภาพที่ 1',
-                    'ผู้สูงอายุ': calculateTotal('elderly_surgical_mask'),
-                    'เด็กเล็ก': calculateTotal('children_surgical_mask'),
-                    'หญิงตั้งครรภ์': calculateTotal('pregnant_surgical_mask'),
-                    'ติดเตียง': calculateTotal('bedridden_surgical_mask'),
-                    'ผู้มีโรคประจำตัว': calculateTotal('disease_surgical_mask'),
+                    "จังหวัด": "เขตสุขภาพที่ 1",
+                    "ประชาชน": calculateTotal("surgicalMaskGiveCivil"),
+                    "ผู้สูงอายุ": calculateTotal("surgicalMaskGiveOlder"),
+                    "เด็กเล็ก": calculateTotal("surgicalMaskGiveChild"),
+                    "หญิงตั้งครรภ์": calculateTotal("surgicalMaskGivePregnant"),
+                    "ติดเตียง": calculateTotal("surgicalMaskGiveBedridden"),
+                    "ผู้มีโรคประจำตัว": calculateTotal("surgicalMaskGiveSick"),
+                    "ผู้ที่มีโรคหัวใจ": calculateTotal("surgicalMaskGiveHeart"),
+                    "ผู้ที่มีโรคระบบทางเดินหายใจ": calculateTotal("surgicalMaskGiveCopd"),
                   }}
                 />
               </div>
             </div>
 
-            {/* 4.5 อื่น ๆ */}
+            {/* Section: ระบบรักษาส่งต่อผู้ป่วย */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              {/* Pie Chart สำหรับ SKY doctor และรถกู้ชีพ */}
-              <div>
-                <PieChartSection
-                  title="ระบบรักษาส่งต่อผู้ป่วย"
-                  data={pieDataOthers}
-                  colors={COLORS}
-                />
-              </div>
-              <div className="mt-6">
-                <DataTable
-                  title="ระบบรักษาส่งต่อผู้ป่วย"
-                  headers={['จังหวัด', 'SKY doctor', 'รถกู้ชีพ ALS']}
-                  data={filteredData.map(item => ({
-                    'จังหวัด': item.province,
-                    'SKY doctor': item.sky_doctor ?? 0,
-                    'รถกู้ชีพ ALS': item.ambulance ?? 0,
-                  }))}
-                  footer={{
-                    'จังหวัด': 'เขตสุขภาพที่ 1',
-                    'SKY doctor': aggregateMemo?.sky_doctor || 0,
-                    'รถกู้ชีพ ALS': aggregateMemo?.ambulance || 0,
-                  }}
-                />
-              </div>
+              {/* <PieChartSection
+                title="ระบบรักษาส่งต่อผู้ป่วย"
+                data={pieDataOthers}
+                colors={COLORS}
+              /> */}
+              <DataTable
+                titlespan="ระบบรักษาส่งต่อผู้ป่วย"
+                title="รายละเอียดระบบรักษาส่งต่อผู้ป่วย"
+                headers={["จังหวัด", "SKY doctor", "ทีมกู้ชีพ ALS"]}
+                data={filteredData.map((item) => ({
+                  "จังหวัด": item.province,
+                  "SKY doctor": item.skyDoctor ?? 0,
+                  "ทีมกู้ชีพ ALS": item.ambulance ?? 0,
+                }))}
+                footer={{
+                  "จังหวัด": "เขตสุขภาพที่ 1",
+                  "SKY doctor": aggregateMemo?.skyDoctor || 0,
+                  "ทีมกู้ชีพ ALS": aggregateMemo?.ambulance || 0,
+                }}
+              />
             </div>
           </>
         )}

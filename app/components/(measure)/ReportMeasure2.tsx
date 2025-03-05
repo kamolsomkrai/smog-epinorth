@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { Measure2Data } from '../../interfaces/measure';
+import { Measure2Data } from '../../interfaces/newmeasure';
 import PieChartSection from '../(object)/PieChartSection';
 import DataTable from '../(object)/DataTable';
 import Loading from '../(object)/Loading';
@@ -20,11 +20,11 @@ const ReportMeasure2: React.FC = () => {
     return data.reduce((acc, curr) => acc + (typeof curr[field] === 'number' ? curr[field] : 0), 0);
   }, [data]);
 
-  const safeAdd = useMemo(() => (...nums: (number | undefined)[]): number => {
-    return nums
-      .filter((num): num is number => num !== undefined)
-      .reduce((acc, num) => acc + num, 0);
-  }, []);
+  // const safeAdd = useMemo(() => (...nums: (number | undefined)[]): number => {
+  //   return nums
+  //     .filter((num): num is number => num !== undefined)
+  //     .reduce((acc, num) => acc + num, 0);
+  // }, []);
 
   // ใช้ useMemo สำหรับการกรองข้อมูลตาม searchTerm
   const filteredData = useMemo(() => {
@@ -67,25 +67,26 @@ const ReportMeasure2: React.FC = () => {
   const pieData2_1_1 = useMemo(() => {
     return filteredData.map(item => ({
       name: item.province,
-      value: typeof item.risk_health_monitoring_1_1 === 'number' ? item.risk_health_monitoring_1_1 : 0,
+      value: typeof item.riskHealthInfo === 'number' ? item.riskHealthInfo : 0,
     }));
   }, [filteredData]);
 
   const pieData2_1_2 = useMemo(() => {
     return filteredData.map(item => ({
       name: item.province,
-      value: typeof item.risk_health_monitoring_1_2 === 'number' ? item.risk_health_monitoring_1_2 : 0,
+      value: typeof item.riskHealthSocial === 'number' ? item.riskHealthSocial : 0,
     }));
   }, [filteredData]);
 
   // ข้อมูลสำหรับ Pie Chart ในส่วน 2.2
   const pieData2_2 = useMemo(() => [
-    { name: 'เด็กเล็ก', value: calculateTotal('child') },
-    { name: 'ผู้สูงอายุ', value: calculateTotal('elderly') },
-    { name: 'หญิงตั้งครรภ์', value: calculateTotal('pregnant') },
-    { name: 'ติดเตียง', value: calculateTotal('bedridden') },
-    { name: 'ผู้มีโรคประจำตัว', value: safeAdd(calculateTotal('asthma'), calculateTotal('copd'), calculateTotal('asthma_copd')) },
-  ], [calculateTotal, safeAdd]);
+    { name: 'เด็กเล็ก', value: calculateTotal('riskChildTotal') },
+    { name: 'ผู้สูงอายุ', value: calculateTotal('riskOlderTotal') },
+    { name: 'หญิงตั้งครรภ์', value: calculateTotal('riskPregnantTotal') },
+    { name: 'ติดเตียง', value: calculateTotal('riskBedriddenTotal') },
+    { name: 'ผู้ที่มีโรคหัวใจ', value: calculateTotal('riskHeartTotal') },
+    { name: 'ผู้ที่มีโรคระบบทางเดินหายใจ', value: calculateTotal('riskCopdTotal') },
+  ], [calculateTotal]);
 
   // ข้อมูลสำหรับ Pie Chart ในส่วน 2.3
   // const pieData2_3 = useMemo(() => [
@@ -95,10 +96,16 @@ const ReportMeasure2: React.FC = () => {
   // ], [calculateTotal]);
 
   // ข้อมูลสำหรับ Pie Chart ในส่วน 4.1
-  const pieData2_4_staff = useMemo(() => [
-    { name: 'ตรวจสุขภาพเจ้าหน้าที่', value: calculateTotal('health_check_staff') },
-    { name: 'ตรวจสุขภาพอาสาสมัคร', value: calculateTotal('health_check_volunteer') },
-  ], [calculateTotal]);
+  const pieData2_4_1 = useMemo(() => {
+    return filteredData.map(item => ({
+      name: item.province,
+      value: typeof item.healthcareOfficer === 'number' ? item.healthcareOfficer : 0,
+    }));
+  }, [filteredData]);
+  // const pieData2_4_staff = useMemo(() => [
+  //   { name: 'ตรวจสุขภาพเจ้าหน้าที่', value: calculateTotal('healthcareOfficer') },
+  //   { name: 'ตรวจสุขภาพอาสาสมัคร', value: calculateTotal('health_check_volunteer') },
+  // ], [calculateTotal]);
 
   if (error) {
     return <div className="p-6 text-red-500">{error}</div>;
@@ -138,7 +145,7 @@ const ReportMeasure2: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* 2.1.1 จัดทาสื่อ Info ประชาสัมพันธ์ */}
             <PieChartSection
-              title="2.1.1 จัดทาสื่อ Info ประชาสัมพันธ์"
+              title="2.1.1 จัดทำสื่อ Info ประชาสัมพันธ์"
               data={pieData2_1_1}
               colors={COLORS}
             />
@@ -150,7 +157,7 @@ const ReportMeasure2: React.FC = () => {
               colors={COLORS}
             />
           </div>
-          {filteredData.map(items => (items.risk_health_monitoring_1_1 + " "))}
+          {/* {filteredData.map(items => (items.riskHealthInfo + " "))} */}
           {/* ตารางข้อมูลสำหรับ 2.1 */}
           <div className="mt-6 overflow-x-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -160,11 +167,11 @@ const ReportMeasure2: React.FC = () => {
                 headers={['จังหวัด', 'จัดทำสื่อ Info ประชาสัมพันธ์ (ชิ้น)']}
                 data={filteredData.map(items => ({
                   'จังหวัด': items.province,
-                  'จัดทำสื่อ Info ประชาสัมพันธ์ (ชิ้น)': items.risk_health_monitoring_1_1 ?? 0,
+                  'จัดทำสื่อ Info ประชาสัมพันธ์ (ชิ้น)': items.riskHealthInfo ?? 0,
                 }))}
                 footer={{
                   'จังหวัด': 'เขตสุขภาพที่ 1',
-                  'จัดทำสื่อ Info ประชาสัมพันธ์ (ชิ้น)': calculateTotal('risk_health_monitoring_1_1'),
+                  'จัดทำสื่อ Info ประชาสัมพันธ์ (ชิ้น)': calculateTotal('riskHealthInfo'),
                 }}
               />
 
@@ -174,11 +181,11 @@ const ReportMeasure2: React.FC = () => {
                 headers={['จังหวัด', 'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ(ครั้ง)']}
                 data={filteredData.map(item => ({
                   'จังหวัด': item.province,
-                  'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ(ครั้ง)': item.risk_health_monitoring_1_2 ?? 0,
+                  'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ(ครั้ง)': item.riskHealthSocial ?? 0,
                 }))}
                 footer={{
                   'จังหวัด': 'เขตสุขภาพที่ 1',
-                  'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ(ครั้ง)': calculateTotal('risk_health_monitoring_1_2'),
+                  'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ(ครั้ง)': calculateTotal('riskHealthSocial'),
                 }}
               />
             </div>
@@ -188,37 +195,76 @@ const ReportMeasure2: React.FC = () => {
         {/* 2.2 กลุ่มเปราะบาง */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800">2.2 กลุ่มเปราะบาง</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <PieChartSection
+              title="จำนวนทั้งหมด"
+              data={pieData2_2}
+              colors={COLORS}
+            />
 
+            <PieChartSection
+              title="ได้รับการดูแล"
+              data={pieData2_2}
+              colors={COLORS}
+            />
+          </div>
           {/* Pie Chart สำหรับ 2.2 */}
-          <PieChartSection
-            title=""
-            data={pieData2_2}
-            colors={COLORS}
-          />
+
 
           {/* ตารางข้อมูลสำหรับ 2.2 */}
           <div className="mt-6 overflow-x-auto">
             <DataTable
-              title=""
-              headers={['จังหวัด', 'เด็กเล็ก (คน)', 'ผู้สูงอายุ (คน)', 'หญิงตั้งครรภ์ (คน)', 'ติดเตียง (คน)', 'ผู้มีโรคประจำตัว (คน)']}
+              titlespan="จำนวนทั้งหมด"
+              title="จำนวนทั้งหมด"
+              headers={['จังหวัด', 'เด็กเล็ก (คน)', 'ผู้สูงอายุ (คน)', 'หญิงตั้งครรภ์ (คน)', 'ติดเตียง (คน)', 'ผู้ที่มีโรคหัวใจ (คน)', 'ผู้ที่มีโรคระบบทางเดินหายใจ (คน)']}
               data={filteredData.map(item => ({
                 'จังหวัด': item.province,
-                'เด็กเล็ก (คน)': item.child ?? 0,
-                'ผู้สูงอายุ (คน)': item.elderly ?? 0,
-                'หญิงตั้งครรภ์ (คน)': item.pregnant ?? 0,
-                'ติดเตียง (คน)': item.bedridden ?? 0,
-                'ผู้มีโรคประจำตัว (คน)': safeAdd(item.asthma, item.copd, item.asthma_copd),
+                'เด็กเล็ก (คน)': item.riskChildTotal ?? 0,
+                'ผู้สูงอายุ (คน)': item.riskOlderTotal ?? 0,
+                'หญิงตั้งครรภ์ (คน)': item.riskPregnantTotal ?? 0,
+                'ติดเตียง (คน)': item.riskBedriddenTotal ?? 0,
+                'ผู้ที่มีโรคหัวใจ (คน)': item.riskHeartTotal ?? 0,
+                'ผู้ที่มีโรคระบบทางเดินหายใจ (คน)': item.riskCopdTotal ?? 0,
               }))}
               footer={{
                 'จังหวัด': 'เขตสุขภาพที่ 1',
-                'เด็กเล็ก (คน)': calculateTotal('child'),
-                'ผู้สูงอายุ (คน)': calculateTotal('elderly'),
-                'หญิงตั้งครรภ์ (คน)': calculateTotal('pregnant'),
-                'ติดเตียง (คน)': calculateTotal('bedridden'),
-                'ผู้มีโรคประจำตัว (คน)': safeAdd(calculateTotal('asthma'), calculateTotal('copd'), calculateTotal('asthma_copd')),
+                'เด็กเล็ก (คน)': calculateTotal('riskChildTotal'),
+                'ผู้สูงอายุ (คน)': calculateTotal('riskOlderTotal'),
+                'หญิงตั้งครรภ์ (คน)': calculateTotal('riskPregnantTotal'),
+                'ติดเตียง (คน)': calculateTotal('riskBedriddenTotal'),
+                'ผู้ที่มีโรคหัวใจ (คน)': calculateTotal('riskHeartTotal'),
+                'ผู้ที่มีโรคระบบทางเดินหายใจ (คน)': calculateTotal('riskCopdTotal')
               }}
             />
           </div>
+
+          <div className="mt-6 overflow-x-auto">
+            <DataTable
+              titlespan="ได้รับการดูแล"
+              title="ได้รับการดูแล"
+              headers={['จังหวัด', 'เด็กเล็ก (คน)', 'ผู้สูงอายุ (คน)', 'หญิงตั้งครรภ์ (คน)', 'ติดเตียง (คน)', 'ผู้ที่มีโรคหัวใจ (คน)', 'ผู้ที่มีโรคระบบทางเดินหายใจ (คน)']}
+              data={filteredData.map(item => ({
+                'จังหวัด': item.province,
+                'เด็กเล็ก (คน)': item.riskChildTakeCare ?? 0,
+                'ผู้สูงอายุ (คน)': item.riskOlderTakeCare ?? 0,
+                'หญิงตั้งครรภ์ (คน)': item.riskPregnantTakeCare ?? 0,
+                'ติดเตียง (คน)': item.riskBedriddenTakeCare ?? 0,
+                'ผู้ที่มีโรคหัวใจ (คน)': item.riskHeartTakeCare ?? 0,
+                'ผู้ที่มีโรคระบบทางเดินหายใจ (คน)': item.riskCopdTakeCare ?? 0,
+              }))}
+              footer={{
+                'จังหวัด': 'เขตสุขภาพที่ 1',
+                'เด็กเล็ก (คน)': calculateTotal('riskChildTakeCare'),
+                'ผู้สูงอายุ (คน)': calculateTotal('riskOlderTakeCare'),
+                'หญิงตั้งครรภ์ (คน)': calculateTotal('riskPregnantTakeCare'),
+                'ติดเตียง (คน)': calculateTotal('riskBedriddenTakeCare'),
+                'ผู้ที่มีโรคหัวใจ (คน)': calculateTotal('riskHeartTakeCare'),
+                'ผู้ที่มีโรคระบบทางเดินหายใจ (คน)': calculateTotal('riskCopdTakeCare')
+              }}
+            />
+          </div>
+
+
         </div>
 
         {/* 4. การตรวจสุขภาพ */}
@@ -228,27 +274,31 @@ const ReportMeasure2: React.FC = () => {
           {/* Pie Charts สำหรับ 4.1 */}
 
           {/* 4.1 ตรวจสุขภาพโดยเจ้าหน้าที่ */}
-          <PieChartSection
+          {/* <PieChartSection
             title=""
             data={pieData2_4_staff}
             colors={COLORS}
-          />
+          /> */}
+
+          {/* <PieChartSection
+            title=""
+            data={pieData2_4_1}
+            colors={COLORS}
+          /> */}
 
           {/* ตารางข้อมูลสำหรับ 4 */}
           {/* <div className="overflow-x-auto"> */}
           <div className='mt-6'>
             <DataTable
               title=""
-              headers={['จังหวัด', 'ตรวจสุขภาพเจ้าหน้าที่ (คน)', 'ตรวจสุขภาพอาสาสมัคร (คน)']}
+              headers={['จังหวัด', 'ตรวจสุขภาพเจ้าหน้าที่ (คน)']}
               data={filteredData.map(item => ({
                 'จังหวัด': item.province,
-                'ตรวจสุขภาพเจ้าหน้าที่ (คน)': item.health_check_staff ?? 0,
-                'ตรวจสุขภาพอาสาสมัคร (คน)': item.health_check_volunteer ?? 0,
+                'ตรวจสุขภาพเจ้าหน้าที่ (คน)': item.healthcareOfficer ?? 0,
               }))}
               footer={{
                 'จังหวัด': 'เขตสุขภาพที่ 1',
-                'ตรวจสุขภาพเจ้าหน้าที่ (คน)': calculateTotal('health_check_staff'),
-                'ตรวจสุขภาพอาสาสมัคร (คน)': calculateTotal('health_check_volunteer'),
+                'ตรวจสุขภาพเจ้าหน้าที่ (คน)': calculateTotal('healthcareOfficer'),
               }}
             />
           </div>

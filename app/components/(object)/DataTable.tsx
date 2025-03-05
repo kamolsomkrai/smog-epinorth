@@ -54,18 +54,18 @@ const DataTable: React.FC<DataTableProps> = ({ titlespan, title, headers, data, 
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex justify-between items-center mb-4">
-        {/* เพิ่มปุ่ม Export พร้อมไอคอน */}
+
+      <div className={`flex ${titlespan ? 'justify-between' : 'justify-end'} items-center mb-4`}>
+        {titlespan && <p className="text-center text-xl">{titlespan}</p>}
         <Button
           variant="contained"
           color="primary"
           onClick={exportToExcel}
-          startIcon={<DownloadIcon />} // เพิ่มไอคอน Download
+          startIcon={<DownloadIcon />}
         >
           Export
         </Button>
       </div>
-      {titlespan && <p className='text-center'>{titlespan}</p>}
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border">
