@@ -344,6 +344,7 @@ const ActivityForm: React.FC = () => {
 
       const measureResponse = await fetch(measureApiMap[activityType], {
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(measurePayload),
       });
