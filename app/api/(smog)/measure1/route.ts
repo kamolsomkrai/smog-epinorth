@@ -55,7 +55,7 @@ export async function PUT(request: NextRequest) {
 
     // ส่งข้อมูลไปยัง Express API โดยใช้ method PUT สำหรับ update
     const res = await fetch(
-      "https://epinorth-api.ddc.moph.go.th/api/measure1",
+      "https://epinorth-api.ddc.moph.go.th/api/measure1/",
       {
         method: "PUT",
         credentials: "include",
@@ -81,7 +81,7 @@ export async function PUT(request: NextRequest) {
 export async function GET() {
   try {
     const res = await fetch(
-      "https://epinorth-api.ddc.moph.go.th/api/measure1",
+      "https://epinorth-api.ddc.moph.go.th/api/measure1/",
       {
         method: "GET",
         credentials: "include",
