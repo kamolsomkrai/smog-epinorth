@@ -11,13 +11,16 @@ import AddSupplyModal from "./AddSupplyModal";
 
 interface Supply {
   id: number;
-  name: string;
-  description: string;
-  quantity: number;
-  unit: string;
-  category: string;
+  hospcode: string;
+  hospname: string;
+  supplie_id: number;
+  suppliename: string;
+  supplietype: string;
+  suppliecatalog: string;
+  quantity_stock: number;
   provcode: string;
   provname: string;
+  updated_at: string;
 }
 
 const Supplies: React.FC = () => {
@@ -48,7 +51,7 @@ const Supplies: React.FC = () => {
       const data = await res.json();
       setSupplies(data?.supplies || data.data?.data || []);
     } catch (err) {
-      setError("เกิดข้อผิดพลาดในการดึงข้อมูลวัสดุ");
+      setError("เกิดข้อผิดพลาดในการดึงข้อมูลเวชภัณฑ์");
       console.error(err);
     } finally {
       setLoading(false);
@@ -67,19 +70,21 @@ const Supplies: React.FC = () => {
   const renderTableRows = () =>
     supplies.map((supply) => (
       <tr key={supply.id} className="hover:bg-gray-100">
-        <td className="py-4 px-6 text-gray-800">{supply.name}</td>
-        <td className="py-4 px-6 text-right text-gray-800">{supply.quantity}</td>
-        <td className="py-4 px-6 text-gray-800">{supply.unit}</td>
-        <td className="py-4 px-6 text-gray-800">{supply.category}</td>
+        <td className="py-4 px-6 text-gray-800">{supply.hospname}</td>
+        <td className="py-4 px-6 text-gray-800">{supply.suppliename}</td>
+        <td className="py-4 px-6 text-gray-800">{supply.supplietype}</td>
+        <td className="py-4 px-6 text-gray-800">{supply.suppliecatalog}</td>
+        <td className="py-4 px-6 text-right text-gray-800">{supply.quantity_stock}</td>
         <td className="py-4 px-6 text-gray-800">{supply.provname}</td>
+        <td className="py-4 px-6 text-gray-800">{supply.updated_at}</td>
         <td className="py-4 px-6">
           <div className="flex items-center space-x-2">
-            <button
+            {/* <button
               className="text-blue-500 hover:text-blue-700"
               onClick={() => setModalState({ type: "edit", supply })}
             >
               <EditIcon />
-            </button>
+            </button> */}
             <button
               className="text-red-500 hover:text-red-700"
               onClick={() => setModalState({ type: "delete", supply })}
@@ -110,12 +115,14 @@ const Supplies: React.FC = () => {
               <table className="w-full table-auto">
                 <thead className="bg-green-600 text-white">
                   <tr>
-                    <th className="py-3 px-6 text-left">ชื่อ</th>
-                    <th className="py-3 px-6 text-right">จำนวน</th>
-                    <th className="py-3 px-6 text-left">หน่วย</th>
-                    <th className="py-3 px-6 text-left">หมวดหมู่</th>
+                    <th className="py-3 px-6 text-left">โรงพยาบาล</th>
+                    <th className="py-3 px-6 text-left">ชื่อวัสดุ</th>
+                    <th className="py-3 px-6 text-left">ประเภทวัสดุ</th>
+                    <th className="py-3 px-6 text-left">แคตตาล็อก</th>
+                    <th className="py-3 px-6 text-right">คงเหลือ</th>
                     <th className="py-3 px-6 text-left">จังหวัด</th>
-                    <th className="py-3 px-6 text-left"></th>
+                    <th className="py-3 px-6 text-left">วันที่อัพเดท</th>
+                    <th className="py-3 px-6 text-left">Actions</th>
                   </tr>
                 </thead>
                 <tbody>{renderTableRows()}</tbody>
@@ -138,9 +145,9 @@ const Supplies: React.FC = () => {
 
         {/* Modal */}
         {modalState.type === "add" && <AddSupplyModal onClose={() => handleModalClose(true)} />}
-        {modalState.type === "edit" && modalState.supply && (
+        {/* {modalState.type === "edit" && modalState.supply && (
           <EditSupplyModal supply={modalState.supply} onClose={() => handleModalClose(true)} />
-        )}
+        )} */}
         {modalState.type === "delete" && modalState.supply && (
           <DeleteSupplyModal supply={modalState.supply} onClose={() => handleModalClose(true)} />
         )}

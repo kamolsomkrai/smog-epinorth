@@ -1,11 +1,7 @@
-// app/summary/components/DataTableComponent.tsx
-import React, { memo } from 'react';
+"use client";
 
-interface SupplySummary {
-  supplyname: string;
-  category: string;
-  [key: string]: string | number;
-}
+import React, { memo } from "react";
+import { SupplySummary } from "../../types/types";
 
 interface DataTableComponentProps {
   supplies: SupplySummary[];
@@ -23,8 +19,11 @@ const DataTableComponent: React.FC<DataTableComponentProps> = ({ supplies, provi
               <th className="py-3 px-6 text-left font-medium uppercase tracking-wider">
                 เวชภัณฑ์
               </th>
-              {provinces.map(province => (
-                <th key={province} className="py-3 px-6 text-right font-medium uppercase tracking-wider">
+              {provinces.map((province) => (
+                <th
+                  key={province}
+                  className="py-3 px-6 text-right font-medium uppercase tracking-wider"
+                >
                   {province}
                 </th>
               ))}
@@ -36,14 +35,20 @@ const DataTableComponent: React.FC<DataTableComponentProps> = ({ supplies, provi
           <tbody className="bg-white divide-y divide-gray-200">
             {supplies.map((supply, index) => {
               const total = calculateTotal(supply);
-
               return (
                 <tr key={index} className="hover:bg-gray-100">
-                  <td className="py-4 px-6 text-gray-800 font-medium">{supply.supplyname}</td>
-                  {provinces.map(province => (
-                    <td key={province} className="py-4 px-6 text-gray-800 text-right">
+                  <td className="py-4 px-6 text-gray-800 font-medium">
+                    {supply.supplyname}
+                  </td>
+                  {provinces.map((province) => (
+                    <td
+                      key={province}
+                      className="py-4 px-6 text-gray-800 text-right"
+                    >
                       {new Intl.NumberFormat().format(
-                        typeof supply[province] === 'number' ? supply[province] : parseFloat(supply[province] as string) || 0
+                        typeof supply[province] === "number"
+                          ? supply[province]
+                          : parseFloat(supply[province] as string) || 0
                       )}
                     </td>
                   ))}

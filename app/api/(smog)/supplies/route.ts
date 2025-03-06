@@ -5,13 +5,16 @@ import { z } from "zod";
 // Zod Schema for Supply Validation
 const SupplySchema = z.object({
   id: z.number().optional(),
-  name: z.string().min(1, "ชื่อวัสดุต้องไม่เป็นค่าว่าง"),
-  description: z.string().optional(),
-  quantity: z.number().min(0, "จำนวนต้องเป็นค่าบวก"),
-  unit: z.string().min(1, "หน่วยต้องระบุ"),
-  provcode: z.string().optional(),
-  provname: z.string().optional(),
-  category: z.string().optional(),
+  hospcode: z.string().min(1, "รหัสโรงพยาบาลต้องไม่เป็นค่าว่าง"),
+  hospname: z.string().min(1, "ชื่อโรงพยาบาลต้องไม่เป็นค่าว่าง"),
+  supplie_id: z.number().min(0, "รหัสวัสดุต้องเป็นค่าบวก"),
+  suppliename: z.string().min(1, "ชื่อวัสดุต้องไม่เป็นค่าว่าง"),
+  supplietype: z.string().min(1, "ประเภทวัสดุต้องไม่เป็นค่าว่าง"),
+  suppliecatalog: z.string().min(1, "แคตตาล็อกวัสดุต้องไม่เป็นค่าว่าง"),
+  quantity_stock: z.number().min(0, "จำนวนต้องเป็นค่าบวก"),
+  provcode: z.string().min(1, "รหัสจังหวัดต้องไม่เป็นค่าว่าง"),
+  provname: z.string().min(1, "ชื่อจังหวัดต้องไม่เป็นค่าว่าง"),
+  updated_at: z.string().min(1, "วันที่อัพเดทต้องไม่เป็นค่าว่าง"),
 });
 
 // เพิ่ม Schema สำหรับการตอบกลับของ API
@@ -58,13 +61,13 @@ export async function GET(request: NextRequest) {
     const cookieHeader = `token=${token}`;
 
     const res = await fetch(
-      "https://epinorth-api.ddc.moph.go.th/api/supplies",
+      "https://epinorth-api.ddc.moph.go.th/api/frontend/supplyhos",
       {
         method: "GET",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Cookie: cookieHeader, // ส่งคุกกี้ไปยัง API ภายนอก
+          Cookie: cookieHeader,
         },
       }
     );
@@ -75,14 +78,12 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await res.json();
-    // console.log("Received data from API:", data);
-    // Validate and parse supplies data
-    const apiResponse = ApiResponseSchema.parse(data);
-    // const supplies = z.array(SupplySchema).parse(data.supplies || data);
-    const supplies = apiResponse.data;
+
+    // เนื่องจาก API ส่งกลับเป็น Array เราจึง validate ด้วย Schema แบบ Array
+    const supplies = z.array(SupplySchema).parse(data);
+
     return NextResponse.json({
       supplies,
-      total: supplies.length,
     });
   } catch (error) {
     return handleApiError(error);
