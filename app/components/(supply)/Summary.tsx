@@ -68,17 +68,20 @@ const Summary: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // กำหนดรายชื่อจังหวัด (order ตามที่ต้องการ)
-  const provinceHeaders = [
-    "เชียงใหม่",
-    "ลำพูน",
-    "ลำปาง",
-    "แพร่",
-    "น่าน",
-    "พะเยา",
-    "เชียงราย",
-    "แม่ฮ่องสอน",
-  ];
+  // กำหนดรายชื่อจังหวัด (order ตามที่ต้องการ) โดยใช้ useMemo เพื่อให้ค่าไม่เปลี่ยนทุก render
+  const provinceHeaders = useMemo(
+    () => [
+      "เชียงใหม่",
+      "ลำพูน",
+      "ลำปาง",
+      "แพร่",
+      "น่าน",
+      "พะเยา",
+      "เชียงราย",
+      "แม่ฮ่องสอน",
+    ],
+    []
+  );
 
   const fetchSummary = async () => {
     setLoading(true);
