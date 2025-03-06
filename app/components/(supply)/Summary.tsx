@@ -1,59 +1,103 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import BarChartComponent from "../(object)/BarChartComponent";
 import PieChartComponent from "../(object)/PieChartComponent";
-import DataTableComponent from "../(object)/DataTableComponent";
-import ExportToExcelButton from "../(object)/ExportToExcelButton";
+import DataTable from "../(object)/DataTableDashboard";
 import Loading from "../(object)/Loading";
+import { SupplySummary } from "../../types/types";
 
-interface SupplySummary {
-  supplyname: string;
-  category: string;
+interface SupplySummaryData extends SupplySummary {
+  id: number;
+  provcode: string;
+  provname: string;
+  hospcode: string;
+  hospname: string;
+  supplie_id: number;
+  suppliename: string;
+  quantity_stock: number;
+  supplietype: string;
+  suppliecatalog: string;
+  updated_at: string;
   [key: string]: string | number;
 }
 
-const COLORS = [
-  "#8884d8",
-  "#82ca9d",
-  "#ffc658",
-  "#ff7f50",
-  "#8dd1e1",
-  "#a4de6c",
-  "#d0ed57",
-  "#ffc0cb",
-];
+// Map รหัสจังหวัด 8 จังหวัดเป็นชื่อจังหวัด
+const provinceMap: { [key: string]: string } = {
+  "50": "เชียงใหม่",
+  "51": "ลำพูน",
+  "52": "ลำปาง",
+  "53": "แพร่",
+  "54": "น่าน",
+  "55": "พะเยา",
+  "56": "เชียงราย",
+  "57": "แม่ฮ่องสอน",
+};
+
+// ฟังก์ชัน group ข้อมูลโดยให้แถวคือ supplyname และคอลัมน์เป็น 8 จังหวัด + "เขตสุขภาพที่ 1"
+const groupDataBySupply = (data: SupplySummaryData[]): any[] => {
+  const result: { [key: string]: any } = {};
+  data.forEach((item) => {
+    const supplyName = item.suppliename;
+    const provinceName = provinceMap[item.provcode];
+    if (!provinceName) return;
+
+    if (!result[supplyName]) {
+      result[supplyName] = {
+        supplyname: supplyName,
+        "เชียงใหม่": 0,
+        "ลำพูน": 0,
+        "ลำปาง": 0,
+        "แพร่": 0,
+        "น่าน": 0,
+        "พะเยา": 0,
+        "เชียงราย": 0,
+        "แม่ฮ่องสอน": 0,
+        "เขตสุขภาพที่ 1": 0,
+      };
+    }
+    result[supplyName][provinceName] += item.quantity_stock;
+    result[supplyName]["เขตสุขภาพที่ 1"] += item.quantity_stock;
+  });
+  return Object.values(result);
+};
 
 const Summary: React.FC = () => {
-  const [provinces, setProvinces] = useState<string[]>([]);
-  const [supplies, setSupplies] = useState<SupplySummary[]>([]);
+  const [rawData, setRawData] = useState<SupplySummaryData[]>([]);
+  const [groupedData, setGroupedData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // กำหนดรายชื่อจังหวัด (order ตามที่ต้องการ)
+  const provinceHeaders = [
+    "เชียงใหม่",
+    "ลำพูน",
+    "ลำปาง",
+    "แพร่",
+    "น่าน",
+    "พะเยา",
+    "เชียงราย",
+    "แม่ฮ่องสอน",
+  ];
 
   const fetchSummary = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
-        "https://epinorth-api.ddc.moph.go.th/api/frontend/summary",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            // หาก API ต้องการ token หรือ headers อื่น ๆ ให้เพิ่มที่นี่
-            // "Authorization": "Bearer YOUR_TOKEN",
-          },
-        }
-      );
-
+      const response = await fetch("/api/summary", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
-      const data = await response.json();
-      setProvinces(data.provinces || []); // ตรวจสอบว่า API ส่ง provinces มาหรือไม่
-      setSupplies(data.supplies || []); // ตรวจสอบว่า API ส่ง supplies มาหรือไม่
+      const data: SupplySummaryData[] = await response.json();
+      setRawData(data);
+      const grouped = groupDataBySupply(data);
+      setGroupedData(grouped);
     } catch (err) {
       console.error("Error fetching summary:", err);
       setError("ไม่สามารถดึงข้อมูลได้ในขณะนี้");
@@ -66,45 +110,10 @@ const Summary: React.FC = () => {
     fetchSummary();
   }, []);
 
-  const calculateTotal = useCallback(
-    (supply: SupplySummary) =>
-      provinces.reduce(
-        (acc, province) =>
-          acc +
-          (typeof supply[province] === "number"
-            ? (supply[province] as number)
-            : parseFloat(supply[province] as string) || 0),
-        0
-      ),
-    [provinces]
-  );
-
-  const barChartData = useMemo(
-    () =>
-      supplies.map((supply) => ({
-        supplyname: supply.supplyname,
-        ...provinces.reduce(
-          (acc, province) => ({
-            ...acc,
-            [province]:
-              typeof supply[province] === "number"
-                ? (supply[province] as number)
-                : parseFloat(supply[province] as string) || 0,
-          }),
-          {}
-        ),
-        total: calculateTotal(supply),
-      })),
-    [supplies, provinces, calculateTotal]
-  );
-
-  const pieChartData = useMemo(
-    () =>
-      supplies.map((supply) => ({
-        name: supply.supplyname,
-        value: calculateTotal(supply),
-      })),
-    [supplies, calculateTotal]
+  // กำหนด headers สำหรับตาราง โดยคอลัมน์แรกเป็น supplyname ตามด้วย 8 จังหวัด และ "เขตสุขภาพที่ 1"
+  const headers = useMemo(
+    () => ["supplyname", ...provinceHeaders, "เขตสุขภาพที่ 1"],
+    [provinceHeaders]
   );
 
   if (error) {
@@ -117,44 +126,58 @@ const Summary: React.FC = () => {
 
   return (
     <div className="p-6 min-h-screen bg-gray-100">
-      <div className="max-w-7xl mx-auto">
+      <div className="container mx-auto">
         {loading ? (
           <Loading />
         ) : (
           <div>
-            <h1 className="text-4xl font-extrabold mb-6 text-gray-800 text-center">
-              สรุปรวมเวชภัณฑ์
+            <h1 className="text-3xl font-extrabold mb-6 text-gray-800 text-center">
+              สรุปรวมเวชภัณฑ์ เขตสุขภาพที่ 1
             </h1>
 
-            {/* Export to Excel */}
-            <div className="mb-6 flex justify-end">
-              <ExportToExcelButton supplies={supplies} provinces={provinces} />
-            </div>
-
-            {/* Data Table */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <DataTableComponent
-                supplies={supplies}
-                provinces={provinces}
-                calculateTotal={calculateTotal}
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+              <DataTable
+                titlespan="ข้อมูลเวชภัณฑ์"
+                title="สรุปรวมเวชภัณฑ์"
+                headers={headers}
+                data={groupedData}
               />
             </div>
 
-            {/* Bar Chart */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
               <BarChartComponent
-                data={barChartData}
-                provinces={provinces}
-                colors={COLORS}
+                data={groupedData}
+                provinces={provinceHeaders}
+                colors={[
+                  "#8884d8",
+                  "#82ca9d",
+                  "#ffc658",
+                  "#ff7f50",
+                  "#8dd1e1",
+                  "#a4de6c",
+                  "#d0ed57",
+                  "#ffc0cb",
+                ]}
               />
             </div>
 
-            {/* Pie Chart */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
               <PieChartComponent
                 title="สัดส่วนเวชภัณฑ์ทั้งหมด"
-                data={pieChartData}
-                colors={COLORS}
+                data={groupedData.map((item) => ({
+                  name: item.supplyname,
+                  value: item["เขตสุขภาพที่ 1"],
+                }))}
+                colors={[
+                  "#8884d8",
+                  "#82ca9d",
+                  "#ffc658",
+                  "#ff7f50",
+                  "#8dd1e1",
+                  "#a4de6c",
+                  "#d0ed57",
+                  "#ffc0cb",
+                ]}
               />
             </div>
           </div>
