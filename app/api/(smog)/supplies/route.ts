@@ -18,12 +18,12 @@ const SupplySchema = z.object({
 });
 
 // เพิ่ม Schema สำหรับการตอบกลับของ API
-const ApiResponseSchema = z.object({
-  page: z.number(),
-  limit: z.number(),
-  total: z.number(),
-  data: z.array(SupplySchema),
-});
+// const ApiResponseSchema = z.object({
+//   page: z.number(),
+//   limit: z.number(),
+//   total: z.number(),
+//   data: z.array(SupplySchema),
+// });
 // Centralized API Error Handling
 const handleApiError = (error: unknown) => {
   console.error("API Error:", error);

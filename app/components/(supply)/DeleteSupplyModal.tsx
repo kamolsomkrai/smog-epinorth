@@ -5,7 +5,7 @@ import React from "react";
 
 interface Supply {
   id: number;
-  name: string;
+  suppliename: string; // เปลี่ยนจาก name เป็น suppliename ให้ตรงกับข้อมูลที่ส่งมา
 }
 
 interface DeleteSupplyModalProps {
@@ -36,7 +36,7 @@ const DeleteSupplyModal: React.FC<DeleteSupplyModalProps> = ({ supply, onClose }
       <div className="bg-white rounded-lg p-6 w-full max-w-sm">
         <h2 className="text-xl font-bold mb-4">ลบวัสดุ</h2>
         <p className="mb-4">
-          คุณแน่ใจหรือว่าต้องการลบวัสดุ {supply.name} ?
+          คุณแน่ใจหรือว่าต้องการลบวัสดุ {supply.suppliename} ?
         </p>
         <div className="flex justify-end space-x-2">
           <button
