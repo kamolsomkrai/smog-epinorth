@@ -7,9 +7,9 @@ export async function GET() {
       "https://epinorth-api.ddc.moph.go.th/api/frontend/summary",
       {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
       }
     );
