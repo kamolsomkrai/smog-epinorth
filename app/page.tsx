@@ -7,10 +7,11 @@ import { Box, Container, Typography } from "@mui/material";
 import CardMenu from "./components/CardMenu";
 import {
   Inventory2 as InventoryIcon,
-  Summarize as SummaryIcon,
+  Summarize as SummarizeIcon,
   Build as BuildIcon,
   Assessment as AssessmentIcon
 } from "@mui/icons-material";
+import PM25Table from "./components/(homepage)/Pm25Table";
 
 const menuItems1 = [
   {
@@ -20,8 +21,8 @@ const menuItems1 = [
   },
   {
     href: "/summary",
-    title: "Dashboard ข้อมูลเวชภัณฑ์",
-    icon: <SummaryIcon fontSize="large" color="success" />
+    title: "Dashboard ข้อมูล เวชภัณฑ์",
+    icon: <SummarizeIcon fontSize="large" color="success" />
   }
 ];
 
@@ -33,7 +34,7 @@ const menuItems2 = [
   },
   {
     href: "/summaryreportsmog",
-    title: "Dashboard ข้อมูลภาพรวมมาตรการ",
+    title: "Dashboard ข้อมูลภาพรวม มาตรการ",
     icon: <AssessmentIcon fontSize="large" color="error" />
   }
 ];
@@ -59,17 +60,23 @@ export default function Home() {
 
   return (
     <Container>
+      {/* เรียกใช้ PM25Table เพื่อแสดงข้อมูล API ก่อน */}
+      <PM25Table />
       <div>
-        <Typography variant="h5" component="div" sx={{ mt: 2, textAlign: 'center' }}>
+        <Typography variant="h5" component="div" sx={{ mt: 2, textAlign: "center" }}>
           <span className="text-blue-800">ข้อมูลเวชภัณฑ์ เขตสุขภาพที่ 1</span>
         </Typography>
-        <Box><CardMenu menuItems={menuItems1} /></Box>
+        <Box>
+          <CardMenu menuItems={menuItems1} />
+        </Box>
       </div>
       <div>
-        <Typography variant="h5" component="div" sx={{ mt: 2, textAlign: 'center' }}>
+        <Typography variant="h5" component="div" sx={{ mt: 2, textAlign: "center" }}>
           <span className="text-blue-800">ข้อมูลมาตรการ เขตสุขภาพที่ 1</span>
         </Typography>
-        <Box><CardMenu menuItems={menuItems2} /></Box>
+        <Box>
+          <CardMenu menuItems={menuItems2} />
+        </Box>
       </div>
     </Container>
   );
