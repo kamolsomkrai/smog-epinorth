@@ -1,6 +1,14 @@
 import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 
+// สร้าง schema สำหรับข้อมูล body โดยแต่ละ key สามารถมีหรือไม่มีได้ (optional)
+const PM25Schema = z.object({
+  province: z.string().optional(),
+  start_date: z.string().optional(),
+  end_date: z.string().optional(),
+  search: z.number().optional(),
+});
+
 // Centralized API Error Handling
 const handleApiError = (error: unknown) => {
   console.error("API Error:", error);
@@ -31,22 +39,24 @@ const validateToken = (token?: string) => {
 
 export async function POST(request: NextRequest) {
   try {
-    const token = validateToken(request.cookies.get("token")?.value);
-    const cookieHeader = `token=${token}`;
-    // const body = await request.json();
-    // const validatedData = Measure2Schema.parse(body);
+    // const token = validateToken(request.cookies.get("token")?.value);
+    // const cookieHeader = `token=${token}`;
 
-    // ส่งข้อมูลไปยัง Express API
+    // รับข้อมูล body แล้ว validate ด้วย PM25Schema
+    const body = await request.json();
+    const validatedData = PM25Schema.parse(body);
+
+    // ส่งข้อมูลไปยัง API ใหม่ (pm25)
     const res = await fetch(
-      "https://epinorth-api.ddc.moph.go.th/api/frontend/hospitallist",
+      "https://epinorth-api.ddc.moph.go.th/api/public/pm25",
       {
         method: "POST",
         credentials: "include",
         headers: {
-          Cookie: cookieHeader,
+          // Cookie: cookieHeader,
           "Content-Type": "application/json",
         },
-        // body: JSON.stringify(validatedData),
+        body: JSON.stringify(validatedData),
       }
     );
 
