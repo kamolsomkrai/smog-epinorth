@@ -200,6 +200,8 @@ const PM25Table = () => {
             ค้นหา
           </Button>
         </Box>
+        <p className="text-gray-400 mt-4">* หมายเหตุ ใน 1 อำเภอ อาจมีสถานีตรวจวัดหลายสถานีตรวจวัด >> การเลือกใช้ค่า PM2.5 เฉลี่ย 24 ชั่วโมง รายวัน ของแต่ละอำเภอ มาตรวจสอบและใช้ค่าสูงสุดของอำเภอนั้นๆ
+          และเลือกข้อมูล จากระบบ AIR4THAI, NTAQHI, CCDC(DustBoy) และ GISTDA มาใช้ตามลำดับ</p>
       </Paper>
 
       {/* ตารางแสดงข้อมูล พร้อม scrollbar แนวนอน */}
@@ -216,8 +218,8 @@ const PM25Table = () => {
         <Table size="small">
           <TableHead>
             <TableRow sx={{ height: 30 }}>
-              <TableCell sx={{ fontWeight: "bold", py: 0.5, px: 1 }}>Province</TableCell>
-              <TableCell sx={{ fontWeight: "bold", py: 0.5, px: 1 }}>Amphur</TableCell>
+              <TableCell sx={{ fontWeight: "bold", py: 0.5, px: 1 }}>จังหวัด</TableCell>
+              <TableCell sx={{ fontWeight: "bold", py: 0.5, px: 1 }}>อำเภอ</TableCell>
               {uniqueDates.map((date) => (
                 <TableCell key={date} align="center" sx={{ fontWeight: "bold", py: 0.5, px: 1 }}>
                   {date}
