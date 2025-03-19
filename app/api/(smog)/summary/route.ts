@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
+    // เพิ่มตัวเลือก cache: 'no-store' เพื่อบังคับให้ fetch ใหม่ทุกครั้ง
     const res = await fetch(
       "https://epinorth-api.ddc.moph.go.th/api/frontend/summary",
       {
@@ -11,6 +12,7 @@ export async function GET() {
         headers: {
           "Content-Type": "application/json",
         },
+        cache: "no-store",
       }
     );
 
