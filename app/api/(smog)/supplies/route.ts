@@ -5,16 +5,22 @@ import { z } from "zod";
 // Zod Schema for Supply Validation
 const SupplySchema = z.object({
   id: z.number().optional(),
-  hospcode: z.string().min(1, "รหัสโรงพยาบาลต้องไม่เป็นค่าว่าง"),
-  hospname: z.string().min(1, "ชื่อโรงพยาบาลต้องไม่เป็นค่าว่าง"),
-  supplie_id: z.number().min(0, "รหัสวัสดุต้องเป็นค่าบวก"),
-  suppliename: z.string().min(1, "ชื่อวัสดุต้องไม่เป็นค่าว่าง"),
-  supplietype: z.string().min(1, "ประเภทวัสดุต้องไม่เป็นค่าว่าง"),
-  suppliecatalog: z.string().min(1, "แคตตาล็อกวัสดุต้องไม่เป็นค่าว่าง"),
-  quantity_stock: z.number().min(0, "จำนวนต้องเป็นค่าบวก"),
-  provcode: z.string().min(1, "รหัสจังหวัดต้องไม่เป็นค่าว่าง"),
-  provname: z.string().min(1, "ชื่อจังหวัดต้องไม่เป็นค่าว่าง"),
-  updated_at: z.string().min(1, "วันที่อัพเดทต้องไม่เป็นค่าว่าง"),
+  hospcode: z.string().min(1, "รหัสโรงพยาบาลต้องไม่เป็นค่าว่าง").optional(),
+  hospname: z.string().min(1, "ชื่อโรงพยาบาลต้องไม่เป็นค่าว่าง").optional(),
+  supplie_id: z.number().min(0, "รหัสวัสดุต้องเป็นค่าบวก").optional(),
+  suppliename: z.string().min(1, "ชื่อวัสดุต้องไม่เป็นค่าว่าง").optional(),
+  supplietype: z.string().min(1, "ประเภทวัสดุต้องไม่เป็นค่าว่าง").optional(),
+  suppliecatalog: z
+    .string()
+    .min(1, "แคตตาล็อกวัสดุต้องไม่เป็นค่าว่าง")
+    .optional(),
+  quantity_stock: z.number().min(0, "จำนวนต้องเป็นค่าบวก").optional(),
+  quantity_add: z.number().min(0, "จำนวนต้องเป็นค่าบวก").optional(),
+  quantity_minus: z.number().min(0, "จำนวนต้องเป็นค่าบวก").optional(),
+  quantity_total: z.number().min(0, "จำนวนต้องเป็นค่าบวก").optional(),
+  provcode: z.string().min(1, "รหัสจังหวัดต้องไม่เป็นค่าว่าง").optional(),
+  provname: z.string().min(1, "ชื่อจังหวัดต้องไม่เป็นค่าว่าง").optional(),
+  updated_at: z.string().min(1, "วันที่อัพเดทต้องไม่เป็นค่าว่าง").optional(),
 });
 
 // เพิ่ม Schema สำหรับการตอบกลับของ API
@@ -32,7 +38,7 @@ const handleApiError = (error: unknown) => {
     return NextResponse.json(
       {
         message: "Validation Error",
-        errors: error.errors.map((err) => err.message),
+        errors: error.errors.map((err) => err),
       },
       { status: 400 }
     );
