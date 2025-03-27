@@ -1,12 +1,13 @@
 // components/ActivityForm.tsx
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { toast } from "react-toastify";
 import MeasureSelect from "../(global)/MeasureSelect";
 import Measure1 from "./Measure1";
 import Measure2 from "./Measure2";
 import Measure3 from "./Measure3";
 import Measure4 from "./Measure4";
+import { AuthContext } from "../../context/AuthContext";
 import { ActivityFormData, Measure1UploadData } from "../../interfaces/newmeasure";
 
 // Map API endpoint สำหรับแต่ละมาตรการ
@@ -26,6 +27,8 @@ const measureShowApiMap: Record<number, string> = {
 
 const ActivityForm: React.FC = () => {
   // เปลี่ยน state files ให้เป็น Measure1UploadData[] ซึ่งในแต่ละตัวเราจะเก็บ property rawFile (File object จริง) สำหรับอัปโหลด
+  const auth = useContext(AuthContext);
+
   const [files, setFiles] = useState<Measure1UploadData[]>([]);
   const [activityType, setActivityType] = useState<number>(0);
   const [activityFormData, setActivityFormData] = useState<ActivityFormData>({
@@ -151,6 +154,7 @@ const ActivityForm: React.FC = () => {
           setActivityFormData((prev) => ({ ...prev, activityId }));
           const fetchedData = Array.isArray(data) && data.length > 0 ? data[0] : data;
           setActivityFormData((prev) => ({ ...prev, ...fetchedData }));
+          // console.log(auth)
         })
         .catch((err) => {
           console.error(err);
@@ -471,7 +475,12 @@ const ActivityForm: React.FC = () => {
             <Measure3 activityFormData={activityFormData} handleChange={handleChange} />
           )}
           {activityType === 4 && (
-            <Measure4 activityFormData={activityFormData} handleChange={handleChange} />
+            auth?.user?.ssj_ok?.data?.[0] === 1 ? (
+              <Measure4 activityFormData={activityFormData} handleChange={handleChange} />
+            ) : (
+              <p className="text-red-500 text-center">สิทธิ์การเข้าถึงไม่เพียงพอ</p>
+
+            )
           )}
           <button
             type="submit"

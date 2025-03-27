@@ -16,9 +16,20 @@ const ReportMeasure2: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   // ใช้ useMemo สำหรับการคำนวณ
+  // เปลี่ยนฟังก์ชัน calculateTotal ให้รองรับ string ที่เป็นตัวเลขด้วย
   const calculateTotal = useMemo(() => (field: keyof Measure2Data): number => {
-    return data.reduce((acc, curr) => acc + (typeof curr[field] === 'number' ? curr[field] : 0), 0);
+    return data.reduce((acc, curr) => {
+      const value = curr[field];
+      let num = 0;
+      if (typeof value === 'number') {
+        num = value;
+      } else if (typeof value === 'string') {
+        num = parseFloat(value) || 0;
+      }
+      return acc + num;
+    }, 0);
   }, [data]);
+
 
   // const safeAdd = useMemo(() => (...nums: (number | undefined)[]): number => {
   //   return nums
@@ -139,7 +150,7 @@ const ReportMeasure2: React.FC = () => {
 
         {/* 2.1 เฝ้าระวังและแจ้งเตือนความเสี่ยงต่อสุขภาพ */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800">2.1 เฝ้าระวังและแจ้งเตือนความเสี่ยงต่อสุขภาพ</h2>
+          <h2 className="text-2xl  mb-6 text-gray-800">2.1 เฝ้าระวังและแจ้งเตือนความเสี่ยงต่อสุขภาพ</h2>
 
           {/* Pie Charts สำหรับ 2.1.1 และ 2.1.2 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -194,7 +205,7 @@ const ReportMeasure2: React.FC = () => {
 
         {/* 2.2 กลุ่มเปราะบาง */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800">2.2 กลุ่มเปราะบาง</h2>
+          <h2 className="text-2xl  mb-6 text-gray-800">2.2 กลุ่มเปราะบาง</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <PieChartSection
               title="จำนวนทั้งหมด"
@@ -269,7 +280,7 @@ const ReportMeasure2: React.FC = () => {
 
         {/* 4. การตรวจสุขภาพ */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800">2.3 การตรวจสุขภาพเจ้าหน้าที่/อาสาสมัครดับไฟป่า</h2>
+          <h2 className="text-2xl  mb-6 text-gray-800">2.3 การตรวจสุขภาพเจ้าหน้าที่/อาสาสมัครดับไฟป่า</h2>
 
           {/* Pie Charts สำหรับ 4.1 */}
 

@@ -289,7 +289,7 @@ const ReportMeasure3: React.FC = () => {
 
             {/* Section: คลินิก */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">จำนวนคลินิกมลพิษและการให้บริการ</h2>
+              <h2 className="text-2xl  mb-6 text-gray-800">จำนวนคลินิกมลพิษและการให้บริการ</h2>
               {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <PieChartSection
                   title="จำนวนคลินิก (เปิด)"
@@ -343,7 +343,7 @@ const ReportMeasure3: React.FC = () => {
             </div>
 
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">การสนับสนุนมุ้งสู้ฝุ่น (สะสม)</h2>
+              <h2 className="text-2xl  mb-6 text-gray-800">การสนับสนุนมุ้งสู้ฝุ่น (สะสม)</h2>
               <DataTable
                 titlespan="จำนวนมุ้งสู้ฝุ่น และการสนับสนุนมุ้งสู้ฝุ่น"
                 title="จำนวนผู้รับบริการ คลินิกมลพิษฯ"
@@ -363,7 +363,7 @@ const ReportMeasure3: React.FC = () => {
 
             {/* Section: ห้องปลอดฝุ่น */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">จัดเตรียมห้องปลอดฝุ่น</h2>
+              <h2 className="text-2xl  mb-6 text-gray-800">จัดเตรียมห้องปลอดฝุ่น</h2>
               {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8"> */}
               <DataTable
                 titlespan="จำนวนห้องปลอดฝุ่นสะสม"
@@ -412,7 +412,7 @@ const ReportMeasure3: React.FC = () => {
 
             {/* Section: ทีมแพทย์ */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">ทีมปฏิบัติการด้านการแพทย์และสาธารณสุข</h2>
+              <h2 className="text-2xl  mb-6 text-gray-800">ทีมปฏิบัติการด้านการแพทย์และสาธารณสุข</h2>
               {/* <BarChartSection
                 title="ทีมแพทย์"
                 data={barChartData}
@@ -485,7 +485,7 @@ const ReportMeasure3: React.FC = () => {
 
             {/* Section: อุปกรณ์ป้องกันส่วนบุคคล */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+              <h2 className="text-2xl  mb-6 text-gray-800">
                 สนับสนุนอุปกรณ์ป้องกันส่วนบุคคลแก่กลุ่มเสี่ยง
               </h2>
               <div className="grid grid-cols-1 gap-8">

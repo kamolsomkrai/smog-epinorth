@@ -151,7 +151,7 @@ const ReportMeasure1: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-8">
         {/* ตารางหลัก (Measure1) */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h1 className="text-2xl font-semibold mb-4">รายงาน Measure1</h1>
+          {/* <h1 className="text-2xl font-semibold mb-4">รายงาน Measure1</h1> */}
           {loadingMeasure1 ? (
             <Loading />
           ) : errorMeasure1 ? (
@@ -210,8 +210,8 @@ const ReportMeasure1: React.FC = () => {
                         )
                       }
                       className={`px-4 py-2 rounded border transition-colors duration-200 ${selectedActivityType === typeValue
-                          ? "bg-blue-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-blue-100"
+                        ? "bg-blue-500 text-white"
+                        : "bg-white text-gray-700 hover:bg-blue-100"
                         }`}
                     >
                       {label}

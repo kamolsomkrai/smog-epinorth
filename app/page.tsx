@@ -16,12 +16,12 @@ import PM25Table from "./components/(homepage)/Pm25Table";
 const menuItems1 = [
   {
     href: "/supplies",
-    title: "บันทึกข้อมูล เวชภัณฑ์",
+    title: "บันทึกข้อมูลเวชภัณฑ์",
     icon: <InventoryIcon fontSize="large" color="secondary" />
   },
   {
     href: "/summary",
-    title: "Dashboard ข้อมูล เวชภัณฑ์",
+    title: "Dashboard เวชภัณฑ์",
     icon: <SummarizeIcon fontSize="large" color="success" />
   }
 ];
@@ -29,12 +29,12 @@ const menuItems1 = [
 const menuItems2 = [
   {
     href: "/activity_smog",
-    title: "บันทึกข้อมูล มาตรการ",
+    title: "บันทึกข้อมูลมาตรการ",
     icon: <BuildIcon fontSize="large" color="warning" />
   },
   {
     href: "/summaryreportsmog",
-    title: "Dashboard ข้อมูลภาพรวม มาตรการ",
+    title: "Dashboard ภาพรวมมาตรการ",
     icon: <AssessmentIcon fontSize="large" color="error" />
   }
 ];
@@ -61,10 +61,10 @@ export default function Home() {
   return (
     <Container>
       {/* เรียกใช้ PM25Table เพื่อแสดงข้อมูล API ก่อน */}
-      <PM25Table />
+      {/* <PM25Table /> */}
       <div>
         <Typography variant="h5" component="div" sx={{ mt: 2, textAlign: "center" }}>
-          <span className="text-blue-800">ข้อมูลเวชภัณฑ์ เขตสุขภาพที่ 1</span>
+          <span className="text-blue-800">ข้อมูลเวชภัณฑ์</span>
         </Typography>
         <Box>
           <CardMenu menuItems={menuItems1} />
@@ -72,7 +72,7 @@ export default function Home() {
       </div>
       <div>
         <Typography variant="h5" component="div" sx={{ mt: 2, textAlign: "center" }}>
-          <span className="text-blue-800">ข้อมูลมาตรการ เขตสุขภาพที่ 1</span>
+          <span className="text-blue-800">ข้อมูลมาตรการ</span>
         </Typography>
         <Box>
           <CardMenu menuItems={menuItems2} />
