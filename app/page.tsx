@@ -11,7 +11,7 @@ import {
   Build as BuildIcon,
   Assessment as AssessmentIcon
 } from "@mui/icons-material";
-import PM25Table from "./components/(homepage)/Pm25Table";
+// import PM25Table from "./components/(homepage)/Pm25Table";
 
 const menuItems1 = [
   {

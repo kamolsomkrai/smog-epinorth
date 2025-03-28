@@ -74,20 +74,22 @@ const ReportMeasure2: React.FC = () => {
 
     fetchMeasure1();
   }, []);
-  // ข้อมูลสำหรับ Pie Chart ในส่วน 2.1
-  const pieData2_1_1 = useMemo(() => {
-    return filteredData.map(item => ({
-      name: item.province,
-      value: typeof item.riskHealthInfo === 'number' ? item.riskHealthInfo : 0,
-    }));
-  }, [filteredData]);
+  // // ข้อมูลสำหรับ Pie Chart ในส่วน 2.1
+  // const pieData2_1_1 = useMemo(() => {
+  //   return filteredData.map(item => ({
+  //     name: item.province,
+  //     value: (typeof item.riskHealthInfo === 'number' ? item.riskHealthInfo : 0).toString(),
+  //   }));
+  // }, [filteredData]);
 
-  const pieData2_1_2 = useMemo(() => {
-    return filteredData.map(item => ({
-      name: item.province,
-      value: typeof item.riskHealthSocial === 'number' ? item.riskHealthSocial : 0,
-    }));
-  }, [filteredData]);
+  // const pieData2_1_2 = useMemo(() => {
+  //   return filteredData.map(item => ({
+  //     name: item.province,
+  //     value: (typeof item.riskHealthSocial === 'number' ? item.riskHealthSocial : 0).toString(),
+  //   }));
+  // }, [filteredData]);
+
+
 
   // ข้อมูลสำหรับ Pie Chart ในส่วน 2.2
   const pieData2_2 = useMemo(() => [
@@ -107,12 +109,12 @@ const ReportMeasure2: React.FC = () => {
   // ], [calculateTotal]);
 
   // ข้อมูลสำหรับ Pie Chart ในส่วน 4.1
-  const pieData2_4_1 = useMemo(() => {
-    return filteredData.map(item => ({
-      name: item.province,
-      value: typeof item.healthcareOfficer === 'number' ? item.healthcareOfficer : 0,
-    }));
-  }, [filteredData]);
+  // const pieData2_4_1 = useMemo(() => {
+  //   return filteredData.map(item => ({
+  //     name: item.province,
+  //     value: typeof item.healthcareOfficer === 'number' ? item.healthcareOfficer : 0,
+  //   }));
+  // }, [filteredData]);
   // const pieData2_4_staff = useMemo(() => [
   //   { name: 'ตรวจสุขภาพเจ้าหน้าที่', value: calculateTotal('healthcareOfficer') },
   //   { name: 'ตรวจสุขภาพอาสาสมัคร', value: calculateTotal('health_check_volunteer') },
@@ -155,18 +157,18 @@ const ReportMeasure2: React.FC = () => {
           {/* Pie Charts สำหรับ 2.1.1 และ 2.1.2 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* 2.1.1 จัดทาสื่อ Info ประชาสัมพันธ์ */}
-            <PieChartSection
+            {/* <PieChartSection
               title="2.1.1 จัดทำสื่อ Info ประชาสัมพันธ์"
               data={pieData2_1_1}
               colors={COLORS}
-            />
+            /> */}
 
             {/* 2.1.2 แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ */}
-            <PieChartSection
+            {/* <PieChartSection
               title="2.1.2 แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ"
               data={pieData2_1_2}
               colors={COLORS}
-            />
+            /> */}
           </div>
           {/* {filteredData.map(items => (items.riskHealthInfo + " "))} */}
           {/* ตารางข้อมูลสำหรับ 2.1 */}
@@ -174,6 +176,7 @@ const ReportMeasure2: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* ตารางสำหรับ 2.1.1 */}
               <DataTable
+                titlespan="2.1.1 จัดทาสื่อ Info ประชาสัมพันธ์"
                 title="จำนวนโครงการสื่อสารและส่งเสริมต่อจังหวัด"
                 headers={['จังหวัด', 'จัดทำสื่อ Info ประชาสัมพันธ์ (ชิ้น)']}
                 data={filteredData.map(items => ({
@@ -188,6 +191,7 @@ const ReportMeasure2: React.FC = () => {
 
               {/* ตารางสำหรับ 2.1.2 */}
               <DataTable
+                titlespan='2.1.2 แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ'
                 title=""
                 headers={['จังหวัด', 'แจ้งเตือนความเสี่ยงผ่านช่องทางต่าง ๆ(ครั้ง)']}
                 data={filteredData.map(item => ({
@@ -206,7 +210,7 @@ const ReportMeasure2: React.FC = () => {
         {/* 2.2 กลุ่มเปราะบาง */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl  mb-6 text-gray-800">2.2 กลุ่มเปราะบาง</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <PieChartSection
               title="จำนวนทั้งหมด"
               data={pieData2_2}
@@ -218,7 +222,7 @@ const ReportMeasure2: React.FC = () => {
               data={pieData2_2}
               colors={COLORS}
             />
-          </div>
+          </div> */}
           {/* Pie Chart สำหรับ 2.2 */}
 
 
