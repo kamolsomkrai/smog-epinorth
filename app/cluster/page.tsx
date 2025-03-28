@@ -4,6 +4,7 @@ import DataTable from '../components/(object)/DataTable';
 
 interface ClusterData {
   yr: number;
+  mm: number;
   hospcode: string;
   hosname: string;
   province: string;
@@ -19,7 +20,8 @@ const ClusterPages: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // state สำหรับตัวกรอง
-  const [filterYear, setFilterYear] = useState<string>("");
+  const [filterYear, setFilterYear] = useState<string>(new Date().getFullYear().toString());
+  const [filterMonth, setFilterMonth] = useState<string>("");
   const [filterProvince, setFilterProvince] = useState<string>("");
   const [filterDiagtype, setFilterDiagtype] = useState<string>("");
   const [filterDiagcode, setFilterDiagcode] = useState<string>("");
@@ -46,26 +48,68 @@ const ClusterPages: React.FC = () => {
     fetchData();
   }, []);
 
-  // กรองข้อมูลตามเงื่อนไข (กรอง yr แต่ไม่แสดงในตาราง)
+  // ดึงปีที่มีอยู่ในข้อมูล (unique)
+  const uniqueYears = useMemo(() => {
+    const years = data.map(item => item.yr);
+    return Array.from(new Set(years)).sort((a, b) => a - b);
+  }, [data]);
+
+  // ตัวเลือกเดือน
+  const monthOptions = [
+    { value: "", label: "เลือกเดือน" },
+    { value: "1", label: "มกราคม" },
+    { value: "2", label: "กุมภาพันธ์" },
+    { value: "3", label: "มีนาคม" },
+    { value: "4", label: "เมษายน" },
+    { value: "5", label: "พฤษภาคม" },
+    { value: "6", label: "มิถุนายน" },
+    { value: "7", label: "กรกฎาคม" },
+    { value: "8", label: "สิงหาคม" },
+    { value: "9", label: "กันยายน" },
+    { value: "10", label: "ตุลาคม" },
+    { value: "11", label: "พฤศจิกายน" },
+    { value: "12", label: "ธันวาคม" },
+  ];
+
+  // ตัวเลือกประเภท diagtype
+  const diagTypeOptions = [
+    { value: "", label: "เลือกประเภท" },
+    { value: "Principal Diagnosis", label: "Principal Diagnosis" },
+    { value: "Comorbidity", label: "Comorbidity" },
+    { value: "Complication", label: "Complication" },
+    { value: "Other", label: "Other" },
+    { value: "External Cause", label: "External Cause" },
+    { value: "Additional Code", label: "Additional Code" },
+    { value: "Morphology Code", label: "Morphology Code" },
+  ];
+
+  // กรองข้อมูลตามเงื่อนไข
   const filteredData = useMemo(() => {
     return data.filter(item => {
       const matchYear = filterYear ? item.yr.toString() === filterYear : true;
+      const matchMonth = filterMonth ? item.mm.toString() === filterMonth : true;
       const matchProvince = filterProvince
         ? item.province.toLowerCase().includes(filterProvince.toLowerCase())
         : true;
       const matchDiagtype = filterDiagtype
-        ? item.diagtype.toLowerCase().includes(filterDiagtype.toLowerCase())
+        ? item.diagtype.toLowerCase() === filterDiagtype.toLowerCase()
         : true;
       const matchDiagcode = filterDiagcode
         ? item.diagcode.toLowerCase().includes(filterDiagcode.toLowerCase())
         : true;
-      return matchYear && matchProvince && matchDiagtype && matchDiagcode;
+      return matchYear && matchMonth && matchProvince && matchDiagtype && matchDiagcode;
     });
-  }, [data, filterYear, filterProvince, filterDiagtype, filterDiagcode]);
-
-  // แปลงข้อมูลสำหรับแสดงผล โดยซ่อน yr และเปลี่ยนชื่อ key ให้ตรงกับ header ที่ต้องการ
+  }, [data, filterYear, filterMonth, filterProvince, filterDiagtype, filterDiagcode]);
   const displayData = useMemo(() => {
+    // สร้าง array สำหรับชื่อเดือนในภาษาไทย
+    const monthNames = [
+      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ];
+
     return filteredData.map(item => ({
+      "ปี": item.yr,
+      "เดือน": monthNames[item.mm], // แปลงเลขเดือนเป็นชื่อเดือนภาษาไทย
       "รหัส": item.hospcode,
       "ชื่อ รพ": item.hosname,
       "จังหวัด": item.province,
@@ -77,19 +121,34 @@ const ClusterPages: React.FC = () => {
   }, [filteredData]);
 
   // กำหนด header ที่ต้องการแสดงในตาราง
-  const headers = ["รหัส", "ชื่อ รพ", "จังหวัด", "อำเภอ", "ประเภท", "รหัสโรค", "จำนวนผู้ป่วย"];
+  const headers = ["ปี", "เดือน", "รหัส", "ชื่อ รพ", "จังหวัด", "อำเภอ", "ประเภท", "รหัสโรค", "จำนวนผู้ป่วย"];
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Cluster Data</h1>
       <div className="mb-4 flex flex-wrap gap-2">
-        <input
-          type="text"
-          placeholder="ปี"
+        {/* เลือกปีจากข้อมูล API */}
+        <select
           value={filterYear}
           onChange={(e) => setFilterYear(e.target.value)}
           className="border p-2"
-        />
+        >
+          <option value="">เลือกปี</option>
+          {uniqueYears.map(year => (
+            <option key={year} value={year.toString()}>{year}</option>
+          ))}
+        </select>
+        {/* เลือกเดือน */}
+        <select
+          value={filterMonth}
+          onChange={(e) => setFilterMonth(e.target.value)}
+          className="border p-2"
+        >
+          {monthOptions.map(option => (
+            <option key={option.value} value={option.value}>{option.label}</option>
+          ))}
+        </select>
+        {/* กรอกจังหวัด */}
         <input
           type="text"
           placeholder="จังหวัด"
@@ -97,13 +156,17 @@ const ClusterPages: React.FC = () => {
           onChange={(e) => setFilterProvince(e.target.value)}
           className="border p-2"
         />
-        <input
-          type="text"
-          placeholder="diagtype"
+        {/* เลือกประเภท diagtype */}
+        <select
           value={filterDiagtype}
           onChange={(e) => setFilterDiagtype(e.target.value)}
           className="border p-2"
-        />
+        >
+          {diagTypeOptions.map(option => (
+            <option key={option.value} value={option.value}>{option.label}</option>
+          ))}
+        </select>
+        {/* กรอกรหัสโรค */}
         <input
           type="text"
           placeholder="รหัสโรค (diagcode)"
