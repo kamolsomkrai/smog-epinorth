@@ -1,11 +1,15 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import BarChartComponent from "../(object)/BarChartComponent";
-import PieChartComponent from "../(object)/PieChartComponent";
-import DataTable from "../(object)/DataTableDashboard";
+import DataTable from "../(object)/DataTable";
 import Loading from "../(object)/Loading";
 import { SupplySummary } from "../../types/types";
+
+interface ColumnStyle {
+  bodyClassName?: string;
+  bodyAlign?: 'left' | 'center' | 'right';
+  wrapText?: boolean;
+}
 
 interface SupplySummaryData extends SupplySummary {
   id: number;
@@ -22,7 +26,6 @@ interface SupplySummaryData extends SupplySummary {
   [key: string]: string | number;
 }
 
-// Map รหัสจังหวัด 8 จังหวัดเป็นชื่อจังหวัด
 const provinceMap: { [key: string]: string } = {
   "50": "เชียงใหม่",
   "51": "ลำพูน",
@@ -34,7 +37,6 @@ const provinceMap: { [key: string]: string } = {
   "57": "แม่ฮ่องสอน",
 };
 
-// ฟังก์ชัน group ข้อมูลโดยให้แถวคือ supplyname และคอลัมน์เป็น 8 จังหวัด + "เขตสุขภาพที่ 1"
 const groupDataBySupply = (data: SupplySummaryData[]): any[] => {
   const result: { [key: string]: any } = {};
   data.forEach((item) => {
@@ -44,7 +46,7 @@ const groupDataBySupply = (data: SupplySummaryData[]): any[] => {
 
     if (!result[supplyName]) {
       result[supplyName] = {
-        supplyname: supplyName,
+        "รายการเวชภัณฑ์": supplyName,
         "เชียงใหม่": 0,
         "ลำพูน": 0,
         "ลำปาง": 0,
@@ -68,7 +70,6 @@ const Summary: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // กำหนดรายชื่อจังหวัด (order ตามที่ต้องการ) โดยใช้ useMemo เพื่อให้ค่าไม่เปลี่ยนทุก render
   const provinceHeaders = useMemo(
     () => [
       "เชียงใหม่",
@@ -82,6 +83,31 @@ const Summary: React.FC = () => {
     ],
     []
   );
+
+  const headers = useMemo(
+    () => ["รายการเวชภัณฑ์", ...provinceHeaders, "เขตสุขภาพที่ 1"],
+    [provinceHeaders]
+  );
+
+  const columnStyles = useMemo(() => {
+    const styles: { [key: string]: ColumnStyle } = {
+      "รายการเวชภัณฑ์": {
+        // bodyClassName: 'bg-gray-50 font-semibold',
+        bodyAlign: 'left',
+        wrapText: true
+      }
+    };
+
+    headers.forEach(header => {
+      if (header !== 'รายการเวชภัณฑ์') {
+        styles[header] = {
+          bodyAlign: 'right'
+        };
+      }
+    });
+
+    return styles;
+  }, [headers]);
 
   const fetchSummary = async () => {
     setLoading(true);
@@ -113,12 +139,6 @@ const Summary: React.FC = () => {
     fetchSummary();
   }, []);
 
-  // กำหนด headers สำหรับตาราง โดยคอลัมน์แรกเป็น supplyname ตามด้วย 8 จังหวัด และ "เขตสุขภาพที่ 1"
-  const headers = useMemo(
-    () => ["supplyname", ...provinceHeaders, "เขตสุขภาพที่ 1"],
-    [provinceHeaders]
-  );
-
   if (error) {
     return (
       <div className="p-6 text-center text-red-500 text-lg font-medium">
@@ -144,43 +164,7 @@ const Summary: React.FC = () => {
                 title="สรุปรวมเวชภัณฑ์"
                 headers={headers}
                 data={groupedData}
-              />
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-              <BarChartComponent
-                data={groupedData}
-                provinces={provinceHeaders}
-                colors={[
-                  "#8884d8",
-                  "#82ca9d",
-                  "#ffc658",
-                  "#ff7f50",
-                  "#8dd1e1",
-                  "#a4de6c",
-                  "#d0ed57",
-                  "#ffc0cb",
-                ]}
-              />
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-              <PieChartComponent
-                title="สัดส่วนเวชภัณฑ์ทั้งหมด"
-                data={groupedData.map((item) => ({
-                  name: item.supplyname,
-                  value: item["เขตสุขภาพที่ 1"],
-                }))}
-                colors={[
-                  "#8884d8",
-                  "#82ca9d",
-                  "#ffc658",
-                  "#ff7f50",
-                  "#8dd1e1",
-                  "#a4de6c",
-                  "#d0ed57",
-                  "#ffc0cb",
-                ]}
+                columnStyles={columnStyles}
               />
             </div>
           </div>

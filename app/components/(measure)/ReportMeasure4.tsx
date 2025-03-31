@@ -15,6 +15,7 @@ const ReportMeasure4: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedProvince, setSelectedProvince] = useState<string>("");
 
   const formatDate = (dateStr: string | undefined): string | null => {
     if (dateStr) {
@@ -44,12 +45,12 @@ const ReportMeasure4: React.FC = () => {
 
   // กรองข้อมูลโดยตรวจสอบค่า null ของ data และ searchTerm เพื่อป้องกัน error
   const filteredData = useMemo(() => {
-    if (!Array.isArray(data)) return [];
-    const lowerCaseSearchTerm = searchTerm?.toLowerCase() || "";
-    return data.filter(item =>
-      item.province?.toLowerCase().includes(lowerCaseSearchTerm)
-    );
-  }, [data, searchTerm]);
+    return selectedProvince
+      ? data?.filter((item) =>
+        item.province.toLowerCase() === selectedProvince.toLowerCase()
+      )
+      : data;
+  }, [data, selectedProvince]);
 
 
   useEffect(() => {
@@ -125,14 +126,23 @@ const ReportMeasure4: React.FC = () => {
         {/* <h1 className="text-4xl font-bold text-gray-800 mb-8">รายงาน Measure 4</h1> */}
 
         {/* เพิ่ม Search Input */}
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="ค้นหาจังหวัด..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+        <div className="grid grid-cols-1 md:grid-rows-2">
+          <label htmlFor="">กรองจังหวัด</label>
+          <select
+            value={selectedProvince}
+            onChange={(e) => setSelectedProvince(e.target.value)}
             className="p-2 border rounded w-full md:w-1/3"
-          />
+          >
+            <option value="">ทั้งหมด</option>
+            <option value="เชียงใหม่">เชียงใหม่</option>
+            <option value="ลำพูน">ลำพูน</option>
+            <option value="ลำปาง">ลำปาง</option>
+            <option value="แพร่">แพร่</option>
+            <option value="น่าน">น่าน</option>
+            <option value="พะเยา">พะเยา</option>
+            <option value="เชียงราย">เชียงราย</option>
+            <option value="แม่ฮ่องสอน">แม่ฮ่องสอน</option>
+          </select>
         </div>
 
         {loading ? (
@@ -147,47 +157,56 @@ const ReportMeasure4: React.FC = () => {
                 'จังหวัด',
                 'วันเปิด EOC',
                 'วันปิด EOC',
-                'จำนวนวันที่เปิด EOC',
-                'การจับปรับ (ครั้ง)'
+                'จำนวนวันที่เปิด EOC'
               ]}
               data={filteredData.map(item => ({
                 'จังหวัด': item.province,
                 'วันเปิด EOC': item.openPheocDate ? formatDate(item.openPheocDate) : 'ยังไม่เปิด',
                 'วันปิด EOC': item.closePheocDate ? formatDate(item.closePheocDate) : 'ยังไม่ปิด',
                 'จำนวนวันที่เปิด EOC': calculateDaysOpen(item.openPheocDate, item.closePheocDate),
-                'การจับปรับ (ครั้ง)': new Intl.NumberFormat().format(item.lawEnforcement),
               }))}
-              footer={{
-                'จังหวัด': 'เขตสุขภาพที่ 1',
-                'วันเปิด EOC': '',
-                'วันปิด EOC': '',
-                'จำนวนวันที่เปิด EOC': aggregateData.totalPheocDaysOpen,
-                'การจับปรับ (ครั้ง)': new Intl.NumberFormat().format(aggregateData.totalFine),
-              }}
+            // footer={{
+            //   'จังหวัด': 'เขตสุขภาพที่ 1',
+            //   'วันเปิด EOC': '',
+            //   'วันปิด EOC': '',
+            //   'จำนวนวันที่เปิด EOC': aggregateData.totalPheocDaysOpen,
+            //   'การจับปรับ (ครั้ง)': new Intl.NumberFormat().format(aggregateData.totalFine),
+            // }}
             />
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <DataTable
+                titlespan='การบังคับใช้กฎหมาย'
+                title="การบังคับใช้กฎหมาย"
+                headers={[
+                  'จังหวัด', 'การจับ/ปรับ (ครั้ง)'
+                ]}
+                data={filteredData.map(item => ({
+                  'จังหวัด': item.province,
+                  'การจับ/ปรับ (ครั้ง)': new Intl.NumberFormat().format(item.lawEnforcement),
+                }))} />
 
-            <DataTable
-              titlespan='มาตรการห้ามเผา'
-              title="มาตรการห้ามเผา"
-              headers={[
-                'จังหวัด',
-                'วันเปิดมาตรการห้ามเผา',
-                'วันปิดมาตรการห้ามเผา',
-                'จำนวนวันที่เปิดมาตรการห้ามเผา',
-              ]}
-              data={filteredData.map(item => ({
-                'จังหวัด': item.province,
-                'วันเปิดมาตรการห้ามเผา': item.openDontBurnDate ? formatDate(item.openDontBurnDate) : 'ยังไม่เปิด',
-                'วันปิดมาตรการห้ามเผา': item.closeDontBurnDate ? formatDate(item.closeDontBurnDate) : 'ยังไม่ปิด',
-                'จำนวนวันที่เปิดมาตรการห้ามเผา': calculateDaysOpen(item.openDontBurnDate, item.closeDontBurnDate),
-              }))}
-              footer={{
-                'จังหวัด': 'เขตสุขภาพที่ 1',
-                'วันเปิดมาตรการห้ามเผา': '',
-                'วันปิดมาตรการห้ามเผา': '',
-                'จำนวนวันที่เปิดมาตรการห้ามเผา': aggregateData.totalBurnDaysOpen,
-              }}
-            />
+              <DataTable
+                titlespan='ระยะเวลาห้ามเผา'
+                title="ระยะเวลาห้ามเผา"
+                headers={[
+                  'จังหวัด',
+                  'ช่วงระยะเวลาการห้ามเผา',
+                  'จำนวนวัน',
+                ]}
+                data={filteredData.map(item => ({
+                  'จังหวัด': item.province,
+                  'ช่วงระยะเวลาการห้ามเผา': item.openDontBurnDate && item.closeDontBurnDate ? formatDate(item.openDontBurnDate) + " - " + formatDate(item.closeDontBurnDate) : "ไม่มีข้อมูล",
+                  'จำนวนวัน': calculateDaysOpen(item.openDontBurnDate, item.closeDontBurnDate),
+                }))}
+              // footer={{
+              //   'จังหวัด': 'เขตสุขภาพที่ 1',
+              //   'วันเปิดมาตรการห้ามเผา': '',
+              //   'วันปิดมาตรการห้ามเผา': '',
+              //   'จำนวนวันที่เปิดมาตรการห้ามเผา': aggregateData.totalBurnDaysOpen,
+              // }}
+              /></div>
+
+
 
             {/* Bar Chart: จำนวนวันที่เปิด EOC ต่อจังหวัด */}
             {/* <BarChartSection
