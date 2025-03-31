@@ -126,7 +126,7 @@ const ClusterPages: React.FC = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Cluster Data</h1>
+      <h1 className="text-2xl font-bold mb-4">การเฝ้าระวังผู้ป่วยที่เข้าได้กับการสอบสวนทางระบาดวิทยา</h1>
       <div className="mb-4 flex flex-wrap gap-2">
         {/* เลือกปีจากข้อมูล API */}
         <select

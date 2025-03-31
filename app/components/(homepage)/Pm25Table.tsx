@@ -21,7 +21,8 @@ import {
   Button,
   Box
 } from "@mui/material";
-
+import { styled } from '@mui/material/styles';
+import { TableCellProps } from '@mui/material/TableCell';
 type PM25Record = {
   province: string;
   amphur: string;
@@ -30,6 +31,37 @@ type PM25Record = {
   pm25_max: string;
   color: string;
 };
+
+interface StyledTableCellProps extends TableCellProps {
+  bgColor?: string;
+}
+
+const StyledTableCell = ({ bgColor, children, ...props }: StyledTableCellProps) => {
+  return (
+    <TableCell {...props} sx={{
+      position: 'relative',
+      textAlign: 'center',
+      '& .bg-layer': {  // ใช้ div จริงแทน pseudo-element
+        position: 'absolute',
+        top: '10%',
+        left: '5%',
+        width: '90%',
+        height: '80%',
+        backgroundColor: bgColor,
+        borderRadius: '4px',
+        opacity: 1,
+        zIndex: 0,
+      },
+      '& .content': {
+        position: 'relative',
+        zIndex: 1,
+      }
+    }}>
+      <div className="bg-layer" />
+      <div className="content">{children}</div>
+    </TableCell>
+  );
+}
 
 // แปลงวันที่เป็นรูปแบบ buddhist (ย่อปี 2 ตัว) เช่น 68-03-01
 const formatBuddhistDate = (dateStr: string): string => {
@@ -81,7 +113,7 @@ const PM25Table = () => {
   >([]);
   // สำหรับ toggle แถว
   const [showAllRows, setShowAllRows] = useState<boolean>(false);
-  const maxVisibleRows = 5;
+  const maxVisibleRows = 10;
   const displayRows = searchOn
     ? rows.filter((row) =>
       Object.values(row.records).some((record) => record.event_valid === 1)
@@ -192,16 +224,20 @@ const PM25Table = () => {
             onChange={(e) => setEndDate(e.target.value)}
             InputLabelProps={{ shrink: true }}
           />
-          <FormControlLabel
-            control={<Switch checked={searchOn} onChange={(e) => setSearchOn(e.target.checked)} />}
-            label="เกิน 75.1 >= 3 วัน"
-          />
           <Button variant="contained" onClick={fetchData}>
             ค้นหา
           </Button>
+          <div className="grid row-span-2">
+            <FormControlLabel
+              label=""
+              control={<Switch checked={searchOn} onChange={(e) => setSearchOn(e.target.checked)} />}
+            />
+            <span>PM₂.₅ เกิน 75.1 µg/m³ ติดต่อกัน 3 วัน</span>
+          </div>
+
         </Box>
         <p className="text-gray-400 mt-4">
-          * หมายเหตุ ใน 1 อำเภอ อาจมีสถานีตรวจวัดหลายสถานีตรวจวัด {'>>'} การเลือกใช้ค่า PM2.5 เฉลี่ย 24 ชั่วโมง รายวัน ของแต่ละอำเภอ มาตรวจสอบและใช้ค่าสูงสุดของอำเภอนั้นๆ
+          * หมายเหตุ ใน 1 อำเภอ อาจมีสถานีตรวจวัดหลายสถานีตรวจวัด {'>>'} การเลือกใช้ค่า PM₂.₅ เฉลี่ย 24 ชั่วโมง รายวัน ของแต่ละอำเภอ มาตรวจสอบและใช้ค่าสูงสุดของอำเภอนั้นๆ
           และเลือกข้อมูล จากระบบ AIR4THAI, NTAQHI, CCDC(DustBoy) และ GISTDA มาใช้ตามลำดับ
         </p>
       </Paper>
@@ -241,13 +277,13 @@ const PM25Table = () => {
                     bgColor = "#ffffff";
                   }
                   return (
-                    <TableCell
+                    <StyledTableCell
                       key={date}
-                      align="center"
-                      sx={{ backgroundColor: bgColor, py: 0.5, px: 1 }}
+                      align="right"
+                      bgColor={bgColor} // ส่งสีผ่าน props
                     >
                       {record ? record.pm25_max : ""}
-                    </TableCell>
+                    </StyledTableCell>
                   );
                 })}
               </TableRow>
@@ -258,13 +294,32 @@ const PM25Table = () => {
 
       {/* ปุ่ม See more / See less สำหรับแถว โดยเลื่อนขึ้นมาหน่อยและลด opacity */}
       {displayRows.length > maxVisibleRows && (
-        <Box textAlign="center" sx={{ mt: -2, mb: 2, opacity: 0.7 }}>
+        <Box
+          textAlign="center"
+          alignContent="center"
+          sx={{
+            ...(!showAllRows && {
+              mt: -12,
+              mb: 2,
+              opacity: 0.7,
+              bgcolor: "#f9f9f9",
+              p: 1,
+              borderRadius: 2,
+              height: 80
+            }),
+            ...(showAllRows && {
+              mt: 2,
+              mb: 2,
+              opacity: 0.9
+            })
+          }}
+        >
           <Button variant="outlined" onClick={() => setShowAllRows(!showAllRows)}>
             {showAllRows ? "See less rows" : "See more rows"}
           </Button>
         </Box>
       )}
-    </Container>
+    </Container >
   );
 };
 

@@ -2,20 +2,22 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import PieChartSection from "../(object)/PieChartSection";
+// import PieChartSection from "../(object)/PieChartSection";
 import DataTable from "../(object)/DataTable";
 import Loading from "../(object)/Loading";
+// import BarChartComponent from "../(object)/BarChartComponent";
+import ReusableBarChart from "../(object)/ReusableBarChart";
 
-const COLORS = [
-  "#8884d8",
-  "#82ca9d",
-  "#ffc658",
-  "#ff7f50",
-  "#8dd1e1",
-  "#a4de6c",
-  "#d0ed57",
-  "#ffc0cb",
-];
+// const COLORS = [
+//   "#8884d8",
+//   "#82ca9d",
+//   "#ffc658",
+//   "#ff7f50",
+//   "#8dd1e1",
+//   "#a4de6c",
+//   "#d0ed57",
+//   "#ffc0cb",
+// ];
 
 interface ActivityData {
   provcode: number;
@@ -49,6 +51,7 @@ const activityTypeLabels = [
   "กิจกรรมอื่นๆ",
 ];
 
+
 const ReportMeasure1: React.FC = () => {
   // สำหรับตาราง Measure1 (/api/measure1)
   const [measure1Data, setMeasure1Data] = useState<ActivityData[]>([]);
@@ -64,6 +67,7 @@ const ReportMeasure1: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [selectedActivityType, setSelectedActivityType] = useState<number | null>(null);
+  const [selectedProvince, setSelectedProvince] = useState<string>("");
 
   // ดึงข้อมูลจาก /api/measure1
   useEffect(() => {
@@ -119,32 +123,49 @@ const ReportMeasure1: React.FC = () => {
     fetchActivityListData();
   }, []);
 
+  // ฟังก์ชันแปลงข้อมูลแบบ pivot โดย key คือ description
+  const transformData = (data: typeof measure1Data) => {
+    const grouped: { [key: string]: { [key: string]: string | number } } = {};
+    data.forEach(item => {
+      const { activityType, provname, activityCount } = item;
+      const label = activityTypeLabels[activityType - 1]; // map activityType เป็น label
+      if (!grouped[label]) {
+        grouped[label] = { activityTypeLabel: label };
+      }
+      grouped[label][provname] = (grouped[label][provname] as number || 0) + activityCount;
+    });
+    return Object.values(grouped);
+  };
+
+  const data = transformData(measure1Data);
+  const provinces = Array.from(new Set(measure1Data.map(item => item.provname)));
+
   // กรองข้อมูลสำหรับ Measure1 Table
   const filteredMeasure1Data = useMemo(() => {
     return measure1Data
       .filter(
         (item) =>
-          item.provname?.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          item.provname?.toLowerCase().includes(selectedProvince.toLowerCase()) &&
           item.activityYear === selectedYear &&
           (selectedActivityType === null || item.activityType === selectedActivityType)
       )
       .sort((a, b) => a.provcode - b.provcode);
-  }, [measure1Data, searchTerm, selectedYear, selectedActivityType]);
+  }, [measure1Data, selectedProvince, selectedYear, selectedActivityType]);
 
-  const aggregateMeasure1 = useMemo(() => {
-    return {
-      totalCount: filteredMeasure1Data.reduce((acc, item) => acc + item.activityCount, 0),
-    };
-  }, [filteredMeasure1Data]);
+  // const aggregateMeasure1 = useMemo(() => {
+  //   return {
+  //     totalCount: filteredMeasure1Data.reduce((acc, item) => acc + item.activityCount, 0),
+  //   };
+  // }, [filteredMeasure1Data]);
 
   // จัดกลุ่มข้อมูลสำหรับ Pie Chart (Measure1)
-  const pieChartData = useMemo(() => {
-    const provinceCount: { [key: string]: number } = {};
-    filteredMeasure1Data.forEach((item) => {
-      provinceCount[item.provname] = (provinceCount[item.provname] || 0) + item.activityCount;
-    });
-    return Object.entries(provinceCount).map(([name, value]) => ({ name, value }));
-  }, [filteredMeasure1Data]);
+  // const pieChartData = useMemo(() => {
+  //   const provinceCount: { [key: string]: number } = {};
+  //   filteredMeasure1Data.forEach((item) => {
+  //     provinceCount[item.provname] = (provinceCount[item.provname] || 0) + item.activityCount;
+  //   });
+  //   return Object.entries(provinceCount).map(([name, value]) => ({ name, value }));
+  // }, [filteredMeasure1Data]);
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
@@ -158,10 +179,17 @@ const ReportMeasure1: React.FC = () => {
             <div className="text-red-500 text-center">{errorMeasure1}</div>
           ) : (
             <>
-              <PieChartSection
+              {/* <PieChartSection
                 title={`จำนวนกิจกรรมต่อจังหวัดในปี ${selectedYear}`}
                 data={pieChartData}
                 colors={COLORS}
+              /> */}
+
+              <ReusableBarChart
+                data={data}
+                title={`จำนวนกิจกรรมต่อจังหวัดในปี ${selectedYear}`}
+                xAxisKey="activityTypeLabel"
+                barKeys={provinces}
               />
               <div className="mb-6 flex flex-wrap gap-6">
                 <div className="flex flex-col flex-1 min-w-[250px]">
@@ -171,14 +199,29 @@ const ReportMeasure1: React.FC = () => {
                   >
                     ค้นหาจังหวัด:
                   </label>
-                  <input
+                  <select
+                    value={selectedProvince}
+                    onChange={(e) => setSelectedProvince(e.target.value)}
+                    className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    <option value="">ทั้งหมด</option>
+                    <option value="เชียงใหม่">เชียงใหม่</option>
+                    <option value="ลำพูน">ลำพูน</option>
+                    <option value="ลำปาง">ลำปาง</option>
+                    <option value="แพร่">แพร่</option>
+                    <option value="น่าน">น่าน</option>
+                    <option value="พะเยา">พะเยา</option>
+                    <option value="เชียงราย">เชียงราย</option>
+                    <option value="แม่ฮ่องสอน">แม่ฮ่องสอน</option>
+                  </select>
+                  {/* <input
                     id="provinceSearch"
                     type="text"
                     placeholder="ค้นหาจังหวัด..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
+                  /> */}
                 </div>
                 <div className="flex flex-col flex-1 min-w-[250px]">
                   <label
@@ -225,15 +268,15 @@ const ReportMeasure1: React.FC = () => {
                 data={filteredMeasure1Data.map((item) => ({
                   จังหวัด: item.provname,
                   "ประเภทกิจกรรม": item.description,
-                  ปี: item.activityYear,
+                  ปี: item.activityYear.toString(),
                   "จำนวนกิจกรรม": item.activityCount,
                 }))}
-                footer={{
-                  จังหวัด: "เขตสุขภาพที่ 1",
-                  "ประเภทกิจกรรม": "",
-                  ปี: "",
-                  "จำนวนกิจกรรม": aggregateMeasure1.totalCount,
-                }}
+              // footer={{
+              //   จังหวัด: "เขตสุขภาพที่ 1",
+              //   "ประเภทกิจกรรม": "",
+              //   ปี: "",
+              //   "จำนวนกิจกรรม": aggregateMeasure1.totalCount,
+              // }}
               />
             </>
           )}
@@ -275,7 +318,7 @@ const ReportMeasure1: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
