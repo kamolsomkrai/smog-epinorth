@@ -130,7 +130,7 @@ const DataTable: React.FC<DataTableProps> = ({
               <tr>
                 {headers.map((header, index) => (
                   <th key={index} className={getHeaderStyle(header as string)}>
-                    {header}
+                    {typeof header === 'string' ? header : header.main}
                   </th>
                 ))}
               </tr>
