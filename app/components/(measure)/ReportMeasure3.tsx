@@ -8,7 +8,7 @@ const ReportMeasure3: React.FC = () => {
   const [data, setData] = useState<Measure3Data[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  // const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedProvince, setSelectedProvince] = useState<string>("");
 
   // ฟังก์ชันแปลงตัวเลขให้มีคอมม่า เช่น 1,000
@@ -244,7 +244,7 @@ const ReportMeasure3: React.FC = () => {
                     "คลินิกมลพิษ (แห่ง)",
                     "คลินิกมลพิษออนไลน์ (แห่ง)",
                   ]}
-                  data={filteredData.map((item) => ({
+                  data={(filteredData ?? []).map((item) => ({
                     "จังหวัด": item.province,
                     "คลินิกมลพิษ (แห่ง)": formatNumber(Number(item.pollutionClinicTotal)),
                     "คลินิกมลพิษออนไลน์ (แห่ง)": formatNumber(Number(item.onlinePollutionClinicTotal)),
@@ -263,7 +263,7 @@ const ReportMeasure3: React.FC = () => {
                     "คลินิกมลพิษ (ครั้ง)",
                     "คลินิกมลพิษออนไลน์ (ครั้ง)",
                   ]}
-                  data={filteredData.map((item) => ({
+                  data={(filteredData ?? []).map((item) => ({
                     "จังหวัด": item.province,
                     "คลินิกมลพิษ (ครั้ง)": formatNumber(Number(item.pollutionCliniService)),
                     "คลินิกมลพิษออนไลน์ (ครั้ง)": formatNumber(Number(item.onlinePollutionCliniService)),
@@ -288,7 +288,7 @@ const ReportMeasure3: React.FC = () => {
                   "จำนวนคลังสะสม (หลัง)",
                   "สนับสนุน/แจกจ่าย (หลัง)",
                 ]}
-                data={filteredData.map((item) => ({
+                data={(filteredData ?? []).map((item) => ({
                   "จังหวัด": item.province,
                   "จำนวนคลังสะสม (หลัง)": formatNumber(Number(item.mosquitoNetTotal)),
                   "สนับสนุน/แจกจ่าย (หลัง)": formatNumber(Number(item.mosquitoNetService)),
@@ -313,7 +313,7 @@ const ReportMeasure3: React.FC = () => {
                   "ร้านอาหาร/กาแฟ/โรงแรม (ห้อง)",
                   "อื่น ๆ (ห้อง)",
                 ]}
-                data={filteredData.map((item) => ({
+                data={(filteredData ?? []).map((item) => ({
                   "จังหวัด": item.province,
                   "ศูนย์พัฒนาเด็ก (ห้อง)": formatNumber(Number(item.nurseryDustFreeTotal)),
                   "สถานบริการสาธารณสุข (ห้อง)": formatNumber(Number(item.publicHealthDustFreeTotal)),
@@ -341,7 +341,7 @@ const ReportMeasure3: React.FC = () => {
                   "ร้านอาหาร/กาแฟ/โรงแรม (ครั้ง)",
                   "อื่น ๆ (ครั้ง)",
                 ]}
-                data={filteredData.map((item) => ({
+                data={(filteredData ?? []).map((item) => ({
                   "จังหวัด": item.province,
                   "ศูนย์พัฒนาเด็ก (ครั้ง)": formatNumber(Number(item.nurseryDustFreeService)),
                   "สถานบริการสาธารณสุข (ครั้ง)": formatNumber(Number(item.publicHealthDustFreeService)),
@@ -375,7 +375,7 @@ const ReportMeasure3: React.FC = () => {
                   "ทีม SHERT อำเภอ",
                   "ทีม EnvOcc CU",
                 ]}
-                data={filteredData.map((item) => ({
+                data={(filteredData ?? []).map((item) => ({
                   "จังหวัด": item.province,
                   "ทีม 3 หมอ": formatNumber(Number(item.team3DoctorTotal)),
                   "ทีมหน่วยแพทย์เคลื่อนที่": formatNumber(Number(item.mobileDoctorTotal)),
@@ -406,7 +406,7 @@ const ReportMeasure3: React.FC = () => {
                   "ทีม SHERT อำเภอ",
                   "ทีม EnvOcc CU",
                 ]}
-                data={filteredData.map((item) => ({
+                data={(filteredData ?? []).map((item) => ({
                   "จังหวัด": item.province,
                   "ทีม 3 หมอ": formatNumber(Number(item.team3DoctorService)),
                   "ทีมหน่วยแพทย์เคลื่อนที่": formatNumber(Number(item.mobileDoctorService)),
@@ -431,7 +431,7 @@ const ReportMeasure3: React.FC = () => {
                 titlespan="ระบบรักษาส่งต่อผู้ป่วย"
                 title="รายละเอียดระบบรักษาส่งต่อผู้ป่วย"
                 headers={["จังหวัด", "SKY doctor", "ทีมกู้ชีพ ALS"]}
-                data={filteredData.map((item) => ({
+                data={(filteredData ?? []).map((item) => ({
                   "จังหวัด": item.province,
                   "SKY doctor": formatNumber(Number(item.skyDoctor)),
                   "ทีมกู้ชีพ ALS": formatNumber(Number(item.ambulance)),

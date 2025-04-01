@@ -14,7 +14,7 @@ const ReportMeasure4: React.FC = () => {
   const [data, setData] = useState<Measure4Data[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  // const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedProvince, setSelectedProvince] = useState<string>("");
 
   const formatDate = (dateStr: string | undefined): string | null => {
@@ -108,13 +108,13 @@ const ReportMeasure4: React.FC = () => {
   // }, [filteredData, calculateDaysOpen]);
 
   // คำนวณรวมสำหรับ Bar Chart และ Pie Chart
-  const aggregateData = useMemo(() => {
-    return {
-      totalPheocDaysOpen: filteredData.reduce((acc, item) => acc + calculateDaysOpen(item.openPheocDate, item.closePheocDate), 0),
-      totalBurnDaysOpen: filteredData.reduce((acc, item) => acc + calculateDaysOpen(item.openDontBurnDate, item.closeDontBurnDate), 0),
-      totalFine: filteredData.reduce((acc, item) => acc + item.lawEnforcement, 0),
-    };
-  }, [filteredData, calculateDaysOpen]);
+  // const aggregateData = useMemo(() => {
+  //   return {
+  //     totalPheocDaysOpen: filteredData.reduce((acc, item) => acc + calculateDaysOpen(item.openPheocDate, item.closePheocDate), 0),
+  //     totalBurnDaysOpen: filteredData.reduce((acc, item) => acc + calculateDaysOpen(item.openDontBurnDate, item.closeDontBurnDate), 0),
+  //     totalFine: filteredData.reduce((acc, item) => acc + item.lawEnforcement, 0),
+  //   };
+  // }, [filteredData, calculateDaysOpen]);
 
   if (error) {
     return <div className="p-6 text-red-500">{error}</div>;
