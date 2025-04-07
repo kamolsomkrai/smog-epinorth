@@ -80,13 +80,13 @@ const Navbar = () => {
           <Link href="/" className="flex items-center">
             <Box display="flex" alignItems="center">
               {/* ปรับขนาดโลโก้ให้พอดีกับข้อความ */}
-              <Image
+              {/* <Image
                 src="/symbol.png" // ใช้เส้นทางที่ถูกต้องไปยังไฟล์ภาพใน public
                 alt="Logo" // คำอธิบายของภาพสำหรับ SEO และการเข้าถึง
                 width={40} // กำหนดความกว้างตามต้องการ
                 height={40} // กำหนดความสูงตามต้องการ
                 style={{ objectFit: 'contain', marginRight: '1rem' }} // ปรับให้ภาพไม่บิดเบี้ยว
-              />
+              /> */}
               <Typography
                 variant="h6"
                 component="div"
