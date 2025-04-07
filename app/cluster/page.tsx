@@ -9,9 +9,14 @@ interface ClusterData {
   hosname: string;
   province: string;
   amphur: string;
+  groupname: string;
   diagtype: string;
-  diagcode: string;
   patient_count: number;
+}
+
+interface ColumnStyle {
+  headerAlign?: 'left' | 'center' | 'right';
+  bodyAlign?: 'left' | 'center' | 'right';
 }
 
 const ClusterPages: React.FC = () => {
@@ -24,7 +29,7 @@ const ClusterPages: React.FC = () => {
   const [filterMonth, setFilterMonth] = useState<string>("");
   const [filterProvince, setFilterProvince] = useState<string>("");
   const [filterDiagtype, setFilterDiagtype] = useState<string>("");
-  const [filterDiagcode, setFilterDiagcode] = useState<string>("");
+  // const [filterDiagcode, setFilterDiagcode] = useState<string>("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,16 +76,30 @@ const ClusterPages: React.FC = () => {
     { value: "12", label: "ธันวาคม" },
   ];
 
+  const provinceOptions = [
+    { value: "", label: "เลือกจังหวัด" },
+    { value: "เชียงใหม่", label: "เชียงใหม่" },
+    { value: "ลำพูน", label: "ลำพูน" },
+    { value: "ลำปาง", label: "ลำปาง" },
+    { value: "แพร่", label: "แพร่" },
+    { value: "น่าน", label: "น่าน" },
+    { value: "พะเยา", label: "พะเยา" },
+    { value: "เชียงราย", label: "เชียงราย" },
+    { value: "แม่ฮ่องสอน", label: "แม่ฮ่องสอน" },
+  ]
+
+
   // ตัวเลือกประเภท diagtype
   const diagTypeOptions = [
-    { value: "", label: "เลือกประเภท" },
-    { value: "Principal Diagnosis", label: "Principal Diagnosis" },
-    { value: "Comorbidity", label: "Comorbidity" },
-    { value: "Complication", label: "Complication" },
-    { value: "Other", label: "Other" },
-    { value: "External Cause", label: "External Cause" },
-    { value: "Additional Code", label: "Additional Code" },
-    { value: "Morphology Code", label: "Morphology Code" },
+    { value: "", label: "เลือกกลุ่มโรค" },
+    { value: "โรคปอดอุดกั้นเรื้อรัง", label: "โรคปอดอุดกั้นเรื้อรัง" },
+    { value: "โรคหืด", label: "โรคหืด" },
+    { value: "โรคกล้ามเนื้อหัวใจตายเฉียบพลัน", label: "โรคกล้ามเนื้อหัวใจตายเฉียบพลัน" },
+    { value: "โรคกล้ามเนื้อหัวใจที่ตายตามมา", label: "โรคกล้ามเนื้อหัวใจที่ตายตามมา" },
+    { value: "โรคหัวใจขาดเลือดเฉียบพลัน", label: "โรคหัวใจขาดเลือดเฉียบพลัน" },
+    { value: "โรคผิวหนังอักเสบ ไม่ระบุรายละเอียด", label: "โรคผิวหนังอักเสบ ไม่ระบุรายละเอียด" },
+    { value: "โรคลมพิษ", label: "โรคลมพิษ" },
+    { value: "โรคเยื่อตาอักเสบ", label: "โรคเยื่อตาอักเสบ" },
   ];
 
   // กรองข้อมูลตามเงื่อนไข
@@ -91,15 +110,15 @@ const ClusterPages: React.FC = () => {
       const matchProvince = filterProvince
         ? item.province.toLowerCase().includes(filterProvince.toLowerCase())
         : true;
+      // const matchDiagcode = filterDiagcode
+      //   ? item.groupname.toLowerCase().includes(filterDiagcode.toLowerCase())
+      //   : true;
       const matchDiagtype = filterDiagtype
-        ? item.diagtype.toLowerCase() === filterDiagtype.toLowerCase()
+        ? item.groupname.toLowerCase() === filterDiagtype.toLowerCase()
         : true;
-      const matchDiagcode = filterDiagcode
-        ? item.diagcode.toLowerCase().includes(filterDiagcode.toLowerCase())
-        : true;
-      return matchYear && matchMonth && matchProvince && matchDiagtype && matchDiagcode;
+      return matchYear && matchMonth && matchProvince && matchDiagtype;
     });
-  }, [data, filterYear, filterMonth, filterProvince, filterDiagtype, filterDiagcode]);
+  }, [data, filterYear, filterMonth, filterProvince, filterDiagtype]);
   const displayData = useMemo(() => {
     // สร้าง array สำหรับชื่อเดือนในภาษาไทย
     const monthNames = [
@@ -109,20 +128,31 @@ const ClusterPages: React.FC = () => {
     ];
 
     return filteredData.map(item => ({
-      "ปี": item.yr,
+      "ปี": (item.yr + 543).toString(), // แปลงปีเป็น string(ถ้าจำเป็น)
       "เดือน": monthNames[item.mm], // แปลงเลขเดือนเป็นชื่อเดือนภาษาไทย
-      "รหัส": item.hospcode,
-      "ชื่อ รพ": item.hosname,
+      // "รหัส": item.hospcode,
+      "โรงพยาบาล": item.hosname,
       "จังหวัด": item.province,
       "อำเภอ": item.amphur,
-      "ประเภท": item.diagtype,
-      "รหัสโรค": item.diagcode,
+      "กลุ่มโรค": item.groupname,
+      // "รหัสโรค": item.diagtype,
       "จำนวนผู้ป่วย": item.patient_count,
     }));
   }, [filteredData]);
 
   // กำหนด header ที่ต้องการแสดงในตาราง
-  const headers = ["ปี", "เดือน", "รหัส", "ชื่อ รพ", "จังหวัด", "อำเภอ", "ประเภท", "รหัสโรค", "จำนวนผู้ป่วย"];
+  const headers = ["ปี", "เดือน", "โรงพยาบาล", "จังหวัด", "อำเภอ", "กลุ่มโรค", "จำนวนผู้ป่วย"];
+
+  const columnStyles: Record<string, ColumnStyle> = {
+    "ปี": { headerAlign: "center", bodyAlign: "right" },
+    "เดือน": { headerAlign: "center", bodyAlign: "left" },
+    // "รหัส": { headerAlign: "center", bodyAlign: "right" },
+    "โรงพยาบาล": { headerAlign: "center", bodyAlign: "left" },
+    "จังหวัด": { headerAlign: "center", bodyAlign: "left" },
+    "อำเภอ": { headerAlign: "center", bodyAlign: "left" },
+    "กลุ่มโรค": { headerAlign: "center", bodyAlign: "left" },
+    "จำนวนผู้ป่วย": { headerAlign: "center", bodyAlign: "right" },
+  };
 
   return (
     <div className="p-6">
@@ -136,7 +166,7 @@ const ClusterPages: React.FC = () => {
         >
           <option value="">เลือกปี</option>
           {uniqueYears.map(year => (
-            <option key={year} value={year.toString()}>{year}</option>
+            <option key={year} value={year.toString()}>{(year + 543)}</option>
           ))}
         </select>
         {/* เลือกเดือน */}
@@ -150,13 +180,25 @@ const ClusterPages: React.FC = () => {
           ))}
         </select>
         {/* กรอกจังหวัด */}
-        <input
+        <select
+          value={filterProvince}
+          onChange={(e) => setFilterProvince(e.target.value)}
+          className="border p-2"
+        >
+          {provinceOptions.map(option => (
+            <option key={option.value} value={option.value}>{option.label}</option>
+          ))}
+        </select>
+
+
+
+        {/* <input
           type="text"
           placeholder="จังหวัด"
           value={filterProvince}
           onChange={(e) => setFilterProvince(e.target.value)}
           className="border p-2"
-        />
+        /> */}
         {/* เลือกประเภท diagtype */}
         <select
           value={filterDiagtype}
@@ -168,19 +210,20 @@ const ClusterPages: React.FC = () => {
           ))}
         </select>
         {/* กรอกรหัสโรค */}
-        <input
+        {/* <input
           type="text"
           placeholder="รหัสโรค (diagcode)"
           value={filterDiagcode}
           onChange={(e) => setFilterDiagcode(e.target.value)}
           className="border p-2"
-        />
+        /> */}
       </div>
       {loading && <div>กำลังโหลดข้อมูล...</div>}
       {error && <div>เกิดข้อผิดพลาด: {error}</div>}
       {!loading && !error && (
         <DataTable
-          titlespan="ตารางข้อมูล Cluster"
+          columnStyles={columnStyles}
+          titlespan="ตารางข้อมูล Cluster รายเดือน ที่มีรหัส Z58.1 ในเขตสุขภาพที่ 1"
           title="Cluster Data"
           headers={headers}
           data={displayData}
