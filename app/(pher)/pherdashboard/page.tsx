@@ -50,9 +50,9 @@ const PherDashboard = () => {
             body: JSON.stringify(payload)
           }).then(res => res.json())
         ]);
-        const maxTime = Math.max(...injuryRes.map(item => new Date(item.accident_date).getTime()));
+        const maxTime = Math.max(...injuryRes.map((item: any) => new Date(item.accident_date).getTime()));
         const latestInjuryData = injuryRes.filter(
-          item => new Date(item.accident_date).getTime() === maxTime
+          (item: any) => new Date(item.accident_date).getTime() === maxTime
         );
         setInjuryData(latestInjuryData);
         setInjuryTotalData(injuryTotalRes);
