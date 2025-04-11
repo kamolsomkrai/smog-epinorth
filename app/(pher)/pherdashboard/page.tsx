@@ -5,7 +5,9 @@ import React, { useEffect, useState } from 'react';
 
 const PherDashboard = () => {
   // กำหนดวันปัจจุบันเป็น default
-  const today = new Date().toISOString().split('T')[0];
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const today = yesterday.toISOString().split('T')[0];
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(today);
   const [injuryData, setInjuryData] = useState<any[]>([]);
@@ -48,7 +50,11 @@ const PherDashboard = () => {
             body: JSON.stringify(payload)
           }).then(res => res.json())
         ]);
-        setInjuryData(injuryRes);
+        const maxTime = Math.max(...injuryRes.map(item => new Date(item.accident_date).getTime()));
+        const latestInjuryData = injuryRes.filter(
+          item => new Date(item.accident_date).getTime() === maxTime
+        );
+        setInjuryData(latestInjuryData);
         setInjuryTotalData(injuryTotalRes);
         setRiskVehicleData(riskVehicleRes);
         setRiskRTIData(riskRTIRes);
