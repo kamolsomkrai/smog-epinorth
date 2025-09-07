@@ -29,7 +29,7 @@
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "mysql2": "^3.12.0",
-    "next": "^14.2.23",
+    "next": "^14.2.32",
     "pdfjs-dist": "^4.9.124",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
